@@ -1,70 +1,107 @@
-import axios from 'axios';
+import { get, post, put } from './apiService';
+import { getToken } from './authService'; // To get the JWT token
 
-// src/services/driverService.js
-const API_BASE_URL = 'http://localhost:8080/api/drivers';
+const DRIVER_API_URL = '/driver'; // Base path for driver operations
 
-export const fetchAvailableLoads = async () => {
-  const token = localStorage.getItem('driverToken');
-  const response = await fetch(`${API_BASE_URL}/loads`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
+export const getAvailableLoads = async () => {
+    const token = getToken();
+    try {
+        const response = await get(`${DRIVER_API_URL}/loads/available`, token);
+        return response;
+    } catch (error) {
+        console.error('Error fetching available loads:', error);
+        throw error;
     }
-  });
-  if (!response.ok) throw new Error('Failed to fetch loads');
-  return response.json();
 };
 
-export const placeBid = async (loadId, amount) => {
-  const token = localStorage.getItem('driverToken');
-  const response = await fetch(`${API_BASE_URL}/bids`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ loadId, amount })
-  });
-  if (!response.ok) throw new Error('Failed to place bid');
-  return response.json();
+export const submitBid = async (bidData) => {
+    // bidData should be: { loadId (Long), bidAmount (BigDecimal) }
+    const token = getToken();
+    try {
+        const response = await post(`${DRIVER_API_URL}/bids`, bidData, token);
+        return response;
+    } catch (error) {
+        console.error('Error submitting bid:', error);
+        throw error;
+    }
 };
 
-export const fetchDriverBids = async (driverId) => {
-  try {
-    const response = await axios.get(`/api/drivers/${driverId}/bids`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching driver bids:', error);
-    throw error;
-  }
+export const getBidHistory = async () => {
+    const token = getToken();
+    try {
+        const response = await get(`${DRIVER_API_URL}/bids/history`, token);
+        return response;
+    } catch (error) {
+        console.error('Error fetching bid history:', error);
+        throw error;
+    }
 };
 
-export const fetchDriverProfile = async (driverId) => {
-  try {
-    const response = await axios.get(`/api/drivers/${driverId}/profile`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching driver profile:', error);
-    throw error;
-  }
+export const getAssignedLoads = async () => {
+    const token = getToken();
+    try {
+        const response = await get(`${DRIVER_API_URL}/loads/assigned`, token);
+        return response;
+    } catch (error) {
+        console.error('Error fetching assigned loads:', error);
+        throw error;
+    }
 };
 
-export const createDriverDispute = async (disputeData) => {
-  try {
-    const response = await axios.post('/api/driver/disputes', disputeData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating driver dispute:', error);
-    throw error;
-  }
+export const raiseDispute = async (disputeData) => {
+    // disputeData should be: { loadId (Long), reason (String) }
+    const token = getToken();
+    try {
+        const response = await post(`${DRIVER_API_URL}/disputes`, disputeData, token);
+        return response;
+    } catch (error) {
+        console.error('Error raising dispute:', error);
+        throw error;
+    }
 };
 
-export const fetchDriverDisputes = async () => {
-  try {
-    const response = await axios.get('/api/driver/disputes');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching driver disputes:', error);
-    throw error;
-  }
+export const getDriverDisputes = async () => {
+    const token = getToken();
+    try {
+        const response = await get(`${DRIVER_API_URL}/disputes`, token);
+        return response;
+    } catch (error) {
+        console.error('Error fetching driver disputes:', error);
+        throw error;
+    }
 };
-// Add more driver-related API calls as needed
+
+export const getDriverProfile = async () => {
+    const token = getToken();
+    try {
+        const response = await get(`${DRIVER_API_URL}/profile`, token);
+        return response;
+    } catch (error) {
+        console.error('Error fetching driver profile:', error);
+        throw error;
+    }
+};
+
+export const updateDriverProfile = async (profileData) => {
+    // profileData should be: { firstName, lastName, phoneNumber, email }
+    const token = getToken();
+    try {
+        const response = await put(`${DRIVER_API_URL}/profile`, profileData, token);
+        return response;
+    } catch (error) {
+        console.error('Error updating driver profile:', error);
+        throw error;
+    }
+};
+
+export const changePassword = async (passwordData) => {
+    // passwordData should be: { newPassword }
+    const token = getToken();
+    try {
+        const response = await post(`${DRIVER_API_URL}/change-password`, passwordData, token);
+        return response; // Typically a message response
+    } catch (error) {
+        console.error('Error changing password:', error);
+        throw error;
+    }
+};

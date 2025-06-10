@@ -1,89 +1,75 @@
-import React, { useState, useContext, useEffect } from 'react'; // Add useContext to the import
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import * as authService from '../services/authService'; // Import all exports
 
-const AuthContext = React.createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userType, setUserType] = useState(null);
-  const [username, setUsername] = useState('');
+    const [user, setUser] = useState(null); // Stores user object { id, username, email, roles }
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true); // For initial check
 
-  // Update the logging to properly stringify the state object
-  console.log('Auth State:', JSON.stringify({
-    isAuthenticated,
-    userType,
-    timestamp: new Date().toISOString()
-  }, null, 2));
+    useEffect(() => {
+        // Check for existing token and user data on app load
+        const token = authService.getToken();
+        const storedUser = authService.getCurrentUser();
 
-  const [authState, setAuthState] = useState({
-    isAuthenticated: false,
-    userType: null,
-    username: '',
-    timestamp: ''
-  });
-
-  const login = (userData) => {
-    if (!userData.username) {
-      console.error('Username is required in userData');
-      return;
-    }
-
-    const newAuthState = {
-      isAuthenticated: true,
-      userType: userData.type,
-      username: userData.username,
-      timestamp: new Date().toISOString()
-    };
-
-    setIsAuthenticated(true);
-    setUserType(userData.type);
-    setUsername(userData.username);
-    setAuthState(newAuthState);
-    localStorage.setItem('auth', JSON.stringify(newAuthState));
-  };
-
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUsername(null);
-    localStorage.removeItem('auth');
-  };
-
-  useEffect(() => {
-    const handleStorageChange = (event) => {
-      if (event.key === 'auth') {
-        const newAuth = JSON.parse(event.newValue);
-        if (newAuth) {
-          setIsAuthenticated(newAuth.isAuthenticated);
-          setUserType(newAuth.userType);
-          setUsername(newAuth.username);
-          setAuthState(newAuth);
+        if (token && storedUser) {
+            setUser(storedUser);
+            setIsAuthenticated(true);
+            // TODO: Optionally, add a request here to verify token with backend
+            // and refresh user data if necessary. For now, trust localStorage.
         }
-      }
+        setLoading(false);
+    }, []);
+
+    const login = async (username, password) => {
+        try {
+            const userData = await authService.login(username, password);
+            setUser(userData);
+            setIsAuthenticated(true);
+            return userData;
+        } catch (error) {
+            setIsAuthenticated(false);
+            setUser(null);
+            console.error("AuthContext login error:", error);
+            throw error;
+        }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    const logout = () => {
+        authService.logout();
+        setUser(null);
+        setIsAuthenticated(false);
+        // Optionally, redirect to login page or home page
+    };
 
-  useEffect(() => {
-    const storedAuth = JSON.parse(localStorage.getItem('auth'));
-    if (storedAuth && storedAuth.isAuthenticated) {
-      setIsAuthenticated(true);
-      setUserType(storedAuth.userType);
-      setUsername(storedAuth.username);
-    }
-  }, []);
+    const signup = async (signupData) => {
+        try {
+            // signupData: { username, email, password, roles, firstName, lastName, phoneNumber }
+            const response = await authService.signup(signupData);
+            // Optionally, log in the user directly after successful signup
+            // Or, redirect to login page with a success message
+            return response; // MessageResponse
+        } catch (error) {
+            console.error("AuthContext signup error:", error);
+            throw error;
+        }
+    };
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, userType, username, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    // Expose a primary role or all roles if needed by components
+    const primaryRole = user && user.roles && user.roles.length > 0 ? user.roles[0] : null;
+
+    return (
+        <AuthContext.Provider value={{ user, isAuthenticated, login, logout, signup, getToken: authService.getToken, primaryRole, loading }}>
+            {!loading && children}
+        </AuthContext.Provider>
+    );
 };
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
