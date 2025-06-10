@@ -1,70 +1,109 @@
-import axios from 'axios';
+import { get, post, put } from './apiService';
+import { getToken } from './authService';
 
-// src/services/goodsOwnerService.js
-const API_BASE_URL = 'http://localhost:8080/api/owners';
+const GOODS_OWNER_API_URL = '/goods-owner'; // Base path for goods owner operations
 
-export const postNewLoad = async (loadData) => {
-  const token = localStorage.getItem('ownerToken');
-  const response = await fetch(`${API_BASE_URL}/loads`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(loadData)
-  });
-  if (!response.ok) throw new Error('Failed to post load');
-  return response.json();
-};
-
-export const fetchMyLoads = async () => {
-  const token = localStorage.getItem('ownerToken');
-  const response = await fetch(`${API_BASE_URL}/loads`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
+export const postLoad = async (loadData) => {
+    // loadData should be: { description, pickupLocation, dropoffLocation, weight }
+    const token = getToken();
+    try {
+        const response = await post(`${GOODS_OWNER_API_URL}/loads`, loadData, token);
+        return response;
+    } catch (error) {
+        console.error('Error posting load:', error);
+        throw error;
     }
-  });
-  if (!response.ok) throw new Error('Failed to fetch loads');
-  return response.json();
 };
 
-export const fetchOwnerLoads = async (ownerId) => {
-  try {
-    const response = await axios.get(`/api/owners/${ownerId}/loads`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching owner loads:', error);
-    throw error;
-  }
+export const getMyLoads = async () => {
+    const token = getToken();
+    try {
+        const response = await get(`${GOODS_OWNER_API_URL}/loads`, token);
+        return response;
+    } catch (error) {
+        console.error('Error fetching my loads:', error);
+        throw error;
+    }
 };
 
-export const fetchOwnerProfile = async (ownerId) => {
-  try {
-    const response = await axios.get(`/api/owners/${ownerId}/profile`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching owner profile:', error);
-    throw error;
-  }
+export const getBidsForLoad = async (loadId) => {
+    const token = getToken();
+    try {
+        // Note: The backend URL is /api/goods-owner/loads/{loadId}/bids
+        const response = await get(`${GOODS_OWNER_API_URL}/loads/${loadId}/bids`, token);
+        return response;
+    } catch (error) {
+        console.error(`Error fetching bids for load ${loadId}:`, error);
+        throw error;
+    }
 };
 
-export const createOwnerDispute = async (disputeData) => {
-  try {
-    const response = await axios.post('/api/owner/disputes', disputeData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating owner dispute:', error);
-    throw error;
-  }
+export const acceptBid = async (bidId) => {
+    const token = getToken();
+    try {
+        // Note: The backend URL is /api/goods-owner/bids/{bidId}/accept
+        const response = await put(`${GOODS_OWNER_API_URL}/bids/${bidId}/accept`, {}, token); // Empty body for this PUT
+        return response;
+    } catch (error) {
+        console.error(`Error accepting bid ${bidId}:`, error);
+        throw error;
+    }
 };
 
-export const fetchOwnerDisputes = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/owner/disputes`);
-    return response.json();
-  } catch (error) {
-    console.error('Error fetching owner disputes:', error);
-    throw error;
-  }
+export const raiseDispute = async (disputeData) => {
+    // disputeData should be: { loadId (Long), reason (String) }
+    const token = getToken();
+    try {
+        const response = await post(`${GOODS_OWNER_API_URL}/disputes`, disputeData, token);
+        return response;
+    } catch (error) {
+        console.error('Error raising dispute:', error);
+        throw error;
+    }
 };
-// Add more owner-related API calls as needed
+
+export const getGoodsOwnerDisputes = async () => {
+    const token = getToken();
+    try {
+        const response = await get(`${GOODS_OWNER_API_URL}/disputes`, token);
+        return response;
+    } catch (error) {
+        console.error('Error fetching goods owner disputes:', error);
+        throw error;
+    }
+};
+
+export const getGoodsOwnerProfile = async () => {
+    const token = getToken();
+    try {
+        const response = await get(`${GOODS_OWNER_API_URL}/profile`, token);
+        return response;
+    } catch (error) {
+        console.error('Error fetching goods owner profile:', error);
+        throw error;
+    }
+};
+
+export const updateGoodsOwnerProfile = async (profileData) => {
+    // profileData should be: { firstName, lastName, phoneNumber, email }
+    const token = getToken();
+    try {
+        const response = await put(`${GOODS_OWNER_API_URL}/profile`, profileData, token);
+        return response;
+    } catch (error) {
+        console.error('Error updating goods owner profile:', error);
+        throw error;
+    }
+};
+
+export const changePassword = async (passwordData) => {
+    // passwordData should be: { newPassword }
+    const token = getToken();
+    try {
+        const response = await post(`${GOODS_OWNER_API_URL}/change-password`, passwordData, token);
+        return response; // Typically a message response
+    } catch (error) {
+        console.error('Error changing password:', error);
+        throw error;
+    }
+};
