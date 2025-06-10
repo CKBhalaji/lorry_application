@@ -1,103 +1,57 @@
-import axios from 'axios';
+import { post } from './apiService';
 
-// export const signUpDriver = async (formData) => {
-//   try {
-//     const response = await fetch('http://localhost:8080/api/drivers/register', {
-//       method: 'POST',
-//       body: formData // Send FormData directly
-//     });
+const AUTH_API_URL = '/auth';
 
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       throw new Error(errorData.message || 'Signup failed');
-//     }
-
-//     return await response.json();
-//   } catch (error) {
-//     console.error('Error during signup:', error);
-//     throw error;
-//   }
-// };
-
-export const signUpDriver = async (formData) => {
-  try {
-    const response = await fetch('http://localhost:8080/api/drivers/register', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      // Log the response status and text to the console for debugging
-      const errorText = await response.text();
-      console.error(`HTTP error! status: ${response.status}, body: ${errorText}`);
-      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+export const login = async (username, password) => {
+    try {
+        const response = await post(`${AUTH_API_URL}/login`, { username, password });
+        if (response && response.token) {
+            localStorage.setItem('jwtToken', response.token);
+            const userDetails = {
+                id: response.id,
+                username: response.username,
+                email: response.email,
+                roles: response.roles,
+            };
+            localStorage.setItem('user', JSON.stringify(userDetails));
+            return userDetails;
+        }
+        throw new Error(response.message || 'Login failed: No token received');
+    } catch (error) {
+        console.error('Login failed:', error);
+        throw error;
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error during signup:', error);
-    throw error;
-  }
 };
 
-export const signUpGoodsOwner = async (goodsOwnerData) => {
-  try {
-    const response = await axios.post(`${API_URL}/signup-goods-owner`, goodsOwnerData);
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const login = async (credentials) => {
-  try {
-    const response = await axios.post(`${API_URL}/login`, credentials);
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const logindriver = async (credentials) => {
-  try {
-    const response = await axios.post(`http://localhost:8080/api/drivers/login`, credentials);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Login failed');
-  }
-};
-
-export const sendOTP = async (email) => {
-  try {
-    const response = await fetch(`http://localhost:8080/api/verification/send?email=${email}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({email}),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'OTP send failed');
+export const signup = async (signupData) => {
+    try {
+        const response = await post(`${AUTH_API_URL}/signup`, signupData);
+        return response;
+    } catch (error) {
+        console.error('Signup failed:', error);
+        throw error;
     }
-  } catch (error) {
-    throw error;
-  }
 };
 
-export const verifyOTP = async (email, otp) => {
-  try {
-    const response = await fetch(`http://localhost:8080/api/verification/verify?email=${email}&token=${otp}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      alert(errorText || 'OTP is not correct');
-      throw new Error('Failed to verify OTP');
+export const logout = () => {
+    localStorage.removeItem('jwtToken');
+    localStorage.removeItem('user');
+};
+
+export const getCurrentUser = () => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+        try {
+            return JSON.parse(userStr);
+        } catch (e) {
+            console.error("Error parsing user from localStorage:", e);
+            localStorage.removeItem('user');
+            return null;
+        }
     }
-    return response.text();
-  } catch (error) {
-    throw error;
-  }
+    return null;
+};
+
+export const getToken = () => {
+    return localStorage.getItem('jwtToken');
 };
