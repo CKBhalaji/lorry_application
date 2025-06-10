@@ -1,0 +1,126 @@
+/* src/components/goods-owner/OwnerProfile.css */
+.GOPowner-profile {
+  color: var(--primary-text);
+  padding: 20px;
+}
+
+.GOPowner-profile h2 {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.GOPprofile-section {
+  margin-bottom: 30px;
+}
+
+.GOPprofile-section h3 {
+  color: var(--input-focus);
+  margin-bottom: 15px;
+}
+
+.GOPprofile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.GOPprofile-field {
+  margin-bottom: 15px;
+}
+
+.GOPprofile-field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--primary-text);
+}
+
+.GOPprofile-field p {
+  background: var(--input-inside);
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 3px solid var(--border-color);
+  box-shadow: 0 1px 3px var(--primary-text);
+}
+
+.GOPprofile-field input,
+.GOPprofile-field select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--input-inside);
+  color: var(--primary-text);
+}
+
+.GOPprofile-field select option {
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+}
+
+.GOPprofile-field input:focus,
+.GOPprofile-field select:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 2px 2px var(--primary-text);
+}
+
+.GOPprofile-actions .GOPedit-btn {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+.GOPprofile-actions .GOPedit-btn:hover {
+  background: var(--button-hover-bg);
+}
+
+.GOPprofile-actions .GOPcancel-btn {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.GOPprofile-actions .GOPcancel-btn:hover {
+  background: #a81c1c;
+}
+
+.GOPloading,
+.GOPerror {
+  color: var(--primary-text);
+  text-align: center;
+  padding: 20px;
+}
+
+.GOPerror {
+  color: #c62828;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .GOPprofile-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .GOPowner-profile {
+    padding: 15px;
+  }
+
+  .GOPprofile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

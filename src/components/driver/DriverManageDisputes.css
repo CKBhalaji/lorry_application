@@ -1,0 +1,316 @@
+/* src/components/driver/ManageDisputes.css and src/components/goods-owner/ManageDisputes.css */
+/* Common styles */
+.DMD-manage-disputes-driver,
+.DMD-manage-disputes-owner {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.DMD-disputes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.DMD-toggle-form-btn {
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.DMD-toggle-form-btn.add {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+}
+
+.DMD-toggle-form-btn.add:hover {
+  background: var(--button-hover-bg);
+}
+
+.DMD-toggle-form-btn.cancel {
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+}
+
+.DMD-toggle-form-btn.cancel:hover {
+  background: var(--dashboard-bg);
+}
+
+.DMD-create-dispute-form {
+  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.DMD-disputes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.DMD-dispute-card {
+  padding: 20px;
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.DMD-dispute-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+}
+
+.DMD-dispute-header h3 {
+  margin: 0;
+}
+
+.DMD-status-badge {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.DMD-dispute-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.DMD-dispute-details p {
+  margin: 5px 0;
+}
+
+.DMD-dispute-message {
+  margin-bottom: 15px;
+}
+
+.DMD-dispute-message p {
+  margin: 5px 0;
+}
+
+.DMD-dispute-resolution {
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+
+.DMD-dispute-resolution p {
+  margin: 5px 0;
+}
+
+.DMD-dispute-attachments {
+  margin-top: 10px;
+}
+
+.DMD-dispute-attachments a {
+  display: inline-block;
+  margin-left: 10px;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.DMD-form-group {
+  margin-bottom: 15px;
+}
+
+.DMD-form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.DMD-form-group input,
+/* .DMD-form-group select, */
+.DMD-form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.DMD-form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.DMD-form-group input[type="file"] {
+  padding: 5px;
+}
+
+.DMD-char-count {
+  text-align: right;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+.DMD-error-message {
+  color: #F44336;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.DMD-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.DMD-submit-btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.DMD-no-disputes {
+  text-align: center;
+  padding: 30px;
+  font-style: italic;
+}
+
+.DMD-loading {
+  text-align: center;
+  padding: 30px;
+}
+
+/* Driver specific styles */
+.DMD-manage-disputes-driver {
+  color: var(--primary-text);
+}
+
+.DMD-manage-disputes-driver .DMD-create-dispute-form {
+  background: var(--dashboard-bg);
+  /* background: var(--primary-bg); */
+  border: 1px solid var(--border-color);
+}
+
+.DMD-manage-disputes-driver .DMD-dispute-card {
+  background: var(--dashboard-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 2px var(--primary-text);
+}
+
+.DMD-manage-disputes-driver .DMD-dispute-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px var(--primary-text);
+}
+
+.DMD-manage-disputes-driver .DMD-dispute-resolution {
+  background: var(--table-header);
+  border-left: 3px solid var(--primary-text);
+}
+
+.DMD-manage-disputes-driver .DMD-form-group input,
+.DMD-manage-disputes-driver .DMD-form-group select,
+.DMD-manage-disputes-driver .DMD-form-group textarea {
+  background: var(--input-inside);
+  color: var(--primary-text);
+  border: 1px solid var(--border-color);
+}
+
+.DMD-manage-disputes-driver .DMD-form-group input:focus,
+.DMD-manage-disputes-driver .DMD-form-group select:focus,
+.DMD-manage-disputes-driver .DMD-form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-text);
+  box-shadow: 0 5px 15px var(--primary-text);
+}
+
+.DMD-manage-disputes-driver .DMD-submit-btn {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+}
+
+.DMD-manage-disputes-driver .DMD-submit-btn:hover {
+  background: var(--button-hover-bg);
+}
+
+.DMD-manage-disputes-driver .DMD-status-badge.pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #FFC107;
+}
+
+.DMD-manage-disputes-driver .DMD-status-badge.accepted {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+}
+
+.DMD-manage-disputes-driver .DMD-status-badge.rejected {
+  background: rgba(244, 67, 54, 0.2);
+  color: #F44336;
+}
+
+.DMD-manage-disputes-driver .DMD-status-badge.resolved {
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196F3;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .DMD-manage-disputes-driver,
+  .DMD-manage-disputes-owner {
+    padding: 15px;
+  }
+  
+  .DMD-disputes-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .DMD-toggle-form-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .DMD-create-dispute-form {
+    padding: 15px;
+  }
+  
+  .DMD-dispute-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .DMD-manage-disputes-driver,
+  .manage-disputes-owner {
+    padding: 10px;
+  }
+  
+  .DMD-form-actions {
+    flex-direction: column;
+  }
+  
+  .DMD-submit-btn {
+    width: 100%;
+  }
+}
+
+.DMD-form-group select option {
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+}
+
+.DMD-form-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  /* padding: 8px; */
+  /* border-radius: 4px; */
+  /* background-color: black;
+  color: yellow; */
+  border: 1px solid yellow;
+}

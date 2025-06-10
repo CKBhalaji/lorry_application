@@ -1,0 +1,162 @@
+.AP-admin-profile {
+  color: var(--primary-text);
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.AP-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.AP-edit-btn,
+.AP-change-password-btn {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.AP-edit-btn:hover,
+.AP-change-password-btn:hover {
+  background: var(--button-hover-bg);
+}
+
+.AP-profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.AP-detail-row {
+  display: flex;
+  padding: 10px;
+  background: var(--tab-hover-bg);
+  border-radius: 5px;
+}
+
+.AP-detail-label {
+  font-weight: bold;
+  width: 150px;
+  color: var(--input-focus);
+}
+
+.AP-detail-value {
+  flex: 1;
+}
+
+.AP-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.AP-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.AP-form-group label {
+  font-weight: bold;
+}
+
+.AP-form-group input {
+  padding: 10px;
+  border-radius: 4px;
+  background: var(--tab-heder);
+  color: var(--input-text);
+  border: 1px solid var(--border-color);
+}
+
+.AP-form-group input.AP-error {
+  border-color: #f44336;
+}
+
+.AP-error-message {
+  color: #f44336;
+  font-size: 0.9rem;
+}
+
+.AP-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.AP-cancel-btn {
+  background: transparent;
+  color: var(--primary-text);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.AP-cancel-btn:hover {
+  background: var(--button-hover-bg);
+}
+
+.AP-save-btn {
+  background: green;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.AP-save-btn:hover {
+  background: var(--button-hover-bg);
+}
+
+.AP-loading,
+.AP-error {
+  color: var(--primary-text);
+  text-align: center;
+  padding: 20px;
+}
+
+.AP-error {
+  color: #f44336;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .AP-profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .AP-detail-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .AP-detail-label {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .AP-form-actions {
+    flex-direction: column;
+  }
+
+  .AP-cancel-btn,
+  .AP-save-btn {
+    width: 100%;
+  }
+}

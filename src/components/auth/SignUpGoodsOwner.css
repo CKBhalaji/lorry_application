@@ -1,0 +1,180 @@
+/* Container for the goods owner sign-up page */
+.goods-owner-signup-container {
+  width: 100%; /* Full width of the viewport */
+  height: 100%; /* Full height of the viewport */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Arrange child elements in a vertical column */
+  align-items: center; /* Center child elements horizontally */
+  justify-content: flex-start; /* Align child elements to the top */
+  /* background: var(--primary-bgg);  */
+  background-color: var(--primary-bg); 
+  color: var(--primary-text); /* Set the default text color to black */
+  overflow-y: auto; /* Enable vertical scrolling when content overflows */
+  padding: 20px; /* Add padding to prevent content from touching the edges */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
+}
+
+/* Title styles */
+.goods-owner-signup-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.goods-owner-signup-form {
+  flex: 1; /* Ensures the form fills the available space */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: none; /* Remove any background that might restrict layout */
+  padding: 0; /* Remove extra padding */
+  margin: 0; /* Remove extra margin */
+  box-sizing: border-box;
+}
+
+/* Layout container for left and right sections */
+.goods-owner-signup-layout {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: stretch; /* Ensures both sections stretch to match the tallest content */
+  box-sizing: border-box;
+}
+
+/* Left section: Email verification */
+.goods-owner-signup-left {
+  flex: 1; /* Fixed width of 300px */
+  padding: 20px;
+  background: var(--dashboard-bg);
+  border: 2px solid var(--login-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 40px var(--login-border);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-sizing: border-box;
+}
+
+/* Right section: Other details */
+.goods-owner-signup-right {
+  flex: 1; /* Takes up the remaining space */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Aligns content to the top */
+  padding: 20px;
+  background: var(--dashboard-bg);
+  border: 2px solid var(--login-border) ;
+  border-radius: 12px;
+  box-shadow: 0 4px 40px var(--login-border); 
+  box-sizing: border-box;
+}
+
+/* Disabled state for the right section */
+.goods-owner-signup-right.disabled {
+  pointer-events: none;
+  opacity: 0.5; 
+}
+
+/* Input styles */
+.goods-owner-signup-input {
+  padding: 10px;  
+  border: 2px solid var(--login-border);
+  border-radius: 5px;  
+  font-family: 'Winky Rough', sans-serif;  
+  background-color: var(--input-inside); 
+  color: var(--primary-text);
+}
+
+.goods-owner-signup-input:focus {
+  outline: none;
+  border-color: var(--primary-text);
+  box-shadow: 0 2px 2px var(--primary-text);
+}
+
+.goods-owner-signup-input.error {
+  border: 2px solid red;
+}
+
+/* Placeholder text styles */
+.goods-owner-signup-input::placeholder {
+  color: var(--input-placeholder);  
+  font-style: italic; 
+}
+
+/* Button styles */
+.goods-owner-signup-button {
+  padding: 10px; /* Add padding inside the button */
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none; /* Remove the border */
+  border-radius: 5px; /* Round the corners of the button */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+  font-family: 'Winky Rough', sans-serif; /* Apply the custom font family */
+  transition: background-color 0.3s ease; /* Smooth transition for background color changes */
+  margin-top: 10px;
+}
+
+/* Button hover effect */
+.goods-owner-signup-button:hover {
+  background-color: var(--button-hover-bg);
+}
+
+.goods-owner-signup-checkbox-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Password progress bar container for goods owner */
+.password-progress-bar-owner {
+  width: 100%;
+  height: 8px;
+  background-color: var(--dashboard-border);
+  border-radius: 5px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+/* Password progress bar fill for goods owner */
+.password-progress-owner {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* Password strength text */
+.password-strength_owner {
+  color: var(--primary-text) 
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+/* Error message styles */
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .goods-owner-signup-layout {
+    flex-direction: column; /* Stack columns vertically */
+    gap: 10px; /* Reduce gap between stacked sections */
+  }
+
+  .goods-owner-signup-left,
+  .goods-owner-signup-right {
+    width: 100%; /* Make both sections full width */
+    padding: 15px; /* Adjust padding for smaller screens */
+  }
+
+  .goods-owner-signup-title {
+    font-size: 1.5rem; /* Reduce title size for mobile */
+    margin-bottom: 15px;
+  }
+
+  .goods-owner-signup-input {
+    font-size: 14px; /* Slightly reduce font size for inputs */
+  }
+}

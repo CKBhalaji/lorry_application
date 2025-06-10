@@ -1,0 +1,103 @@
+/* src/pages/auth/AdminLogin.css */
+.AL-admin-login-container {
+    background-color: var(--primary-bg);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .AL-admin-login-box {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px var(--border-color);
+  }
+
+  .AL-admin-login-container h1 {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary-text);
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  /* .AL-admin-login-box h1 {
+    color: yellow;
+    text-align: center;
+    margin-bottom: 30px;
+  } */
+  
+  .AL-form-group {
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+  
+  .AL-form-group label {
+    display: block;
+    color: var(--primary-text);
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  .AL-form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    background: white;
+    color: black;
+    font-size: 16px;
+  }
+  
+  .AL-form-group input:focus {
+    outline: none;
+    /* border-color: #ffcc00; */
+    border-color: var(--input-focus);
+    box-shadow: 0 0 5px var(--primary-text);
+  }
+  
+  .AL-login-button {
+    width: 100%;
+    padding: 12px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: 2px solid black;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .AL-login-button:hover {
+    background: var(--button-hover-bg);
+  }
+  
+  .error-message {
+    color: #FF5252;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 480px) {
+    .AL-admin-login-box {
+      padding: 20px;
+    }
+    
+    .AL-admin-login-box h1 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    
+    .AL-form-group input, .AL-login-button {
+      padding: 10px;
+    }
+  }

@@ -1,0 +1,119 @@
+/* src/pages/goods-owner/Dashboard.css */
+.GOD-owner-dashboard {
+  /* background-color: yellow; */
+  color: var(--primary-text);
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.GOD-owner-dashboard-baground {
+  background-color: var(--primary-bg);
+  /* color: black;
+    max-width: 1200px; */
+}
+
+.GOD-owner-dashboard .GOD-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.GOD-owner-dashboard .GOD-logout-button {
+  background-color: black;
+  color: yellow;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.GOD-owner-dashboard .GOD-logout-button:hover {
+  background-color: #333;
+}
+
+.GOD-owner-dashboard .GOD-dashboard-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.GOD-owner-dashboard .GOD-tab-button {
+  background: transparent;
+  color: var(--button-bg);
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: all 0.3s;
+}
+
+.GOD-owner-dashboard .GOD-tab-button:hover {
+  background: var(--tab-hover-bg);
+}
+
+.GOD-owner-dashboard .GOD-tab-button.active {
+  background: var(--tab-bg);
+  color: var(--tab-text);
+  font-weight: bold;
+}
+
+.GOD-owner-dashboard .GOD-dashboard-content {
+  background: var(--dashboard-bg);
+  border-radius: 10px;
+  padding: 20px;
+  border: 1px solid var(--dashboard-border);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .GOD-owner-dashboard .GOD-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .GOD-owner-dashboard .GOD-dashboard-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .GOD-owner-dashboard .GOD-tab-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .GOD-owner-dashboard {
+    padding: 15px;
+  }
+
+  .GOD-owner-dashboard .GOD-dashboard-content {
+    padding: 15px;
+  }
+}
+
+.GOD-dashboard-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.GOD-dashboard-tabs::-webkit-scrollbar-thumb {
+  background-color: var(--tab-bg);
+  border-radius: 4px;
+}
+
+.GOD-dashboard-tabs::-webkit-scrollbar-track {
+  background-color: rvar(--tab-hover-bg);
+}

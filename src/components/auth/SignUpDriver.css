@@ -1,0 +1,201 @@
+.driver-signup-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  /* max-width: 1200px;
+  margin: 0 auto; */
+}
+
+/* Title styles */
+.driver-signup-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Form container inside the right section */
+.driver-signup-form {
+  flex: 1; /* Ensures the form fills the available space */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: none; /* Remove any background that might restrict layout */
+  padding: 0; /* Remove extra padding */
+  margin: 0; /* Remove extra margin */
+  box-sizing: border-box;
+}
+
+/* Layout container for left and right sections */
+.driver-signup-layout {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: flex-start; /* Aligns both sections to the top */
+  box-sizing: border-box;
+}
+
+/* Left section: Email verification */
+.driver-signup-left {
+  flex: 1;
+  padding: 20px;
+  background: var(--dashboard-bg);
+  border: 2px solid var(--login-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--login-border);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-sizing: border-box;
+}
+
+/* Right section: Other details */
+.driver-signup-right {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; 
+  padding: 20px;
+  background: var(--dashboard-bg);
+  border: 2px solid var(--login-border) ;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--login-border); 
+  box-sizing: border-box;
+}
+
+/* Disabled state for the right section */
+.driver-signup-right.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Input styles */
+.driver-signup-input {
+  padding: 10px;
+  border: 2px solid var(--login-border);
+  border-radius: 5px;
+  background-color: var(--input-inside);
+  color: var(--primary-text);
+  font-family: 'Winky Rough', sans-serif;
+}
+
+.driver-signup-input:focus {
+  outline: none;
+  border-color: var(--primary-text);
+  box-shadow: 0 2px 2px var(--primary-text);
+}
+
+/* Error styles for invalid inputs */
+.driver-signup-input.error {
+  border: 2px solid red;
+}
+
+/* Placeholder text styles */
+.driver-signup-input::placeholder {
+  color: var(--input-placeholder);
+  font-style: italic;
+}
+
+/* Select styles */
+.driver-signup-select {
+  padding: 10px;
+  border: 2px solid var(--primary-text);
+  border-radius: 5px;
+  background-color: var(--dashboard-bg);
+  color: var(--primary-text);
+  font-family: 'Winky Rough', sans-serif;
+}
+
+/* Checkbox styles */
+.driver-signup-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.driver-signup-checkbox-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Button styles */
+.driver-signup-button {
+  /* align-self: flex-start; */
+  padding: 10px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Winky Rough', sans-serif;
+  transition: background-color 0.3s ease;
+  margin-top: auto; /* Pushes the button to the bottom of the form */
+}
+
+/* Button hover effect */
+.driver-signup-button:hover {
+  background-color: var(--button-hover-bg);
+}
+
+/* Password strength container */
+.password-strength_driver {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--primary-text);
+}
+
+/* Password progress bar container */
+.password-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--dashboard-border);
+  border-radius: 5px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+/* Password progress bar fill */
+.password-progress {
+  height: 100%;
+  background-color: var(--primary-text);
+  transition: width 0.3s ease;
+}
+
+/* Error message styles */
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+  .driver-signup-layout {
+    flex-direction: column; /* Stack columns vertically */
+    gap: 10px; /* Reduce gap between stacked sections */
+  }
+
+  .driver-signup-left,
+  .driver-signup-right {
+    width: 100%; /* Make both sections full width */
+    padding: 15px; /* Adjust padding for smaller screens */
+  }
+
+  .driver-signup-title {
+    font-size: 1.5rem; /* Reduce title size for mobile */
+    margin-bottom: 15px;
+  }
+
+  .driver-signup-input {
+    font-size: 14px; /* Slightly reduce font size for inputs */
+  }
+}

@@ -1,0 +1,315 @@
+.GOMD-manage-disputes-owner {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.GOMD-disputes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.GOMD-toggle-form-btn {
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.GOMD-toggle-form-btn.add {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 1.5px solid var(--button-bg);
+}
+
+.GOMD-toggle-form-btn.add:hover {
+  background: var(--button-hover-bg);
+}
+
+.GOMD-toggle-form-btn.cancel {
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+}
+
+.GOMD-toggle-form-btn.cancel:hover {
+  background: var(--button-hover-bg);
+}
+
+.GOMD-create-dispute-form {
+  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.GOMD-disputes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.GOMD-dispute-card {
+  padding: 20px;
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.GOMD-dispute-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+}
+
+.GOMD-dispute-header h3 {
+  margin: 0;
+}
+
+.GOMD-status-badge {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.GOMD-dispute-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.GOMD-dispute-details p {
+  margin: 5px 0;
+}
+
+.GOMD-dispute-message {
+  margin-bottom: 15px;
+}
+
+.GOMD-dispute-message p {
+  margin: 5px 0;
+}
+
+.GOMD-dispute-resolution {
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+
+.GOMD-dispute-resolution p {
+  margin: 5px 0;
+}
+
+.GOMD-dispute-attachments {
+  margin-top: 10px;
+}
+
+.GOMD-dispute-attachments a {
+  display: inline-block;
+  margin-left: 10px;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.GOMD-form-group {
+  margin-bottom: 15px;
+}
+
+.GOMD-form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.GOMD-form-group input,
+.GOMD-form-group select,
+.GOMD-form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.GOMD-form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.GOMD-form-group input[type="file"] {
+  padding: 5px;
+}
+
+.GOMD-char-count {
+  text-align: right;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+.GOMD-error-message {
+  color: #F44336;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.GOMD-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.GOMD-submit-btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.GOMD-no-disputes {
+  text-align: center;
+  padding: 30px;
+  font-style: italic;
+}
+
+.GOMD-loading {
+  text-align: center;
+  padding: 30px;
+}
+
+/* Goods Owner specific styles */
+.GOMD-manage-disputes-owner {
+  color: var(--primary-text);
+  /* background: yellow; */
+  /* background: var(--dashboard-bg); */
+  /* transition: background-color 0.3s; */
+}
+
+.GOMD-manage-disputes-owner .GOMD-create-dispute-form {
+  background: var(--dashboard-bg);
+  border: 1px solid var(--border-color);
+}
+
+.GOMD-manage-disputes-owner .GOMD-dispute-card {
+  background: var(--dashboard-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 2px var(--primary-text);
+}
+
+.GOMD-manage-disputes-owner .GOMD-dispute-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px var(--primary-text);
+}
+
+.GOMD-manage-disputes-owner .GOMD-dispute-resolution {
+  background: var(--table-header);
+  border-left: 3px solid var(--primary-text);
+}
+
+.GOMD-manage-disputes-owner .GOMD-form-group input,
+.GOMD-manage-disputes-owner .GOMD-form-group select,
+.GOMD-manage-disputes-owner .GOMD-form-group textarea {
+  background: var(--input-inside);
+  color: var(--primary-text);
+  border: 1px solid var(--border-color);
+}
+
+.GOMD-manage-disputes-owner .GOMD-form-group input:focus,
+.GOMD-manage-disputes-owner.GOMD-form-group select:focus,
+.GOMD-manage-disputes-owner.GOMD-form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-text);
+  box-shadow: 0 5px 15px var(--primary-text);
+}
+
+.GOMD-manage-disputes-owner .GOMD-submit-btn {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+}
+
+.GOMD-manage-disputes-owner .GOMD-submit-btn:hover {
+  background: var(--button-hover-bg);
+}
+
+.GOMD-manage-disputes-owner .GOMD-status-badge.pending {
+  background: rgba(255, 193, 7, 0.3);
+  color: #b28704;
+}
+
+.GOMD-manage-disputes-owner .GOMD-status-badge.accepted {
+  background: rgba(76, 175, 80, 0.3);
+  color: #2E7D32;
+}
+
+.GOMD-manage-disputes-owner .GOMD-status-badge.rejected {
+  background: rgba(244, 67, 54, 0.3);
+  color: #C62828;
+}
+
+.GOMD-manage-disputes-owner .GOMD-status-badge.resolved {
+  background: rgba(33, 150, 243, 0.3);
+  color: #1565C0;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .GOMD-manage-disputes-driver,
+  .GOMD-manage-disputes-owner {
+    padding: 15px;
+  }
+  
+  .GOMD-disputes-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .GOMD-toggle-form-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .GOMD-create-dispute-form {
+    padding: 15px;
+  }
+  
+  .GOMD-dispute-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .GOMD-manage-disputes-driver,
+  .GOMD-manage-disputes-owner {
+    padding: 10px;
+  }
+  
+  .GOMD-form-actions {
+    flex-direction: column;
+  }
+  
+  .GOMD-submit-btn {
+    width: 100%;
+  }
+}
+
+.GOMD-form-group select option {
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+}
+
+.GOMD-form-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  /* padding: 8px; */
+  /* border-radius: 4px; */
+  /* background-color: black;
+  color: yellow; */
+  border: 1px solid yellow;
+}

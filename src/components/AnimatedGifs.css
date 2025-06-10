@@ -1,0 +1,43 @@
+.top-gif {
+    position: absolute;
+    top: 10px;
+    width: 150px;
+    height: auto;
+    animation: move-right-to-left 10s linear infinite;
+}
+
+.middle-gif {
+    position: absolute;
+    top: 140px;
+    width: 150px;
+    height: auto;
+    animation: move-left-to-right 10s linear infinite;
+    animation-delay: 2s;
+}
+
+.bottom-gif {
+    position: absolute;
+    bottom: 60px;
+    width: 150px;
+    height: auto;
+    animation: move-left-to-right 10s linear infinite;
+    animation-delay: 4s;
+}
+
+@keyframes move-left-to-right {
+    0% {
+        left: 0;
+    }
+    100% {
+        left: 100vw;
+    }
+}
+
+@keyframes move-right-to-left {
+    0% {
+        right: 0;
+    }
+    100% {
+        right: 100vw;
+    }
+}

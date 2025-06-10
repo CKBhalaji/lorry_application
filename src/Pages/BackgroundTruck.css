@@ -1,0 +1,190 @@
+/* Container for the background truck page */
+.background-truck-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: black; /* Black background */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Welcome Message */
+.welcome-message {
+  font-size: 2.5rem;
+  color: yellow;
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Truck Design */
+.background-truck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  width: 600px; /* Larger truck width */
+  height: 500px; /* Larger truck height */
+  perspective: 1000px; /* 3D perspective */
+}
+
+/* Truck Head */
+.background-truck-head {
+  width: 400px;
+  height: 250px;
+  background: linear-gradient(145deg, #ff0000, #4a4a4a, #0000ff); /* Metallic red and blue gradient */
+  border-radius: 5px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  transform: rotateX(10deg) rotateY(0deg); /* 3D effect */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Truck Window */
+.background-truck-window {
+  width: 300px;
+  height: 100px;
+  background-color: black; /* Window color */
+  border-radius: 5px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: yellow; /* Text color */
+  font-family: 'Arial', sans-serif;
+  font-size: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Truck Logo */
+.background-truck-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: yellow;
+}
+
+/* Truck Grill */
+.background-truck-grill {
+  width: 300px;
+  height: 80px;
+  background: linear-gradient(145deg, #b0b0b0, #d6d6d6); /* Metallic gradient */
+  margin-top: 10px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.background-truck-grill-line {
+  width: 90%;
+  height: 10px;
+  background-color: #6e6e6e; /* Grill line color */
+  margin: 5px auto;
+  border-radius: 2px;
+}
+
+/* Truck Lights */
+.background-truck-lights {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  margin-top: 10px;
+}
+
+.background-truck-light {
+  width: 50px;
+  height: 50px;
+  background-color: yellow; /* Light color */
+  border-radius: 50%;
+  box-shadow: 0 0 15px 5px yellow; /* Glow effect */
+}
+
+/* Truck Smoker */
+.background-truck-smoker {
+  width: 20px;
+  height: 100px;
+  background: linear-gradient(145deg, #4a4a4a, #6e6e6e); /* Metallic gradient */
+  position: absolute;
+  top: -50px;
+  right: -40px;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Truck Body */
+.background-truck-body {
+  width: 500px;
+  height: 200px;
+  background: linear-gradient(145deg, #ff0000, #4a4a4a, #0000ff); /* Metallic red and blue gradient */
+  border-radius: 5px;
+  margin-top: 10px;
+  transform: rotateX(10deg) rotateY(0deg); /* 3D effect */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Truck Stripes */
+.background-truck-stripes {
+  width: 100%;
+  height: 20px;
+  background-color: yellow; /* Stripes color */
+  position: absolute;
+  top: 40px;
+  left: 0;
+}
+
+/* Truck Wheels */
+.background-truck-wheels {
+  display: flex;
+  justify-content: space-between;
+  width: 500px;
+  margin-top: 10px;
+}
+
+.background-truck-wheel {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(145deg, #2a2a2a, #3e3e3e); /* Metallic gradient for wheels */
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Login Button Container */
+.login-button-container {
+  margin-top: 20px;
+  width: 300px;
+  height: 80px;
+  background-color: red; /* Red background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid black; /* Black border */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Login Button */
+.login-button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  font-family: 'Courier New', Courier, monospace; /* Old-style font */
+  background-color: yellow; /* Yellow background */
+  color: black; /* Black text */
+  border: 2px solid black; /* Black border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: black; /* Black background on hover */
+  color: yellow; /* Yellow text on hover */
+}

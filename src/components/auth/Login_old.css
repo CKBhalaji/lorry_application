@@ -1,0 +1,215 @@
+/* .root{
+  padding: 0rem;
+} */
+/* Commented-out code for potential root-level padding */
+
+html,
+body,
+#root {
+  height: 100vh; 
+  margin: 0; 
+  padding: 0; 
+  font-family: "Winky Rough", sans-serif;
+}
+
+.LOO-container {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: row; /* Default: Arrange child elements in a horizontal row */
+  align-items: center; /* Center child elements vertically */
+  justify-content: center; /* Center child elements horizontally */
+  height: 100%; /* Set the height to fill the parent container */
+}
+
+.LOO-black,
+.LOO-yellow {
+  width: 50%; /* Each section takes half the width of the container */
+  height: 100vh; /* Each section fills the height of the container */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Arrange child elements in a vertical column */
+  align-items: center; /* Center child elements horizontally */
+  justify-content: center; /* Center child elements vertically */
+}
+
+.LOO-black {
+  background-color: black; /* Set the background color to black */
+  color: yellow; /* Set the text color to yellow */
+}
+
+.LOO-yellow {
+  background-color: yellow; /* Set the background color to yellow */
+  color: black; /* Set the text color to black */
+}
+
+/* Login box styles */
+#login {
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+  padding: 30px; /* Add padding inside the login box */
+  border-radius: 12px; /* Round the corners of the login box */
+  width: 80%; /* Set the width to 80% of the parent container */
+  max-width: 300px; /* Limit the maximum width to 300px */
+  border: 2px solid; /* Add a border */
+}
+
+/* Black box styles */
+.LOO-black #login {
+  border-color: yellow; /* Set the border color for the black section */
+  box-shadow: 0 4px 20px yellow; /* Yellow box shadow for the black box */
+}
+
+/* Yellow box styles */
+.LOO-yellow #login {
+  border-color: black; /* Set the border color for the yellow section */
+  box-shadow: 0 4px 40px black; /* Black box shadow for the yellow box */
+}
+
+form {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Arrange form elements in a vertical column */
+  gap: 10px; /* Add spacing between form elements */
+}
+
+/* Input styles with contrasting borders */
+input {
+  padding: 8px; /* Add padding inside the input box */
+  border: 2px solid transparent; /* Default border with no visible color */
+  border-radius: 5px; /* Round the corners of the input box */
+  outline: none; /* Remove the default outline */
+  transition: border-color 0.3s ease; /* Smooth transition for border color changes */
+  font-family: "Winky Rough", sans-serif; /* Apply the custom font family */
+}
+
+.LOO-black input {
+  border-color: yellow; /* Set the border color for inputs in the black section */
+}
+
+.LOO-yellow input {
+  border-color: black; /* Set the border color for inputs in the yellow section */
+}
+
+input:focus {
+  border-color: #00ff00; /* Highlight the border with green when focused */
+  outline: none; /* Remove the default outline */
+}
+
+/* Button styles with contrasting borders */
+.Loo-button {
+  margin-top: 15px; /* Add spacing above the button */
+  padding: 10px; /* Add padding inside the button */
+  color: white; /* Set the text color to white */
+  border: 2px solid transparent; /* Default border with no visible color */
+  border-radius: 5px; /* Round the corners of the button */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+  transition: border-color 0.3s ease, background-color 0.3s ease; /* Smooth transition for border and background color changes */
+  font-family: "Winky Rough", sans-serif; /* Apply the custom font family */
+}
+
+.LOO-black .LOO-button {
+  border-color: yellow; /* Set the border color for buttons in the black section */
+  background-color: yellow; /* Set the background color to yellow */
+  color: black; /* Set the text color to black */
+}
+
+.LOO-yellow .LOO-button {
+  border-color: black; /* Set the border color for buttons in the yellow section */
+  background-color: black; /* Set the background color to black */
+}
+
+.LOO-button:hover {
+  background-color: #666; /* Change the background color to gray on hover */
+  /*border-color: #00ff00;  Optional: Highlight border on hover */
+}
+
+p {
+  margin-top: 10px; /* Add spacing above the paragraph */
+  font-size: 0.9rem; /* Set the font size */
+}
+
+.LOO-ds {
+  color: yellow; /* Set the text color for links in the black section */
+  text-decoration: unset; /* Remove the underline */
+}
+
+.LOO-gs {
+  color: black; /* Set the text color for links in the yellow section */
+  text-decoration: unset; /* Remove the underline */
+}
+
+/* Styles for the "Sign up" link */
+.LOO-ds,
+.LOO-gs {
+  font-weight: bold; /* Make the link text bold */
+  text-decoration: underline; /* Add underline to indicate it's a link */
+  cursor: pointer; /* Change the cursor to a pointer */
+}
+
+.LOO-ds {
+  color: #ffd700; /* Gold color for the "Sign up" link in the black section */
+}
+
+.LOO-gs {
+  color: #0000ff; /* Blue color for the "Sign up" link in the yellow section */
+}
+
+.LOO-ds:hover,
+.LOO-gs:hover {
+  text-decoration: none; /* Remove underline on hover */
+  color: #ff4500; /* Change the color to orange on hover */
+}
+
+/* Full-size layout for selected section */
+.LOO-full-size {
+  width: 100%; /* Set the width to fill the viewport */
+  height: 100vh; /* Set the height to fill the viewport */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Arrange child elements in a vertical column */
+  align-items: center; /* Center child elements horizontally */
+  justify-content: center; /* Center child elements vertically */
+}
+
+.LOO-full-size.LOO-black {
+  background-color: black; /* Set the background color to black */
+  color: yellow; /* Set the text color to yellow */
+}
+
+.LOO-full-size.LOO-yellow {
+  background-color: yellow; /* Set the background color to yellow */
+  color: black; /* Set the text color to black */
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .LOO-container {
+    flex-direction: column; /* Stack sections vertically */
+    height: auto; /* Allow the height to adjust based on content */
+  }
+
+  .LOO-mobile-section {
+    width: 100%; /* Set the width to fill the parent container */
+    height: 50vh; /* Set the height to half the viewport height */
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Arrange child elements in a vertical column */
+    align-items: center; /* Center child elements horizontally */
+    justify-content: center; /* Center child elements vertically */
+  }
+
+  .LOO-mobile-section.LOO-black {
+    background-color: black; /* Set the background color to black */
+    color: yellow; /* Set the text color to yellow */
+  }
+
+  .LOO-mobile-section.LOO-yellow {
+    background-color: yellow; /* Set the background color to yellow */
+    color: black; /* Set the text color to black */
+  }
+
+  .LOO-mobile-section h1 {
+    margin-bottom: 10px; /* Add spacing below the heading */
+  }
+
+  .LOO-mobile-section .LOO-button {
+    width: 80%; /* Set the width to 80% of the parent container */
+    max-width: 300px; /* Limit the maximum width to 300px */
+    padding: 10px; /* Add padding inside the button */
+    font-size: 16px; /* Set the font size */
+  }
+}

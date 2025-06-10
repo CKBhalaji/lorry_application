@@ -1,0 +1,56 @@
+:root {
+  --primary-bg: yellow;
+  /* --primary-bgg: linear-gradient(to right, #fbbf24, #fcd34d, #fef08a); */
+  --primary-text: black;
+  --dashboard-bg: white;
+  --dashboard-border: #1a1a1a;
+  --card-bg: yellow;
+  --input-focus: rgb(24, 24, 23);
+  --input-inside: rgba(0, 0, 0, 0.05);
+  --input-placeholder: rgba(0, 0, 0, 0.5);
+  --border-color: black;
+  --hover-bg: rgba(255, 255, 0, 0.1);
+  --button-text: yellow;
+  --button-bg: black;
+  --button-hover-bg: #333;
+  --button-hover-text: rgba(255, 255, 0, 0.3);
+  --tab-bg: black;
+  --tab-text: yellow;
+  --tab-hover-bg: rgba(0, 0, 0, 0.1);
+  --table-header: rgba(0, 0, 0, 0.05);
+  /* login_page */
+  --login-border:black;
+  --login-bg: yellow;
+  --login-card-bg: rgba(255, 255, 0, 0.9);
+}
+
+[data-theme="dark"] {
+  --primary-bg: black;
+  --primary-text: yellow;
+  --dashboard-bg: rgba(255, 255, 0, 0.05);
+  --dashboard-border: rgba(255, 255, 0, 0.2);
+  --card-bg: rgba(255, 255, 255, 0.1);
+  --input-focus: #ffcc00;
+  --input-inside: rgba(255, 255, 0, 0.1);
+  --input-placeholder: rgba(255, 255, 0, 0.5);
+  --border-color: rgba(255, 255, 0, 0.3);
+  --hover-bg: rgba(255, 255, 255, 0.1);
+  --button-text: rgba(0, 0, 0, 1);
+  --button-bg: yellow;
+  --button-hover-bg: #ffcc00;
+  --button-hover-text: rgba(0, 0, 0, 0.1);
+  --tab-bg: yellow;
+  --tab-text: black;
+  --tab-hover-bg: rgba(255, 255, 0, 0.05);
+  --table-header: rgba(255, 255, 0, 0.1);
+  /* login_page */
+  --login-border:yellow;
+  --login-bg:black;
+  --login-card-bg: #1a1a1a;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}

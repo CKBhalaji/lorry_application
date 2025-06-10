@@ -1,0 +1,122 @@
+/* src/pages/admin/Dashboard.css */
+.admin-dashboard-baground {
+  background-color: var(--primary-bg);
+}
+
+.admin-dashboard {
+  background-color: var(--primary-bg);
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--primary-text);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.admin-dashboard .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+/* .admin-dashboard .logout-button {
+  background-color: yellow;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+} */
+
+/* .admin-dashboard .logout-button:hover {
+  background-color: #ffcc00;
+} */
+
+.admin-dashboard .dashboard-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.admin-dashboard .tab-button {
+  background: transparent;
+  color: var(--button-bg);
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: all 0.3s;
+}
+
+.admin-dashboard .tab-button:hover {
+  /* background: rgba(255, 255, 0, 0.1); */
+  background: var(--tab-hover-bg);
+}
+
+.admin-dashboard .tab-button.active {
+  background: var(--tab-bg);
+  color: var(--tab-text);
+  font-weight: bold;
+}
+
+.admin-dashboard .dashboard-content {
+  /* background: rgba(255, 255, 0, 0.05); */
+  background: var(--dashboard-bg);
+  border-radius: 10px;
+  padding: 20px;
+  /* border: 1px solid rgba(255, 255, 0, 0.2); */
+  border: 1px solid var(--dashboard-border);
+}
+
+/* Add these responsive styles */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 15px;
+  }
+
+  .dashboard-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+  }
+
+  .tab-button {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard {
+    padding: 10px;
+  }
+
+  /* .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  } */
+
+  .dashboard-content {
+    padding: 10px;
+  }
+}
+
+.dashboard-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.dashboard-tabs::-webkit-scrollbar-thumb {
+  background-color: var(--tab-bg);
+  border-radius: 4px;
+}
+
+.dashboard-tabs::-webkit-scrollbar-track {
+  background-color: var(--tab-hover-bg);
+}

@@ -1,0 +1,223 @@
+/* .root{
+  padding: 0rem;
+} */
+/* Commented-out code for potential root-level padding */
+
+html,
+body,
+#root {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: "Winky Rough", sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.black,
+.yellow {
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.black {
+  background-color: var(--login-bg);
+  color: var(--primary-text);
+  border: 2px solid var(--border-color);
+}
+
+.yellow {
+  background-color: var(--login-bg);
+  color: var(--primary-text);
+  border: 2px solid var(--border-color);
+}
+
+#login {
+  /* background: rgba(255, 255, 255, 0.1);  */
+  padding: 30px; /* Add padding inside the login box */
+  border-radius: 12px; /* Round the corners of the login box */
+  width: 80%; /* Set the width to 80% of the parent container */
+  max-width: 300px; /* Limit the maxFimum width to 300px */
+  border: 2px solid; /* Add a border */
+}
+
+.black #login {
+  border-color: var(--login-border);
+  box-shadow: 0 4px 20px var(--login-border); 
+  background-color: var(--login-card-bg); 
+}
+
+.yellow #login {
+  border-color: var(--login-border);
+  box-shadow: 0 4px 20px var(--login-border);
+  background-color: var(--login-card-bg);
+}
+
+form {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Arrange form elements in a vertical column */
+  gap: 10px; /* Add spacing between form elements */
+}
+
+/* Input styles with contrasting borders */
+input {
+  padding: 8px; /* Add padding inside the input box */
+  border: 2px solid transparent; /* Default border with no visible color */
+  border-radius: 5px; /* Round the corners of the input box */
+  outline: none; /* Remove the default outline */
+  transition: border-color 0.3s ease; /* Smooth transition for border color changes */
+  font-family: "Winky Rough", sans-serif; /* Apply the custom font family */
+}
+
+.black input {
+  border-color: var(--login-border);
+}
+
+.yellow input {
+  border-color: var(--login-border);
+}
+
+input:focus {
+  border-color: #00ff00; /* Highlight the border with green when focused */
+  outline: none; /* Remove the default outline */
+}
+
+/* Button styles with contrasting borders */
+button {
+  margin-top: 15px; /* Add spacing above the button */
+  padding: 10px; /* Add padding inside the button */
+  color: var(--button-text); /* Set the text color to white */
+  border: 2px solid transparent; /* Default border with no visible color */
+  border-radius: 5px; /* Round the corners of the button */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+  transition: border-color 0.3s ease, background-color 0.3s ease; /* Smooth transition for border and background color changes */
+  font-family: "Winky Rough", sans-serif; /* Apply the custom font family */
+}
+
+.black button {
+  border-color: var(--border-color);
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+.yellow button {
+  border-color: var(--border-color);
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+button:hover {
+  background-color: var(
+    --button-hover-bg
+  ); /* Change the background color to gray on hover */
+  /*border-color: #00ff00;  Optional: Highlight border on hover */
+}
+
+p {
+  margin-top: 10px; /* Add spacing above the paragraph */
+  font-size: 0.9rem; /* Set the font size */
+}
+
+.ds {
+  color: var(--button-text);
+  text-decoration: unset;
+}
+
+.gs {
+  color: var(
+    --button-text
+  ); /* Set the text color for links in the yellow section */
+  text-decoration: unset; /* Remove the underline */
+}
+
+/* Styles for the "Sign up" link */
+.ds,
+.gs {
+  font-weight: bold; /* Make the link text bold */
+  text-decoration: underline; /* Add underline to indicate it's a link */
+  cursor: pointer; /* Change the cursor to a pointer */
+}
+
+.ds {
+  /* color: #ffd700;  */
+  color: #0000ff;
+}
+
+.gs {
+  color: #0000ff; /* Blue color for the "Sign up" link in the yellow section */
+}
+
+.ds:hover,
+.gs:hover {
+  text-decoration: none; /* Remove underline on hover */
+  color: #ff4500; /* Change the color to orange on hover */
+}
+
+/* Full-size layout for selected section */
+.full-size {
+  width: 100%; /* Set the width to fill the viewport */
+  height: 100vh; /* Set the height to fill the viewport */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Arrange child elements in a vertical column */
+  align-items: center; /* Center child elements horizontally */
+  justify-content: center; /* Center child elements vertically */
+}
+
+.full-size.black {
+  background-color: var(--login-bg);
+  color: var(--primary-text);
+}
+
+.full-size.yellow {
+  background-color: var(--login-bg);
+  color: var(--primary-text);
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* Stack sections vertically */
+    height: auto; /* Allow the height to adjust based on content */
+  }
+
+  .mobile-section {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-section.black {
+    background-color: var(--login-bg);
+    color: var(--primary-text);
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .mobile-section.yellow {
+    background-color: var(--login-bg);
+    color: var(--primary-text);
+  }
+
+  .mobile-section h1 {
+    margin-bottom: 10px; /* Add spacing below the heading */
+  }
+
+  .mobile-section .button {
+    width: 80%; /* Set the width to 80% of the parent container */
+    max-width: 300px; /* Limit the maximum width to 300px */
+    padding: 10px; /* Add padding inside the button */
+    font-size: 16px; /* Set the font size */
+  }
+}
