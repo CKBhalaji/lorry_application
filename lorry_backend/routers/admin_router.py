@@ -19,7 +19,13 @@ async def get_current_admin_user(current_user: models.User = Depends(security.ge
     return current_user
 
 # --- User Management ---
-@router.get('/users', response_model=List[schemas.UserInDB], dependencies=[Depends(get_current_admin_user)])
+@router.get(
+    '/users',
+    response_model=List[schemas.UserInDB],
+    dependencies=[Depends(get_current_admin_user)],
+    summary="Get All Users (Admin Only)",
+    description="Retrieve a list of all users in the system. Requires admin privileges."
+)
 async def get_all_users(db: Session = Depends(database.get_db), skip: int = 0, limit: int = 100):
     users = db.query(models.User).offset(skip).limit(limit).all()
     return users

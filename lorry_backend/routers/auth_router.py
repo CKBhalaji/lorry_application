@@ -74,7 +74,12 @@ async def signup_goods_owner(user_data: schemas.GoodsOwnerUserCreate, db: Sessio
 
     return db_user
 
-@router.post('/login', response_model=schemas.Token)
+@router.post(
+    '/login',
+    response_model=schemas.Token,
+    summary="User Login",
+    description="Login with username (or email) and password to obtain an access token."
+)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     # Try to fetch user by username first
     user = db.query(models.User).filter(models.User.username == form_data.username).first()
