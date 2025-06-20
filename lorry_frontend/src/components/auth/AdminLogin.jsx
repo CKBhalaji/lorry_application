@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('testadmin');
-  const [password, setPassword] = useState('password123');
+  const [password, setPassword] = useState('ONEtwo@2003');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
