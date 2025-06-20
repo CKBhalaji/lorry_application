@@ -21,25 +21,33 @@ const Login = () => {
   }, []);
 
   const handleDriverLogin = async () => {
-    const userData = {
-      type: 'driver',
+    const credentials = {
       username: driverUsername,
-      // Add other necessary fields
+      password: driverPassword,
+      type: 'driver',
     };
-    console.log('Attempting driver login with:', userData);
-    login(userData);
-    navigate('/driver');
+    try {
+      console.log('Attempting driver login with:', credentials);
+      await login(credentials);
+      navigate('/driver');
+    } catch (error) {
+      setErrorMessage(error.message || 'Login failed. Please check your credentials.');
+    }
   };
 
   const handleGoodsOwnerLogin = async () => {
-    const userData = {
-      type: 'goodsOwner',
+    const credentials = {
       username: goodsOwnerUsername,
-      // Add other necessary fields
+      password: goodsOwnerPassword,
+      type: 'goodsOwner',
     };
-    console.log('Attempting goods owner login with:', userData);
-    login(userData);
-    navigate('/goods-owner');
+    try {
+      console.log('Attempting goods owner login with:', credentials);
+      await login(credentials);
+      navigate('/goods-owner');
+    } catch (error) {
+      setErrorMessage(error.message || 'Login failed. Please check your credentials.');
+    }
   };
 
   const renderMobileView = () => {

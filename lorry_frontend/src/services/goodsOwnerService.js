@@ -4,7 +4,7 @@ import axios from 'axios';
 const API_BASE_URL = 'http://localhost:8000/api/v1/owners';
 
 export const postNewLoad = async (loadData) => {
-  const token = localStorage.getItem('ownerToken'); // Or a generic 'authToken'
+  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
   const response = await fetch(`${API_BASE_URL}/loads`, {
     method: 'POST',
     headers: {
@@ -18,7 +18,7 @@ export const postNewLoad = async (loadData) => {
 };
 
 export const fetchMyLoads = async () => {
-  const token = localStorage.getItem('ownerToken'); // Or a generic 'authToken'
+  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
   const response = await fetch(`${API_BASE_URL}/loads`, { // This path is correct for "get all loads for the current owner"
     headers: {
       'Authorization': `Bearer ${token}`
@@ -36,7 +36,7 @@ export const fetchOwnerLoads = async (ownerId) => {
   // in which case `fetchMyLoads` is more appropriate. Or, if it's for an admin, it needs a different endpoint.
   // Let's assume it's a duplicate or misaligned with current backend and comment for review.
   // For now, it will use the same logic as fetchMyLoads if ownerId matches current user, or fail if not admin.
-  const token = localStorage.getItem('ownerToken'); // Or a generic 'authToken'
+  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
   try {
     // This specific endpoint `/api/owners/${ownerId}/loads` does not exist on the backend.
     // The backend has GET `/api/v1/owners/loads` (all loads for the authenticated owner)
@@ -56,7 +56,7 @@ export const fetchOwnerLoads = async (ownerId) => {
 };
 
 export const fetchOwnerProfile = async (ownerId) => {
-  const token = localStorage.getItem('ownerToken'); // Or a generic 'authToken'
+  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
   try {
     const response = await axios.get(`${API_BASE_URL}/${ownerId}/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -69,7 +69,7 @@ export const fetchOwnerProfile = async (ownerId) => {
 };
 
 export const createOwnerDispute = async (disputeData) => {
-  const token = localStorage.getItem('ownerToken'); // Or a generic 'authToken'
+  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
   try {
     // Old path: /api/owner/disputes. New path should be `${API_BASE_URL}/disputes`
     const response = await axios.post(`${API_BASE_URL}/disputes`, disputeData, {
@@ -83,7 +83,7 @@ export const createOwnerDispute = async (disputeData) => {
 };
 
 export const fetchOwnerDisputes = async () => {
-  const token = localStorage.getItem('ownerToken'); // Or a generic 'authToken'
+  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
   try {
     // Old path contained `/owner/disputes`. New path is `${API_BASE_URL}/disputes`
     const response = await fetch(`${API_BASE_URL}/disputes`,{
