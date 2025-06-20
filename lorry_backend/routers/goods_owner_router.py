@@ -20,7 +20,14 @@ async def get_current_goods_owner_user(current_user: models.User = Depends(secur
     return current_user
 
 # --- Load functionalities for Goods Owners ---
-@router.post('/loads', response_model=schemas.LoadResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_goods_owner_user)])
+@router.post(
+    '/loads',
+    response_model=schemas.LoadResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(get_current_goods_owner_user)],
+    summary="Post a New Load (Goods Owner)",
+    description="Allows a goods owner to post a new load to the system. The load will initially have a 'pending' status."
+)
 async def post_new_load_by_owner(load_data: schemas.LoadCreate, current_owner: models.User = Depends(get_current_goods_owner_user), db: Session = Depends(database.get_db)):
     db_load = models.Load(
         **(load_data.model_dump() if hasattr(load_data, 'model_dump') else load_data.dict()), # Pydantic v1/v2 compat

@@ -20,7 +20,13 @@ async def get_current_driver_user(current_user: models.User = Depends(security.g
     return current_user
 
 # --- Load functionalities for Drivers ---
-@router.get('/loads', response_model=List[schemas.LoadResponse], dependencies=[Depends(get_current_driver_user)])
+@router.get(
+    '/loads',
+    response_model=List[schemas.LoadResponse],
+    dependencies=[Depends(get_current_driver_user)],
+    summary="Get Available Loads for Driver",
+    description="Fetches a list of currently available loads (e.g., status 'pending' or 'active') for drivers."
+)
 async def get_available_loads_for_driver(db: Session = Depends(database.get_db), skip: int = 0, limit: int = 100):
     # Fetch loads that are 'pending' or 'active' (or whatever status means available)
     # This might need more complex filtering based on driver's vehicle, location etc. in future

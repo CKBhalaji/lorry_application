@@ -9,7 +9,11 @@ from .config import settings # For upload directory or other settings if needed
 # This is suitable for development. For production, use migrations (e.g., Alembic).
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Lorry Backend API", version="0.1.0")
+app = FastAPI(
+    title="Lorry Backend API",
+    description="API for Lorry Transportation Service, managing users (admins, drivers, goods owners), loads, bids, and disputes.",
+    version="0.1.0"
+)
 
 # CORS Configuration
 # Adjust origins as necessary. "*" is permissive for development.
