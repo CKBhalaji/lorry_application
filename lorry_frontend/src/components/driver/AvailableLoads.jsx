@@ -16,16 +16,25 @@ const AvailableLoads = () => {
       setError(null);
       try {
         const data = await fetchAvailableLoads();
-        setLoads(data);
+        console.log('AvailableLoads: Successfully fetched data:', data);
+        if (!Array.isArray(data)) {
+          console.error('AvailableLoads: Data is not an array!', data);
+          throw new Error('Received invalid data format from server.');
+        }
+        setLoads(data || []); // Ensure loads is always an array
         // Initialize bid amounts
         const initialBids = {};
-        data.forEach(load => {
-          initialBids[load.id] = '';
-        });
+        if (data) { // Check if data is not null before calling forEach
+          data.forEach(load => {
+            if (load && load.id) { // Ensure load and load.id are valid
+              initialBids[load.id] = '';
+            }
+          });
+        }
         setBidAmounts(initialBids);
       } catch (error) {
-        console.error('Error fetching loads:', error);
-        setError('Failed to fetch available loads. Please try again later.');
+        console.error('AvailableLoads: Detailed error fetching loads:', error);
+        setError(error.message || 'Failed to fetch available loads. Please check console for details.');
       } finally {
         setLoading(false);
       }
@@ -110,31 +119,53 @@ const AvailableLoads = () => {
         <p>No loads available at the moment.</p>
       ) : (
         <div className="DAL-loads-list">
-          {loads.map(load => (
-            <div key={load.id} className="DAL-load-card">
-              <div className="DAL-load-info">
-                <h3>{load.goodsType}</h3>
-                <p><strong>From:</strong> {load.pickupLocation}</p>
-                <p><strong>To:</strong> {load.deliveryLocation}</p>
-                <p><strong>Weight:</strong> {load.weight} kg</p>
-                <p><strong>Pickup Date:</strong> {new Date(load.pickupDate).toLocaleDateString()}</p>
-                <p><strong>Delivery Date:</strong> {new Date(load.deliveryDate).toLocaleDateString()}</p>
-                <p><strong>Current Highest Bid:</strong> ₹{load.currentHighestBid || 'No bids yet'}</p>
-              </div>
+          {loads.map((load, index) => {
+            try {
+              if (!load || typeof load !== 'object') {
+                console.error(`AvailableLoads: Invalid load item at index ${index}:`, load);
+                return <div key={index} className="DAL-load-card error">Invalid load data</div>;
+              }
+              // Ensure essential properties exist
+              const id = load.id || `missing-id-${index}`;
+              const goodsType = load.goodsType || 'N/A';
+              const pickupLocation = load.pickupLocation || 'N/A';
+              const deliveryLocation = load.deliveryLocation || 'N/A';
+              const weight = load.weight || 'N/A';
+              // Validate dates before formatting
+              const pickupDateStr = load.pickupDate && !isNaN(new Date(load.pickupDate)) ? new Date(load.pickupDate).toLocaleDateString() : 'Invalid Date';
+              const deliveryDateStr = load.deliveryDate && !isNaN(new Date(load.deliveryDate)) ? new Date(load.deliveryDate).toLocaleDateString() : 'Invalid Date';
+              const currentHighestBid = load.currentHighestBid || 'No bids yet';
 
-              <div className="DAL-bid-section">
-                <input
-                  type="number"
-                  placeholder="Enter your bid amount"
-                  value={bidAmounts[load.id]}
-                  onChange={(e) => handleBidChange(load.id, e.target.value)}
-                />
-                <button onClick={() => handleSubmitBid(load.id)}>
-                  Place Bid
-                </button>
-              </div>
-            </div>
-          ))}
+              return (
+                <div key={id} className="DAL-load-card">
+                  <div className="DAL-load-info">
+                    <h3>{goodsType}</h3>
+                    <p><strong>From:</strong> {pickupLocation}</p>
+                    <p><strong>To:</strong> {deliveryLocation}</p>
+                    <p><strong>Weight:</strong> {weight} kg</p>
+                    <p><strong>Pickup Date:</strong> {pickupDateStr}</p>
+                    <p><strong>Delivery Date:</strong> {deliveryDateStr}</p>
+                    <p><strong>Current Highest Bid:</strong> ₹{currentHighestBid}</p>
+                  </div>
+                  {/* Bid section remains the same */}
+                  <div className="DAL-bid-section">
+                    <input
+                      type="number"
+                      placeholder="Enter your bid amount"
+                      value={bidAmounts[load.id] || ''} // Ensure bidAmounts[load.id] is not undefined
+                      onChange={(e) => handleBidChange(load.id, e.target.value)}
+                    />
+                    <button onClick={() => handleSubmitBid(load.id)}>
+                      Place Bid
+                    </button>
+                  </div>
+                </div>
+              );
+            } catch (cardError) {
+              console.error(`AvailableLoads: Error rendering load card for load at index ${index}:`, load, cardError);
+              return <div key={load && load.id ? load.id : index} className="DAL-load-card error">Error displaying this load.</div>;
+            }
+          })}
         </div>
       )}
     </div>

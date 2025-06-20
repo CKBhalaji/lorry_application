@@ -5,49 +5,29 @@ import { fetchUsers, deleteUser } from '../../services/adminService';
 
 
 const UserManagement = () => {
-  const users = [
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      role: 'driver',
-      status: 'active'
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      role: 'goodsOwner',
-      status: 'pending'
-    },
-    {
-      id: 3,
-      name: 'Bob Johnson',
-      email: 'bob@example.com',
-      role: 'admin',
-      status: 'suspended'
-    }
-  ];
-  // const [users, setUsers] = useState();
+  const [usersData, setUsersData] = useState([]); // Renamed to avoid conflict
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [error, setError] = useState(null);
   const [selectedRole, setSelectedRole] = useState('All');
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const handleView = (user) => {
-    setSelectedUser(user);
-  };
-
-  // const handleDelete = (userId) => {
-  //   setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-  // };
   useEffect(() => {
     const loadUsers = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        console.log('UserManagement: Fetching users.');
         const data = await fetchUsers();
-        setUsers(data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
+        console.log('UserManagement: Successfully fetched data:', data);
+        if (!Array.isArray(data)) {
+          console.error('UserManagement: Data is not an array!', data);
+          throw new Error('Received invalid data format from server for users.');
+        }
+        setUsersData(data || []);
+      } catch (err) {
+        console.error('UserManagement: Detailed error fetching users:', err);
+        setError(err.message || 'Failed to fetch users. Please check console for details.');
+        setUsersData([]);
       } finally {
         setLoading(false);
       }
@@ -55,26 +35,31 @@ const UserManagement = () => {
     loadUsers();
   }, []);
 
+  const handleView = (user) => {
+    setSelectedUser(user);
+  };
+
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await deleteUser(userId);
-        setUsers(users.filter(user => user.id !== userId));
-      } catch (error) {
-        console.error('Error deleting user:', error);
+        console.log(`UserManagement: Deleting user ID: ${userId}`);
+        await deleteUser(userId); // Service call
+        setUsersData(currentUsers => currentUsers.filter(user => user.id !== userId));
+        console.log(`UserManagement: User ID: ${userId} deleted successfully from UI.`);
+      } catch (err) {
+        console.error('UserManagement: Error deleting user:', err);
+        // Optionally set an error message to display to the admin
+        setError(err.message || `Failed to delete user ${userId}.`);
       }
     }
   };
 
-  // const filteredUsers = Array.isArray(users) ? (filter === 'all'
-  //   ? users
-  //   : users.filter(user => user.role === filter)) : [];
-
   const filteredUsers = selectedRole === 'All'
-    ? users
-    : users.filter(user => user.role === selectedRole);
+    ? usersData
+    : usersData.filter(user => user.role === selectedRole);
 
   if (loading) return <div className="UM-loading">Loading users...</div>;
+  if (error) return <div className="UM-error-message">{error}</div>;
 
   return (
     <div className="UM-user-management">
@@ -95,10 +80,10 @@ const UserManagement = () => {
         <div className="UM-user-card">
           <h3>User Details</h3>
           <div className="UM-user-details-grid">
-            <p><strong>Name:</strong> {selectedUser.name}</p>
-            <p><strong>Email:</strong> {selectedUser.email}</p>
-            <p><strong>Role:</strong> {selectedUser.role}</p>
-            <p><strong>Status:</strong> {selectedUser.status}</p>
+            <p><strong>Name:</strong> {selectedUser.name || 'N/A'}</p>
+            <p><strong>Email:</strong> {selectedUser.email || 'N/A'}</p>
+            <p><strong>Role:</strong> {selectedUser.role || 'N/A'}</p>
+            <p><strong>Status:</strong> {selectedUser.status || 'N/A'}</p>
           </div>
           <button className="UM-close-button" onClick={() => setSelectedUser(null)}>
             Close
@@ -106,8 +91,8 @@ const UserManagement = () => {
         </div>
       )}
 
-      {filteredUsers.length === 0 ? (
-        <div className="UM-no-results">No users found</div>
+      {!loading && !error && filteredUsers.length === 0 ? (
+        <div className="UM-no-results">No users found for the selected filter.</div>
       ) : (
         <div className="UM-table-container">
           <table className="UM-user-table">
@@ -122,27 +107,52 @@ const UserManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map(user => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <span className={`UM-role-badge ${user.role}`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`UM-status-badge ${user.status}`}>
-                      {user.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="UM-view-btn" onClick={() => handleView(user)}>View</button>
-                    <button className="UM-delete-btn" onClick={() => handleDelete(user.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
+              {filteredUsers.map((user, index) => {
+                try {
+                  if (!user || typeof user !== 'object') {
+                    console.error(`UserManagement: Invalid user item at index ${index}:`, user);
+                    return (
+                      <tr key={`error-${index}`} className="error-row">
+                        <td colSpan="6">Invalid user data</td>
+                      </tr>
+                    );
+                  }
+                  const id = user.id || `missing-id-${index}`;
+                  const name = user.name || 'N/A';
+                  const email = user.email || 'N/A';
+                  const role = user.role || 'N/A';
+                  const status = user.status || 'N/A';
+
+                  return (
+                    <tr key={id}>
+                      <td>{id}</td>
+                      <td>{name}</td>
+                      <td>{email}</td>
+                      <td>
+                        <span className={`UM-role-badge ${role.toLowerCase()}`}>
+                          {role}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`UM-status-badge ${status.toLowerCase()}`}>
+                          {status}
+                        </span>
+                      </td>
+                      <td>
+                        <button className="UM-view-btn" onClick={() => handleView(user)}>View</button>
+                        <button className="UM-delete-btn" onClick={() => handleDelete(id)}>Delete</button>
+                      </td>
+                    </tr>
+                  );
+                } catch (cardError) {
+                  console.error(`UserManagement: Error rendering user row for user at index ${index}:`, user, cardError);
+                  return (
+                    <tr key={user && user.id ? `error-${user.id}` : `error-idx-${index}`} className="error-row">
+                      <td colSpan="6">Error displaying this user.</td>
+                    </tr>
+                  );
+                }
+              })}
             </tbody>
           </table>
         </div>

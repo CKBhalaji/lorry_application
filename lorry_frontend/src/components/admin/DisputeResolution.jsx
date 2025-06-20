@@ -4,68 +4,28 @@ import './DisputeResolution.css';
 import { fetchDisputes, resolveDispute } from '../../services/adminService';
 
 const DisputeResolution = () => {
-  const disputes = [
-    {
-      id: 1,
-      loadId: 'L12345',
-      complainantName: 'John Doe',
-      againstName: 'Jane Smith',
-      date: '2023-10-01T09:00:00',
-      message: 'The load was delivered late without prior notice.',
-      status: 'open'
-    },
-    {
-      id: 2,
-      loadId: 'L67890',
-      complainantName: 'Alice Johnson',
-      againstName: 'Bob Williams',
-      date: '2023-10-05T14:30:00',
-      message: 'The load was damaged during transit.',
-      status: 'resolved',
-      resolution: 'approved',
-      resolvedDate: '2023-10-07T11:15:00'
-    },
-    {
-      id: 3,
-      loadId: 'L24680',
-      complainantName: 'Michael Brown',
-      againstName: 'Sarah Johnson',
-      date: '2023-10-10T16:45:00',
-      message: 'The load was delivered to the wrong location.',
-      status: 'open'
-    },
-    {
-      id: 4,
-      loadId: 'L13579',
-      complainantName: 'Emily Davis',
-      againstName: 'David Wilson',
-      date: '2023-10-12T11:20:00',
-      message: 'The load was incomplete upon delivery.',
-      status: 'resolved',
-      resolution: 'rejected',
-      resolvedDate: '2023-10-14T09:30:00'
-    },
-    {
-      id: 5,
-      loadId: 'L97531',
-      complainantName: 'Robert Taylor',
-      againstName: 'Jennifer Anderson',
-      date: '2023-10-15T13:15:00',
-      message: 'The load was damaged during loading.',
-      status: 'open'
-    }
-  ];
-  // const [disputes, setDisputes] = useState([]);
+  const [disputesData, setDisputesData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('open');
 
   useEffect(() => {
     const loadDisputes = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        console.log('DisputeResolution: Fetching all disputes.');
         const data = await fetchDisputes();
-        setDisputes(data);
-      } catch (error) {
-        console.error('Error fetching disputes:', error);
+        console.log('DisputeResolution: Successfully fetched data:', data);
+        if (!Array.isArray(data)) {
+          console.error('DisputeResolution: Data is not an array!', data);
+          throw new Error('Received invalid data format from server for disputes.');
+        }
+        setDisputesData(data || []);
+      } catch (err) {
+        console.error('DisputeResolution: Detailed error fetching disputes:', err);
+        setError(err.message || 'Failed to fetch disputes. Please check console for details.');
+        setDisputesData([]);
       } finally {
         setLoading(false);
       }
@@ -73,22 +33,37 @@ const DisputeResolution = () => {
     loadDisputes();
   }, []);
 
-  const handleResolve = async (disputeId, resolution) => {
+  const handleResolve = async (disputeId, resolutionAction) => {
     try {
-      await resolveDispute(disputeId, resolution);
-      setDisputes(disputes.map(dispute =>
-        dispute.id === disputeId ? { ...dispute, status: 'resolved' } : dispute
-      )); 
-    } catch (error) {
-      console.error('Error resolving dispute:', error);
+      console.log(`DisputeResolution: Resolving dispute ID ${disputeId} with action: ${resolutionAction}.`);
+      // The actual resolution message/details might come from a form or be predefined
+      const resolutionMessage = resolutionAction === 'approved' ? 'Complaint approved by admin.' : 'Complaint rejected by admin.';
+      await resolveDispute(disputeId, resolutionMessage); // Assuming resolveDispute API updates status and adds resolution text
+
+      // Refetch or update local state
+      // For simplicity, refetching; ideally, API returns updated object or we update locally more precisely
+      setLoading(true); // Show loading while refetching
+      const data = await fetchDisputes();
+      if (Array.isArray(data)) {
+        setDisputesData(data);
+      } else {
+        setDisputesData([]); // Or handle error from refetch
+      }
+      console.log(`DisputeResolution: Dispute ID ${disputeId} resolved.`);
+    } catch (err) {
+      console.error(`DisputeResolution: Error resolving dispute ID ${disputeId}:`, err);
+      setError(err.message || `Failed to resolve dispute ${disputeId}.`);
+    } finally {
+      setLoading(false); // Ensure loading is false even if refetch fails
     }
   };
 
-  const filteredDisputes = Array.isArray(disputes) ? disputes.filter(dispute =>
-    activeTab === 'open' ? dispute.status === 'open' : dispute.status === 'resolved'
-  ) : [];
+  const filteredDisputes = disputesData.filter(dispute =>
+    activeTab === 'open' ? dispute.status === 'open' || dispute.status === 'pending' : dispute.status === 'resolved' // Adjusted to include 'pending' in open
+  );
 
   if (loading) return <div className="ADR-loading">Loading disputes...</div>;
+  if (error) return <div className="ADR-error-message">{error}</div>;
 
   return (
     <div className="ADR-dispute-resolution">
@@ -110,56 +85,79 @@ const DisputeResolution = () => {
         </div>
       </div>
 
-      {filteredDisputes.length === 0 ? (
+      {!loading && !error && filteredDisputes.length === 0 ? (
         <div className="ADR-no-results">
-          No {activeTab} disputes found
+          No {activeTab} disputes found.
         </div>
       ) : (
         <div className="ADR-disputes-list">
-          {filteredDisputes.map(dispute => (
-            <div key={dispute.id} className="ADR-dispute-card">
-              <div className="ADR-dispute-header">
-                <h3>Dispute #{dispute.id}</h3>
-                <span className={`ADR-status-badge ${dispute.status}`}>
-                  {dispute.status}
-                </span>
-              </div>
-              <div className="ADR-dispute-details">
-                <p><strong>Load ID:</strong> {dispute.loadId}</p>
-                <p><strong>Complainant:</strong> {dispute.complainantName}</p>
-                <p><strong>Against:</strong> {dispute.againstName}</p>
-                <p><strong>Date:</strong> {new Date(dispute.date).toLocaleString()}</p>
-              </div>
-              <div className="ADR-dispute-message">
-                <p><strong>Message:</strong></p>
-                <p>{dispute.message}</p>
-              </div>
+          {filteredDisputes.map((dispute, index) => {
+            try {
+              if (!dispute || typeof dispute !== 'object') {
+                console.error(`DisputeResolution: Invalid dispute item at index ${index}:`, dispute);
+                return <div key={index} className="ADR-dispute-card error">Invalid dispute data</div>;
+              }
 
-              {dispute.status === 'open' && (
-                <div className="ADR-resolution-actions">
-                  <button
-                    className="ADR-resolve-btn approve"
-                    onClick={() => handleResolve(dispute.id, 'approved')}
-                  >
-                    Approve Complaint
-                  </button>
-                  <button
-                    className="ADR-resolve-btn reject"
-                    onClick={() => handleResolve(dispute.id, 'rejected')}
-                  >
-                    Reject Complaint
-                  </button>
-                </div>
-              )}
+              const id = dispute.id || `missing-id-${index}`;
+              const loadId = dispute.loadId || 'N/A';
+              const complainantName = dispute.complainantName || 'N/A';
+              const againstName = dispute.againstName || 'N/A';
+              const dateStr = dispute.date || dispute.createdAt; // Prefer 'date' if available, else 'createdAt'
+              const formattedDate = dateStr && !isNaN(new Date(dateStr)) ? new Date(dateStr).toLocaleString() : 'Invalid Date';
+              const message = dispute.message || 'No message provided.';
+              const status = dispute.status || 'N/A';
+              const resolution = dispute.resolution || null;
+              const resolvedDateStr = dispute.resolvedDate && !isNaN(new Date(dispute.resolvedDate)) ? new Date(dispute.resolvedDate).toLocaleString() : null;
 
-              {dispute.status === 'resolved' && (
-                <div className="ADR-resolution-outcome">
-                  <p><strong>Resolution:</strong> {dispute.resolution}</p>
-                  <p><strong>Resolved on:</strong> {new Date(dispute.resolvedDate).toLocaleString()}</p>
+              return (
+                <div key={id} className="ADR-dispute-card">
+                  <div className="ADR-dispute-header">
+                    <h3>Dispute #{id}</h3>
+                    <span className={`ADR-status-badge ${status.toLowerCase()}`}>
+                      {status}
+                    </span>
+                  </div>
+                  <div className="ADR-dispute-details">
+                    <p><strong>Load ID:</strong> {loadId}</p>
+                    <p><strong>Complainant:</strong> {complainantName}</p>
+                    <p><strong>Against:</strong> {againstName}</p>
+                    <p><strong>Date:</strong> {formattedDate}</p>
+                  </div>
+                  <div className="ADR-dispute-message">
+                    <p><strong>Message:</strong></p>
+                    <p>{message}</p>
+                  </div>
+
+                  {(status === 'open' || status === 'pending') && (
+                    <div className="ADR-resolution-actions">
+                      <button
+                        className="ADR-resolve-btn approve"
+                        onClick={() => handleResolve(id, 'approved')}
+                      >
+                        Approve Complaint
+                      </button>
+                      <button
+                        className="ADR-resolve-btn reject"
+                        onClick={() => handleResolve(id, 'rejected')}
+                      >
+                        Reject Complaint
+                      </button>
+                    </div>
+                  )}
+
+                  {status === 'resolved' && resolution && (
+                    <div className="ADR-resolution-outcome">
+                      <p><strong>Resolution:</strong> {resolution}</p>
+                      {resolvedDateStr && <p><strong>Resolved on:</strong> {resolvedDateStr}</p>}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+              );
+            } catch (cardError) {
+              console.error(`DisputeResolution: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
+              return <div key={dispute && dispute.id ? dispute.id : index} className="ADR-dispute-card error">Error displaying this dispute.</div>;
+            }
+          })}
         </div>
       )}
     </div>
