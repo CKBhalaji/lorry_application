@@ -4,7 +4,10 @@ const API_BASE_URL = 'http://localhost:8000/api/v1/admin';
 
 export const deleteUser = async (userId) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/users/${userId}`);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.delete(`${API_BASE_URL}/users/${userId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error deleting user:', error);
@@ -14,7 +17,10 @@ export const deleteUser = async (userId) => {
 
 export const fetchUsers = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/users`);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get(`${API_BASE_URL}/users`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -24,7 +30,10 @@ export const fetchUsers = async () => {
 
 export const fetchAllLoads = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/loads`);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get(`${API_BASE_URL}/loads`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching loads:', error);
@@ -34,7 +43,10 @@ export const fetchAllLoads = async () => {
 
 export const updateLoadStatus = async (loadId, status) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/loads/${loadId}/status`, { status });
+    const token = localStorage.getItem('authToken');
+    const response = await axios.put(`${API_BASE_URL}/loads/${loadId}/status`, { status }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating load status:', error);
@@ -44,7 +56,10 @@ export const updateLoadStatus = async (loadId, status) => {
 
 export const fetchDisputes = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/disputes`);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get(`${API_BASE_URL}/disputes`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching disputes:', error);
@@ -54,7 +69,10 @@ export const fetchDisputes = async () => {
 
 export const resolveDispute = async (disputeId, resolution) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/disputes/${disputeId}/resolve`, { resolution });
+    const token = localStorage.getItem('authToken');
+    const response = await axios.put(`${API_BASE_URL}/disputes/${disputeId}/resolve`, { resolution }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error resolving dispute:', error);
@@ -64,7 +82,10 @@ export const resolveDispute = async (disputeId, resolution) => {
 
 export const addNewAdmin = async (adminData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/admins`, adminData);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.post(`${API_BASE_URL}/admins`, adminData, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error adding new admin:', error);
@@ -74,7 +95,10 @@ export const addNewAdmin = async (adminData) => {
 
 export const deleteAdmin = async (adminId) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/admins/${adminId}`);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.delete(`${API_BASE_URL}/admins/${adminId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error deleting admin:', error);
@@ -84,7 +108,10 @@ export const deleteAdmin = async (adminId) => {
 
 export const fetchAdmins = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/admins`);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get(`${API_BASE_URL}/admins`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching admins:', error);
@@ -94,7 +121,10 @@ export const fetchAdmins = async () => {
 
 export const fetchAdminProfile = async (adminId) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/admins/${adminId}/profile`);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get(`${API_BASE_URL}/admins/${adminId}/profile`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching admin profile:', error);
@@ -104,7 +134,10 @@ export const fetchAdminProfile = async (adminId) => {
 
 export const updateAdminProfile = async (adminId, profileData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/profile`, profileData);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/profile`, profileData, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating admin profile:', error);
@@ -114,7 +147,10 @@ export const updateAdminProfile = async (adminId, profileData) => {
 
 export const changeAdminPassword = async (adminId, passwordData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/password`, passwordData);
+    const token = localStorage.getItem('authToken');
+    const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/password`, passwordData, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error changing admin password:', error);
