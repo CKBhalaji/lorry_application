@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 // src/services/driverService.js
-const API_BASE_URL = 'http://localhost:8080/api/drivers';
+const API_BASE_URL = 'http://localhost:8000/api/v1/drivers';
 
 export const fetchAvailableLoads = async () => {
-  const token = localStorage.getItem('driverToken');
+  const token = localStorage.getItem('driverToken'); // Or a generic 'authToken'
   const response = await fetch(`${API_BASE_URL}/loads`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -29,8 +29,11 @@ export const placeBid = async (loadId, amount) => {
 };
 
 export const fetchDriverBids = async (driverId) => {
+  const token = localStorage.getItem('driverToken'); // Or a generic 'authToken'
   try {
-    const response = await axios.get(`/api/drivers/${driverId}/bids`);
+    const response = await axios.get(`${API_BASE_URL}/${driverId}/bids`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching driver bids:', error);
@@ -39,8 +42,11 @@ export const fetchDriverBids = async (driverId) => {
 };
 
 export const fetchDriverProfile = async (driverId) => {
+  const token = localStorage.getItem('driverToken'); // Or a generic 'authToken'
   try {
-    const response = await axios.get(`/api/drivers/${driverId}/profile`);
+    const response = await axios.get(`${API_BASE_URL}/${driverId}/profile`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching driver profile:', error);
@@ -49,8 +55,13 @@ export const fetchDriverProfile = async (driverId) => {
 };
 
 export const createDriverDispute = async (disputeData) => {
+  const token = localStorage.getItem('driverToken'); // Or a generic 'authToken'
   try {
-    const response = await axios.post('/api/driver/disputes', disputeData);
+    // Note: The old path was '/api/driver/disputes'. The new backend router for drivers is '/api/v1/drivers'.
+    // So the new path should be `${API_BASE_URL}/disputes`.
+    const response = await axios.post(`${API_BASE_URL}/disputes`, disputeData, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error creating driver dispute:', error);
@@ -59,8 +70,12 @@ export const createDriverDispute = async (disputeData) => {
 };
 
 export const fetchDriverDisputes = async () => {
+  const token = localStorage.getItem('driverToken'); // Or a generic 'authToken'
   try {
-    const response = await axios.get('/api/driver/disputes');
+    // Similar to createDriverDispute, path should be `${API_BASE_URL}/disputes`.
+    const response = await axios.get(`${API_BASE_URL}/disputes`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching driver disputes:', error);
