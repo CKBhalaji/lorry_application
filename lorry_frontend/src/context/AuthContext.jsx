@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiLogin(credentials);
       const { access_token, user } = response; // Adjust based on actual API response
+<<<<<<< HEAD
       let decodedUser = null;
 
       if (user && user.username && user.type) {
@@ -49,9 +50,31 @@ export const AuthProvider = ({ children }) => {
       if (!decodedUser || !decodedUser.type || !decodedUser.username) {
         throw new Error('Login failed: User details (including role) could not be determined from server response.');
       }
+=======
+
+      // The `user` object from `response` (which is response.data from axios)
+      // is expected to be: { username: "...", type: "..." }
+      const apiUser = user;
+
+      if (!apiUser || !apiUser.type || !apiUser.username) {
+        console.error('AuthContext: Login response missing user details or type.', apiUser);
+        throw new Error('Login failed: User role information missing in server response.');
+      }
+
+      // Construct decodedUser directly from the user object in the response
+      const decodedUser = {
+        username: apiUser.username,
+        type: apiUser.type
+        // Potentially include other user fields from apiUser if needed
+      };
+
+      // The JWT decoding section for role is no longer needed here as we trust response.user.type.
+      // The access_token itself will be stored, but its decoding for role is bypassed.
+>>>>>>> 3f8c5208370800b74f63e59f673fd60f3bcdfd22
 
       // Role comparison
       if (decodedUser.type !== credentials.type) {
+        console.warn(`AuthContext: Role mismatch. Expected: ${credentials.type}, Got: ${decodedUser.type}`);
         throw new Error('Login failed: The user account is not registered for this role.');
       }
 
