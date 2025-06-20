@@ -1,61 +1,27 @@
 // src/components/goods-owner/MyLoads.js
 import React, { useState, useEffect } from 'react';
 import './MyLoads.css';
-import { fetchOwnerLoads } from '../../services/goodsOwnerService';
+import { fetchMyLoads } from '../../services/goodsOwnerService'; // Changed from fetchOwnerLoads
 
 const MyLoads = () => {
-  const loads = [
-    {
-      id: 1,
-      goodsType: 'Electronics',
-      pickupLocation: 'Mumbai',
-      deliveryLocation: 'Delhi',
-      weight: 500,
-      pickupDate: '2023-10-20T09:00:00Z',
-      deliveryDate: '2023-10-22T18:00:00Z',
-      status: 'ACTIVE',
-      bidCount: 3,
-      highestBid: 15000
-    },
-    {
-      id: 2,
-      goodsType: 'Furniture',
-      pickupLocation: 'Chennai',
-      deliveryLocation: 'Bangalore',
-      weight: 800,
-      pickupDate: '2023-10-18T11:00:00Z',
-      deliveryDate: '2023-10-19T20:00:00Z',
-      status: 'COMPLETED',
-      bidCount: 5,
-      highestBid: 20000
-    },
-    {
-      id: 3,
-      goodsType: 'Clothing',
-      pickupLocation: 'Kolkata',
-      deliveryLocation: 'Hyderabad',
-      weight: 300,
-      pickupDate: '2023-10-25T08:00:00Z',
-      deliveryDate: '2023-10-26T17:00:00Z',
-      status: 'CANCELLED',
-      bidCount: 0
-    }
-  ];
-
-  // In the component:
-  // const [loads, setLoads] = useState(sampleLoads);
-  // const [loads, setLoads] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loads, setLoads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
 
   useEffect(() => {
     const fetchLoads = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const data = await fetchOwnerLoads();
+        const data = await fetchMyLoads(); // Changed from fetchOwnerLoads
         setLoads(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching loads:', error);
-        setLoads([]);
+        setError('Failed to fetch your loads. Please try again later.');
+        setLoads([]); // Ensure loads is an array even on error
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -63,11 +29,12 @@ const MyLoads = () => {
   }, []);
 
   if (loading) return <div className="GOML-loading">Loading your loads...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="GOML-my-loads">
       <h2>My Loads</h2>
-      {loads.length === 0 ? (
+      {!loading && !error && loads.length === 0 ? (
         <p className="GOML-no-loads">You haven't posted any loads yet.</p>
       ) : (
         <div className="GOML-loads-list">

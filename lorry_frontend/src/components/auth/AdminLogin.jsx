@@ -11,16 +11,22 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const userData = {
-      type: 'admin',
+    setError(''); // Clear previous errors
+    const credentials = {
       username: username,
-      // Add other necessary fields
+      password: password,
+      type: 'admin'
     };
-    console.log('Attempting admin login with:', userData);
-    login(userData);
-    navigate('/admin/dashboard');
+    try {
+      console.log('Attempting admin login with:', credentials);
+      await login(credentials);
+      navigate('/admin'); // Or '/admin/dashboard' if preferred
+    } catch (err) {
+      console.error('Admin login failed:', err);
+      setError(err.message || 'Login failed. Please check your credentials.');
+    }
   };
 
   return (

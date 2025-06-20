@@ -4,48 +4,16 @@ import './AvailableLoads.css';
 import { fetchAvailableLoads, placeBid } from '../../services/driverService';
 
 const AvailableLoads = () => {
-  const sampleLoads = [
-    {
-      id: 1,
-      goodsType: 'Electronics',
-      pickupLocation: 'Mumbai',
-      deliveryLocation: 'Delhi',
-      weight: 500,
-      pickupDate: '2023-10-20T09:00:00Z',
-      deliveryDate: '2023-10-22T18:00:00Z',
-      currentHighestBid: 15000
-    },
-    {
-      id: 2,
-      goodsType: 'Furniture',
-      pickupLocation: 'Chennai',
-      deliveryLocation: 'Bangalore',
-      weight: 800,
-      pickupDate: '2023-10-18T11:00:00Z',
-      deliveryDate: '2023-10-19T20:00:00Z',
-      currentHighestBid: 20000
-    },
-    {
-      id: 3,
-      goodsType: 'Clothing',
-      pickupLocation: 'Kolkata',
-      deliveryLocation: 'Hyderabad',
-      weight: 300,
-      pickupDate: '2023-10-25T08:00:00Z',
-      deliveryDate: '2023-10-26T17:00:00Z',
-      currentHighestBid: 12000
-    }
-  ];
-
-  // In the component:
-  const [loads, setLoads] = useState(sampleLoads);
-  // const [loads, setLoads] = useState([]);
+  const [loads, setLoads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [bidAmounts, setBidAmounts] = useState({});
   const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     const getLoads = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const data = await fetchAvailableLoads();
         setLoads(data);
@@ -57,6 +25,7 @@ const AvailableLoads = () => {
         setBidAmounts(initialBids);
       } catch (error) {
         console.error('Error fetching loads:', error);
+        setError('Failed to fetch available loads. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -116,6 +85,7 @@ const AvailableLoads = () => {
   };
 
   if (loading) return <div>Loading available loads...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   const successCard = successMessage && (
     <div className={`DAL-success-card ${successMessage.type}`}>
@@ -123,7 +93,7 @@ const AvailableLoads = () => {
       {successMessage.type === 'success' && (
         <p>Bid Amount: ₹{successMessage.amount}</p>
       )}
-      <button 
+      <button
         className="DAL-ok-button"
         onClick={() => setSuccessMessage(null)}
       >
@@ -136,7 +106,7 @@ const AvailableLoads = () => {
     <div className="DAL-available-loads">
       {successCard}
       <h2>Available Loads</h2>
-      {loads.length === 0 ? (
+      {!loading && !error && loads.length === 0 ? (
         <p>No loads available at the moment.</p>
       ) : (
         <div className="DAL-loads-list">
