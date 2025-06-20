@@ -152,21 +152,26 @@ const SignUpDriver = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      // const formData = {
-      //   email,
-      //   username: document.getElementById('driver-username').value,
-      //   phone: document.getElementById('driver-phone').value,
-      //   aadhar: document.getElementById('driver-aadhar').value,
-      //   experience: document.getElementById('driver-experience').value,
-      //   vehicleType,
-      //   customVehicleType,
-      //   loadCapacity: document.getElementById('vehicle-load').value,
-      //   paymentMethod: selectedPayment,
-      //   paymentDetails: document.querySelector('input[name="payment-method"]:checked').value,
-      //   password,
-      // };
+      const formData = {
+        username: document.getElementById('driver-username').value,
+        phoneNumber: document.getElementById('driver-phone').value,
+        aadharNumber: document.getElementById('driver-aadhar').value,
+        email,
+        experience: document.getElementById('driver-experience').value,
+        drivingLicenseFileName: '', // File upload handling needed
+        insuranceFileName: '', // File upload handling needed
+        rcCardFileName: '', // File upload handling needed
+        vehicleType,
+        customVehicleType,
+        loadCapacityKg: document.getElementById('vehicle-load').value,
+        gpayId: selectedPayment === 'gpay' ? document.querySelector('input[name="payment-method"]:checked')?.value : '',
+        paytmId: selectedPayment === 'paytm' ? document.querySelector('input[name="payment-method"]:checked')?.value : '',
+        upiId: selectedPayment === 'upi' ? document.querySelector('input[name="payment-method"]:checked')?.value : '',
+        password,
+      };
 
       try {
+        console.log('Submitting driver signup payload:', formData);
         await signUpDriver(formData);
         alert('Driver signed up successfully!');
         navigate(-1);

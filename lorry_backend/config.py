@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 import os
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = 'postgresql://user:password@host:port/dbname'
+    DATABASE_URL: str = 'postgresql://postgres:2003@localhost:5432/LorryDatabase'
     SECRET_KEY: str = 'your_very_secret_key_here_please_change_me' # IMPORTANT: Generate a strong secret key
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30 # Default to 30 minutes
 
