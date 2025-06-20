@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SignUpDriver.css';
-import { signUpDriver } from '../../services/authService';
+import { signUpDriver, login} from '../../services/authService';
+import { uploadDriverDocument } from '../../services/driverService';
 import { sendOTP, verifyOTP } from '../../services/authService';
 
 const SignUpDriver = () => {
@@ -164,16 +165,39 @@ const SignUpDriver = () => {
         vehicleType,
         customVehicleType,
         loadCapacityKg: document.getElementById('vehicle-load').value,
-        gpayId: selectedPayment === 'gpay' ? document.querySelector('input[name="payment-method"]:checked')?.value : '',
-        paytmId: selectedPayment === 'paytm' ? document.querySelector('input[name="payment-method"]:checked')?.value : '',
-        upiId: selectedPayment === 'upi' ? document.querySelector('input[name="payment-method"]:checked')?.value : '',
+        gpayId: selectedPayment === 'gpay' ? document.getElementById('payment-method').value : '',
+        paytmId: selectedPayment === 'paytm' ? document.getElementById('payment-method').value : '',
+        upiId: selectedPayment === 'upi' ? document.getElementById('payment-method').value : '',
         password,
       };
 
       try {
         console.log('Submitting driver signup payload:', formData);
-        await signUpDriver(formData);
-        alert('Driver signed up successfully!');
+        const signupRes = await signUpDriver(formData);
+
+        // Get driverId from signupRes (adjust if your backend returns a different property)
+        const driverId = signupRes.id;
+
+        // Get the files from the file inputs
+        const drivingLicenseFile = document.getElementById('driver-license').files[0];
+        const insuranceFile = document.getElementById('driver-insurance').files[0];
+        const rcCardFile = document.getElementById('driver-rc-card').files[0];
+
+        const loginRes = await login({ username: formData.username, password: formData.password });
+        localStorage.setItem('driverToken', loginRes.access_token);
+
+        // Upload each file if present
+        if (drivingLicenseFile) {
+          await uploadDriverDocument(driverId, drivingLicenseFile, 'driving_license');
+        }
+        if (insuranceFile) {
+          await uploadDriverDocument(driverId, insuranceFile, 'insurance');
+        }
+        if (rcCardFile) {
+          await uploadDriverDocument(driverId, rcCardFile, 'rc_card');
+        }
+
+        alert('Driver signed up and documents uploaded successfully!');
         navigate(-1);
       } catch (error) {
         console.error('Error submitting form:', error);
@@ -391,10 +415,10 @@ const SignUpDriver = () => {
             {/* Show input box based on selected payment method */}
             {selectedPayment && (
               <input
+                id="payment-method"
                 type="text"
                 className="driver-signup-input"
                 placeholder={`Enter your ${selectedPayment} details`}
-
                 required
                 disabled={!isVerified}
               />
