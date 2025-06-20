@@ -1,77 +1,111 @@
 // src/components/goods-owner/OwnerProfile.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';import './OwnerProfile.css';
+import { useNavigate } from 'react-router-dom';
+import './OwnerProfile.css';
 import { fetchOwnerProfile } from '../../services/goodsOwnerService';
+import { useAuth } from '../../context/AuthContext'; // For authUser
 
 const OwnerProfile = () => {
   const navigate = useNavigate();
-  // const [profile, setProfile] = useState(null);
-  const [originalProfile, setOriginalProfile] = useState({
-    fullName: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+91 9876543210',
-    aadhar: '1234 5678 9012',
-    companyName: 'Doe Enterprises',
-    paymentMethod: 'Credit Card',
-    paymentDetails: '**** **** **** 1234'
-  });
-  const [profile, setProfile] = useState({ ...originalProfile });
-  const [loading, setLoading] = useState(false);
+  const { authUser } = useAuth();
+
+  const [originalProfile, setOriginalProfile] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const validateFields = () => {
-    const newErrors = {};
-    if (!profile.fullName) newErrors.fullName = 'Full Name is required';
-    if (!profile.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email))
-      newErrors.email = 'Valid email is required';
-    if (!profile.phone || !/^\+?\d{10,15}$/.test(profile.phone))
-      newErrors.phone = 'Valid phone number is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleEdit = () => {
-    if (isEditing) {
-      if (!validateFields()) return;
-      setOriginalProfile(profile);
-    } else {
-      setProfile({ ...originalProfile });
-    }
-    setIsEditing(!isEditing);
-  };
-
-  const handleCancel = () => {
-    setProfile({ ...originalProfile });
-    setErrors({});
-    setIsEditing(false);
-  };
-
-  const handleChange = (field, value) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
-  };
-
   useEffect(() => {
     const loadProfile = async () => {
+      if (!authUser || !authUser.id) {
+        setError("User ID not found. Cannot fetch profile.");
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      setError(null);
       try {
-        const data = await fetchOwnerProfile();
-        setProfile(data);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.log(`OwnerProfile: Fetching profile for owner ID: ${authUser.id}`);
+        const data = await fetchOwnerProfile(authUser.id);
+        console.log('OwnerProfile: Successfully fetched data:', data);
+
+        if (data && typeof data === 'object') {
+          setOriginalProfile(data);
+          setProfile(data);
+        } else {
+          console.error('OwnerProfile: Data is not an object or is null!', data);
+          throw new Error('Received invalid data format from server for profile.');
+        }
+      } catch (err) {
+        console.error('OwnerProfile: Detailed error fetching profile:', err);
+        setError(err.message || 'Failed to fetch profile. Please check console for details.');
       } finally {
         setLoading(false);
       }
     };
     loadProfile();
-  }, []);
+  }, [authUser]);
+
+  const validateFields = () => {
+    const newErrors = {};
+    if (!profile?.fullName) newErrors.fullName = 'Full Name is required';
+    if (!profile?.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email))
+      newErrors.email = 'Valid email is required';
+    if (!profile?.phone || !/^\+?\d{10,15}$/.test(profile.phone)) // Basic phone validation
+      newErrors.phone = 'Valid phone number is required';
+    // Add other validations as needed
+    if (!profile?.aadhar) newErrors.aadhar = 'Aadhar is required'; // Example
+    if (!profile?.companyName) newErrors.companyName = 'Company name is required';
+    if (!profile?.paymentMethod) newErrors.paymentMethod = 'Payment method is required';
+    if (!profile?.paymentDetails) newErrors.paymentDetails = 'Payment details are required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleEdit = async () => {
+    if (isEditing) {
+      if (!validateFields()) return;
+      try {
+        // Placeholder for save profile functionality
+        console.log('OwnerProfile: Attempting to save profile (API call not implemented yet):', profile);
+        // await saveOwnerProfile(profile); // This function needs to be imported and implemented
+        setOriginalProfile(profile); // Optimistically update originalProfile
+        alert('Profile changes would be saved here. API call needs implementation.');
+        setIsEditing(false);
+      } catch (saveError) {
+        console.error('Error saving owner profile:', saveError);
+        setError(saveError.message || 'Failed to save profile.');
+      }
+    } else {
+      if (originalProfile) {
+        setProfile({ ...originalProfile });
+      }
+      setIsEditing(true);
+    }
+  };
+
+  const handleCancel = () => {
+    if (originalProfile) {
+      setProfile({ ...originalProfile });
+    }
+    setErrors({});
+    setIsEditing(false);
+  };
+
+  const handleChange = (field, value) => {
+    setProfile(prev => (prev ? { ...prev, [field]: value } : { [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+  };
 
   const handlePasswordChange_owner = () => {
-    navigate('/driver/dashboard?tab=change-password', { state: { activeTab: 'change-password' } });
-    // window.location.reload(); // Force immediate refresh
-};
-  if (loading) return <div className="GOPloading">Loading profile...</div>;
-  if (!profile) return <div className="GOPerror">Failed to load profile</div>;
+    navigate('/goods-owner/dashboard?tab=change-password', { state: { activeTab: 'change-password' } });
+  };
+
+  if (loading) return <div className="GOP-loading">Loading profile...</div>; // Standardized class name
+  if (error) return <div className="GOP-error-message">{error}</div>;
+  if (!profile) return <div className="GOP-no-profile">No profile data available.</div>;
 
   return (
     <div className="GOPowner-profile">
@@ -85,75 +119,70 @@ const OwnerProfile = () => {
             {isEditing ? (
               <>
                 <input
-                  value={profile.fullName}
+                  value={profile?.fullName || ''}
                   onChange={e => handleChange('fullName', e.target.value)}
                 />
-                {errors.fullName && <span className="GOPerror">{errors.fullName}</span>}
+                {errors.fullName && <span className="GOP-error">{errors.fullName}</span>}
               </>
             ) : (
-              <p>{profile.fullName}</p>
+              <p>{profile?.fullName || 'N/A'}</p>
             )}
-            {/* <p>{profile.fullName}</p> */}
           </div>
           <div className="GOPprofile-field">
             <label>Email</label>
             {isEditing ? (
               <>
                 <input
-                  value={profile.email}
+                  value={profile?.email || ''}
                   onChange={e => handleChange('email', e.target.value)}
                 />
-                {errors.email && <span className="GOPerror">{errors.email}</span>}
+                {errors.email && <span className="GOP-error">{errors.email}</span>}
               </>
             ) : (
-              <p>{profile.email}</p>
+              <p>{profile?.email || 'N/A'}</p>
             )}
-            {/* <p>{profile.email}</p> */}
           </div>
           <div className="GOPprofile-field">
             <label>Phone</label>
             {isEditing ? (
               <>
                 <input
-                  value={profile.phone}
+                  value={profile?.phone || ''}
                   onChange={e => handleChange('phone', e.target.value)}
                 />
-                {errors.phone && <span className="GOPerror">{errors.phone}</span>}
+                {errors.phone && <span className="GOP-error">{errors.phone}</span>}
               </>
             ) : (
-              <p>{profile.phone}</p>
+              <p>{profile?.phone || 'N/A'}</p>
             )}
-            {/* <p>{profile.phone}</p> */}
           </div>
           <div className="GOPprofile-field">
             <label>Aadhar Number</label>
             {isEditing ? (
               <>
                 <input
-                  value={profile.aadhar}
+                  value={profile?.aadhar || ''}
                   onChange={e => handleChange('aadhar', e.target.value)}
                 />
-                {errors.aadhar && <span className="GOPerror">{errors.aadhar}</span>}
+                {errors.aadhar && <span className="GOP-error">{errors.aadhar}</span>}
               </>
             ) : (
-              <p>{profile.aadhar}</p>
+              <p>{profile?.aadhar || 'N/A'}</p>
             )}
-            {/* <p>{profile.aadhar}</p> */}
           </div>
           <div className="GOPprofile-field">
             <label>Company Name</label>
             {isEditing ? (
               <>
                 <input
-                  value={profile.companyName}
+                  value={profile?.companyName || ''}
                   onChange={e => handleChange('companyName', e.target.value)}
                 />
-                {errors.companyName && <span className="GOPerror">{errors.companyName}</span>}
+                {errors.companyName && <span className="GOP-error">{errors.companyName}</span>}
               </>
             ) : (
-              <p>{profile.companyName || 'Not specified'}</p>
+              <p>{profile?.companyName || 'N/A'}</p>
             )}
-            {/* <p>{profile.companyName || 'Not specified'}</p> */}
           </div>
         </div>
       </div>
@@ -165,31 +194,34 @@ const OwnerProfile = () => {
             <label>Primary Payment Method</label>
             {isEditing ? (
               <>
-                <input
-                  value={profile.paymentMethod}
+                <select
+                  value={profile?.paymentMethod || ''}
                   onChange={e => handleChange('paymentMethod', e.target.value)}
-                />
-                {errors.paymentMethod && <span className="GOPerror">{errors.paymentMethod}</span>}
+                >
+                  <option value="">Select Method</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Credit Card">Credit Card</option>
+                </select>
+                {errors.paymentMethod && <span className="GOP-error">{errors.paymentMethod}</span>}
               </>
             ) : (
-              <p>{profile.paymentMethod}</p>
+              <p>{profile?.paymentMethod || 'N/A'}</p>
             )}
-            {/* <p>{profile.paymentMethod}</p> */}
           </div>
           <div className="GOPprofile-field">
             <label>Payment Details</label>
             {isEditing ? (
               <>
               <input
-                value={profile.paymentDetails}
+                value={profile?.paymentDetails || ''}
                 onChange={e => handleChange('paymentDetails', e.target.value)}
               />
-              {errors.paymentDetails && <span className="GOPerror">{errors.paymentDetails}</span>}
+              {errors.paymentDetails && <span className="GOP-error">{errors.paymentDetails}</span>}
               </>
             ) : (
-              <p>{profile.paymentDetails}</p>
+              <p>{profile?.paymentDetails || 'N/A'}</p>
             )}
-            {/* <p>{profile.paymentDetails}</p> */}
           </div>
         </div>
       </div>

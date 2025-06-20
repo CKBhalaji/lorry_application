@@ -6,34 +6,50 @@ import { fetchAdminProfile, updateAdminProfile } from '../../services/adminServi
 import { useAuth } from '../../context/AuthContext';
 
 const AdminProfile = () => {
-  const { currentUser } = useAuth();
+  const { authUser } = useAuth(); // Changed from currentUser to authUser
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({ name: '', email: '', profile: '', phone: '' });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const isSuperAdmin = currentUser && currentUser.role === 'superadmin';
+  const isSuperAdmin = authUser && authUser.type === 'superadmin'; // Assuming role is in authUser.type
 
   useEffect(() => {
     const loadProfile = async () => {
+      if (!authUser || !authUser.id) {
+        setError("User ID not found. Cannot fetch profile.");
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      setError(null);
       try {
-        const data = await fetchAdminProfile();
-        setProfile(data);
-        setFormData({
-          name: data.name,
-          email: data.email,
-          profile: data.profile,
-          phone: data.phone
-        });
-      } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.log(`AdminProfile: Fetching profile for admin ID: ${authUser.id}`);
+        const data = await fetchAdminProfile(authUser.id); // Pass adminId
+        console.log('AdminProfile: Successfully fetched data:', data);
+        if (data && typeof data === 'object') {
+          setProfile(data);
+          setFormData({ // Initialize formData with fetched data
+            name: data.name || '',
+            email: data.email || '',
+            profile: data.profile || data.type || '', // Use profile or type from data
+            phone: data.phone || ''
+          });
+        } else {
+          console.error('AdminProfile: Data is not an object or is null!', data);
+          throw new Error('Received invalid data format from server for admin profile.');
+        }
+      } catch (err) {
+        console.error('AdminProfile: Detailed error fetching profile:', err);
+        setError(err.message || 'Failed to fetch profile. Please check console for details.');
       } finally {
         setLoading(false);
       }
     };
     loadProfile();
-  }, []);
+  }, [authUser]); // Depend on authUser
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,23 +74,34 @@ const AdminProfile = () => {
     if (!validateForm()) return;
 
     try {
-      const updatedProfile = await updateAdminProfile(formData);
+      if (!authUser || !authUser.id) {
+        throw new Error("Cannot update profile: Admin ID not found.");
+      }
+      console.log(`AdminProfile: Updating profile for admin ID: ${authUser.id}`, formData);
+      const updatedProfile = await updateAdminProfile(authUser.id, formData); // Pass adminId
       setProfile(updatedProfile);
+      setFormData({ // Reset formData with updated profile data
+            name: updatedProfile.name || '',
+            email: updatedProfile.email || '',
+            profile: updatedProfile.profile || updatedProfile.type || '',
+            phone: updatedProfile.phone || ''
+      });
       setEditMode(false);
       alert('Profile updated successfully!');
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+    } catch (err) {
+      console.error('AdminProfile: Error updating profile:', err);
+      setError(err.message || 'Failed to update profile. Please try again.');
+      // alert('Failed to update profile. Please try again.'); // setError will display the message
     }
   };
 
   const handlePasswordChange = () => {
     navigate('/admin/dashboard?tab=change-password', { state: { activeTab: 'change-password' } });
-    // window.location.reload(); // Force immediate refresh
   };
 
   if (loading) return <div className="AP-loading">Loading profile...</div>;
-  if (!profile) return <div className="AP-error">Failed to load profile</div>;
+  if (error) return <div className="AP-error-message">{error}</div>;
+  if (!profile) return <div className="AP-no-profile">No profile data available.</div>;
 
   return (
     <div className="AP-admin-profile">
@@ -97,7 +124,7 @@ const AdminProfile = () => {
             <input
               type="text"
               name="name"
-              value={formData.name}
+              value={formData.name || ''}
               onChange={handleChange}
               className={errors.name ? 'error' : ''}
             />
@@ -109,7 +136,7 @@ const AdminProfile = () => {
             <input
               type="email"
               name="email"
-              value={formData.email}
+              value={formData.email || ''}
               onChange={handleChange}
               className={errors.email ? 'error' : ''}
             />
@@ -117,17 +144,17 @@ const AdminProfile = () => {
           </div>
 
           <div className="AP-form-group">
-            <label>Profile</label>
+            <label>Profile/Role</label>
             <select
-              name="profile"
-              value={formData.profile}
+              name="profile" // This field in formData should align with what backend expects ('profile' or 'type')
+              value={formData.profile || ''}
               onChange={handleChange}
-              disabled={!isSuperAdmin}
+              disabled={!isSuperAdmin} // Only superadmin can change role
               className={!isSuperAdmin ? 'disabled-field' : ''}
             >
               <option value="admin">Admin</option>
               <option value="superadmin">Super Admin</option>
-              <option value="manager">Manager</option>
+              <option value="manager">Manager</option> {/* Ensure these roles match backend enum/values */}
             </select>
           </div>
 
@@ -136,7 +163,7 @@ const AdminProfile = () => {
             <input
               type="tel"
               name="phone"
-              value={formData.phone}
+              value={formData.phone || ''}
               onChange={handleChange}
               className={errors.phone ? 'error' : ''}
             />
@@ -163,24 +190,26 @@ const AdminProfile = () => {
         <div className="AP-profile-details">
           <div className="AP-detail-row">
             <span className="AP-detail-label">Name:</span>
-            <span className="AP-detail-value">{profile.name}</span>
+            <span className="AP-detail-value">{profile?.name || 'N/A'}</span>
           </div>
           <div className="AP-detail-row">
             <span className="AP-detail-label">Email:</span>
-            <span className="AP-detail-value">{profile.email}</span>
+            <span className="AP-detail-value">{profile?.email || 'N/A'}</span>
           </div>
           <div className="AP-detail-row">
-            <span className="AP-detail-label">Profile:</span>
-            <span className="AP-detail-value">{profile.profile}</span>
+            <span className="AP-detail-label">Profile/Role:</span>
+            <span className="AP-detail-value">{profile?.profile || profile?.type || 'N/A'}</span>
           </div>
           <div className="AP-detail-row">
             <span className="AP-detail-label">Phone:</span>
-            <span className="AP-detail-value">{profile.phone}</span>
+            <span className="AP-detail-value">{profile?.phone || 'N/A'}</span>
           </div>
           <div className="AP-detail-row">
             <span className="AP-detail-label">Admin Since:</span>
             <span className="AP-detail-value">
-              {new Date(profile.createdAt).toLocaleDateString()}
+              {profile?.createdAt && !isNaN(new Date(profile.createdAt))
+                ? new Date(profile.createdAt).toLocaleDateString()
+                : 'N/A'}
             </span>
           </div>
 
