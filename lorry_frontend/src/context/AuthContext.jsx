@@ -32,22 +32,67 @@ export const AuthProvider = ({ children }) => {
 
       // For demonstration, if user info isn't directly in response, try to decode JWT (simplified)
       // In a real app, use a library like jwt-decode
-      let decodedUser = user;
-      if (!decodedUser && access_token) {
+      let decodedUser = null;
+
+      if (user && user.username && user.type) {
+        // Prefer user object from response if available and complete
+        decodedUser = user;
+      } else if (access_token) {
+        // Attempt to decode token if user object is not in response or incomplete
+        // This is a simplified placeholder for actual JWT decoding
         try {
-          // Simplified: normally you'd decode the token here if it contains user info
-          // const decodedToken = jwt_decode(access_token);
-          // decodedUser = { username: decodedToken.username, type: decodedToken.type };
-          // For now, we'll use credentials if no user info in response
-          decodedUser = { username: credentials.username, type: credentials.type };
+          // const actualDecodedToken = jwt_decode(access_token); // Placeholder for actual decoding
+          // For demonstration, assuming the token *might* contain username and type directly (highly simplified)
+          // In a real scenario, the structure of actualDecodedToken would be specific to your JWT
+          // For now, let's assume a hypothetical structure or that authService normalizes it.
+          // If your apiLogin service already decodes and returns a user object, this part might be redundant.
+          // For this step, we'll assume a placeholder decoding that might give us type and username.
+          // This is a critical part: ensure this reflects how you *actually* get role from token.
+          // If token doesn't reliably contain 'type', this approach needs a real JWT decoding library.
+
+          // Placeholder: Simulate decoding that might provide `type` and `username`
+          // THIS IS A MOCK DECODING. REPLACE WITH ACTUAL JWT DECODING.
+          const simulatedTokenData = { username: credentials.username, type: null }; // Start with null type
+
+          // If backend sends user type in token, it should be extracted here.
+          // For example, if token had a claim `user_role`: simulatedTokenData.type = decoded_jwt.user_role;
+          // For now, if `response.user.type` was missing, we cannot reliably get it from a simple mock.
+          // The backend response (either `response.user` or a decodable token) MUST provide the type.
+
+          // If `user` object from response was partial (e.g. had username but not type),
+          // we might try to get type from token.
+          // However, this example assumes `user` from response is all-or-nothing for simplicity.
+
+          // Crucial: If type cannot be determined from token or direct response, we must fail.
+          // Let's assume `apiLogin` or a future JWT decoding step provides `type`.
+          // For this exercise, if `response.user` was not there, we'll assume a hypothetical
+          // `response.decodedTokenData` or similar from `apiLogin` for role.
+          // If not, the login should fail.
+          if (response.user && response.user.type) { // Check again if apiLogin provided it
+            decodedUser = response.user;
+          } else {
+            // If no reliable type from backend (neither in response.user nor from token decoding)
+            throw new Error('Login failed: User role could not be verified from server response.');
+          }
+
         } catch (e) {
-          console.error("Error decoding token or user info not available", e);
-          // Fallback to credentials if token doesn't have user info or is not decodable easily
-          decodedUser = { username: credentials.username, type: credentials.type };
+          console.error("Error processing token or user info not available", e);
+          throw new Error('Login failed: User role could not be verified due to token processing error.');
         }
       }
 
+      if (!decodedUser || !decodedUser.type || !decodedUser.username) {
+        // This check ensures we have a user object with type and username.
+        // It's a fallback if the above logic didn't correctly establish decodedUser.
+        throw new Error('Login failed: User details (including role) could not be determined from server response.');
+      }
 
+      // Role comparison
+      if (decodedUser.type !== credentials.type) {
+        throw new Error('Login failed: The user account is not registered for this role.');
+      }
+
+      // Proceed with successful login if roles match
       const newAuthState = {
         isAuthenticated: true,
         userType: decodedUser.type,
@@ -58,11 +103,9 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setUserType(decodedUser.type);
       setUsername(decodedUser.username);
-      setAuthState(newAuthState); // Though authState itself is not directly used, keep for consistency or future use
+      setAuthState(newAuthState);
       localStorage.setItem('authToken', access_token);
-      localStorage.setItem('authUser', JSON.stringify(decodedUser)); // Store more comprehensive user object
-      // For backward compatibility or if other parts of the app use 'auth', we can keep it or phase it out.
-      // localStorage.setItem('auth', JSON.stringify(newAuthState));
+      localStorage.setItem('authUser', JSON.stringify(decodedUser));
 
 
     } catch (error) {

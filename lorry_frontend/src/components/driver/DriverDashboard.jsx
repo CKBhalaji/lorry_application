@@ -35,9 +35,11 @@ const DriverDashboard = () => {
   // };
 
   return (
-    <div className="DD-driver-dashboard-baground">
-      <div className="DD-driver-dashboard">
-        {/* <header className="DD-dashboard-header">
+    <>
+      <h1 style={{color: 'red', backgroundColor: 'yellow', fontSize: '30px', padding: '20px', position: 'fixed', top: '0', left: '0', zIndex: '9999' }}>DRIVER DASHBOARD TEST RENDER</h1>
+      <div className="DD-driver-dashboard-baground">
+        <div className="DD-driver-dashboard">
+          {/* <header className="DD-dashboard-header">
           <h1>Driver Dashboard</h1>
           <button onClick={handleLogout} className="DD-logout-button">
             Logout

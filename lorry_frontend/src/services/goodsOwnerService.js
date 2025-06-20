@@ -18,14 +18,33 @@ export const postNewLoad = async (loadData) => {
 };
 
 export const fetchMyLoads = async () => {
-  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
-  const response = await fetch(`${API_BASE_URL}/loads`, { // This path is correct for "get all loads for the current owner"
-    headers: {
-      'Authorization': `Bearer ${token}`
+  const token = localStorage.getItem('authToken');
+  console.log('GoodsOwnerService: Attempting to fetch my loads.');
+  console.log('GoodsOwnerService: Using token:', token);
+  const url = `${API_BASE_URL}/loads`;
+  console.log('GoodsOwnerService: Target URL:', url);
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    console.log('GoodsOwnerService: Response status:', response.status);
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('GoodsOwnerService: Error fetching loads. Status:', response.status, 'Body:', errorBody);
+      throw new Error(`Failed to fetch loads. Status: ${response.status}`);
     }
-  });
-  if (!response.ok) throw new Error('Failed to fetch loads');
-  return response.json();
+
+    console.log('GoodsOwnerService: Successfully fetched loads. Preparing to parse JSON.');
+    return response.json();
+  } catch (error) {
+    console.error('GoodsOwnerService: Exception during fetchMyLoads:', error);
+    throw error; // Re-throw to be caught by the component
+  }
 };
 
 export const fetchOwnerLoads = async (ownerId) => {
@@ -56,15 +75,32 @@ export const fetchOwnerLoads = async (ownerId) => {
 };
 
 export const fetchOwnerProfile = async (ownerId) => {
-  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
+  const token = localStorage.getItem('authToken');
+  console.log(`GoodsOwnerService: Attempting to fetch profile for owner ID: ${ownerId}.`);
+  console.log('GoodsOwnerService: Using token:', token);
+  const url = `${API_BASE_URL}/${ownerId}/profile`;
+  console.log('GoodsOwnerService: Target URL:', url);
+
   try {
-    const response = await axios.get(`${API_BASE_URL}/${ownerId}/profile`, {
+    const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+    console.log('GoodsOwnerService: Response status for fetchOwnerProfile:', response.status);
+    console.log('GoodsOwnerService: Successfully fetched owner profile. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching owner profile:', error);
-    throw error;
+    console.error(`GoodsOwnerService: Exception during fetchOwnerProfile for owner ID ${ownerId}:`, error.response ? error.response.data : error.message);
+    if (error.response) {
+      console.error('GoodsOwnerService: Error status:', error.response.status);
+      console.error('GoodsOwnerService: Error body:', error.response.data);
+      throw new Error(`Failed to fetch owner profile. Status: ${error.response.status}`);
+    } else if (error.request) {
+      console.error('GoodsOwnerService: No response received for fetchOwnerProfile:', error.request);
+      throw new Error('Failed to fetch owner profile: No response from server.');
+    } else {
+      console.error('GoodsOwnerService: Error setting up request for fetchOwnerProfile:', error.message);
+      throw new Error(`Failed to fetch owner profile: ${error.message}`);
+    }
   }
 };
 
@@ -83,17 +119,31 @@ export const createOwnerDispute = async (disputeData) => {
 };
 
 export const fetchOwnerDisputes = async () => {
-  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
+  const token = localStorage.getItem('authToken');
+  console.log('GoodsOwnerService: Attempting to fetch owner disputes.');
+  console.log('GoodsOwnerService: Using token:', token);
+  const url = `${API_BASE_URL}/disputes`;
+  console.log('GoodsOwnerService: Target URL for fetchOwnerDisputes:', url);
+
   try {
-    // Old path contained `/owner/disputes`. New path is `${API_BASE_URL}/disputes`
-    const response = await fetch(`${API_BASE_URL}/disputes`,{
+    const response = await fetch(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    if (!response.ok) throw new Error('Failed to fetch owner disputes'); // Added error check for fetch
+
+    console.log('GoodsOwnerService: Response status for fetchOwnerDisputes:', response.status);
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('GoodsOwnerService: Error fetching owner disputes. Status:', response.status, 'Body:', errorBody);
+      throw new Error(`Failed to fetch owner disputes. Status: ${response.status}`);
+    }
+
+    console.log('GoodsOwnerService: Successfully fetched owner disputes. Preparing to parse JSON.');
     return response.json();
   } catch (error) {
-    console.error('Error fetching owner disputes:', error);
-    throw error;
+    // This will catch network errors or errors from response.json()
+    console.error('GoodsOwnerService: Exception during fetchOwnerDisputes:', error);
+    throw error; // Re-throw to be caught by the component
   }
 };
 // Add more owner-related API calls as needed
