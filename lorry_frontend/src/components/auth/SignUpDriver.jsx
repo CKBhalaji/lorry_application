@@ -158,9 +158,9 @@ const SignUpDriver = () => {
         aadharNumber: document.getElementById('driver-aadhar').value,
         email,
         experience: document.getElementById('driver-experience').value,
-        drivingLicenseFileName: '', // File upload handling needed
-        insuranceFileName: '', // File upload handling needed
-        rcCardFileName: '', // File upload handling needed
+        drivingLicenseFileName: document.getElementById('driver-license').files[0]?.name || null, // File upload handling needed
+        insuranceFileName: document.getElementById('driver-insurance').files[0]?.name || null, // File upload handling neededdriver-insurance
+        rcCardFileName: document.getElementById('driver-rc-card').files[0]?.name || null, // File upload handling neededdriver-rc-card
         vehicleType,
         customVehicleType,
         loadCapacityKg: document.getElementById('vehicle-load').value,

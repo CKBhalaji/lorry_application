@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './SignUpGoodsOwner.css';
-import { signUpDriver } from '../../services/authService';
+import { signUpGoodsOwner } from '../../services/authService';
 import { sendOTP, verifyOTP } from '../../services/authService';
 
 const SignUpGoodsOwner = () => {
@@ -121,24 +121,11 @@ const SignUpGoodsOwner = () => {
         paymentMethod,
         password,
       };
-
       try {
-        const response = await fetch('http://localhost:8080/api/signup-goods-owner', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-
-        if (response.ok) {
-          alert('Goods owner signed up successfully!');
-          navigate(-1); // Redirect to the previous page
-        } else if (response.status === 409) {
-          // Handle email already taken
-          alert('Email already taken!');
-        } else {
-          const errorData = await response.json();
-          alert(`Error: ${errorData.error}`);
-        }
+        console.log('Submitting driver signup payload:', formData);
+        await signUpGoodsOwner(formData);
+        alert('Goods owner signed up successfully!');
+        navigate(-1);
       } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to sign up. Please try again.');
