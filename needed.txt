@@ -15,3 +15,6 @@ settings = Settings()
 # Create the UPLOAD_DIRECTORY if it doesn't exist
 if not os.path.exists(settings.UPLOAD_DIRECTORY):
     os.makedirs(settings.UPLOAD_DIRECTORY)
+
+
+testadmin and password with ONEtwo@2003
