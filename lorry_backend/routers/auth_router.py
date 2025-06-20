@@ -98,7 +98,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Inactive user')
 
     access_token = security.create_access_token(data={'sub': user.username}) # 'sub' is standard for subject (username)
-    return {'access_token': access_token, 'token_type': 'bearer'}
+    return {
+        'access_token': access_token,
+        'token_type': 'bearer',
+        'user': {
+            'username': user.username,
+            'type': user.role.value
+        }
+    }
 
 # Stubbed OTP endpoints as per plan
 @router.post('/verification/send')

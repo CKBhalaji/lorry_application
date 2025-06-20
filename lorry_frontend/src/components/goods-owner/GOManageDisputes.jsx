@@ -11,56 +11,6 @@ const ManageDisputes = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
     driverId: '',
-      loadId: 'LOAD456',
-      type: 'Payment',
-      status: 'pending',
-      message: 'The payment amount is incorrect.',
-      createdAt: '2023-10-01T09:00:00Z',
-      resolution: '',
-      resolvedAt: null,
-      attachments: {
-        name: 'invoice.pdf',
-        url: 'https://example.com/invoice.pdf'
-      }
-    },
-    {
-      id: 2,
-      driverId: 'DRV789',
-      loadId: 'LOAD101',
-      type: 'Delivery',
-      status: 'resolved',
-      message: 'Package was damaged during delivery.',
-      createdAt: '2023-09-28T14:30:00Z',
-      resolution: 'Compensation provided.',
-      resolvedAt: '2023-09-29T10:15:00Z',
-      attachments: null
-    },
-    {
-      id: 3,
-      driverId: 'DRV456',
-      loadId: 'LOAD789',
-      type: 'Service',
-      status: 'accepted',
-      message: 'Driver arrived late for pickup.',
-      createdAt: '2023-09-25T11:45:00Z',
-      resolution: 'Driver warned about punctuality.',
-      resolvedAt: '2023-09-26T09:30:00Z',
-      attachments: null
-    },
-    {
-      id: 4,
-      driverId: 'DRV101',
-      loadId: 'LOAD112',
-      type: 'Documentation',
-      status: 'rejected',
-      message: 'Missing delivery confirmation signature.',
-      createdAt: '2023-09-20T16:20:00Z',
-      resolution: 'Signature not required for this delivery.',
-      resolvedAt: '2023-09-21T10:00:00Z',
-      attachments: {
-        name: 'delivery_note.pdf',
-        url: 'https://example.com/delivery_note.pdf'
-      }
     loadId: '',
     disputeType: 'service',
     message: '',

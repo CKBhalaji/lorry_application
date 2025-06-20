@@ -5,59 +5,6 @@ import './DriverManageDisputes.css';
 import { fetchDriverDisputes, createDriverDispute } from '../../services/driverService';
 
 const ManageDisputes = () => {
-  const disputes = [
-    {
-      id: 1,
-      loadId: 'L12345',
-      type: 'Late Delivery',
-      status: 'pending',
-      message: 'The delivery was delayed by 2 hours.',
-      createdAt: '2023-10-01T10:00:00Z',
-      attachments: {
-        url: 'https://example.com/invoice.pdf',
-        name: 'invoice.pdf'
-      }
-    },
-    {
-      id: 2,
-      loadId: 'L67890',
-      type: 'Damaged Goods',
-      status: 'accepted',
-      message: 'The goods were damaged during transit.',
-      createdAt: '2023-09-25T09:30:00Z',
-      resolvedAt: '2023-09-28T14:00:00Z',
-      resolution: 'Compensation of $500 was provided.',
-      attachments: {
-        url: 'https://example.com/damage_report.pdf',
-        name: 'damage_report.pdf'
-      }
-    },
-    {
-      id: 3,
-      loadId: 'L54321',
-      type: 'Incorrect Billing',
-      status: 'rejected',
-      message: 'The invoice amount does not match the agreed rate.',
-      createdAt: '2023-10-05T11:15:00Z',
-      attachments: {
-        url: 'https://example.com/invoice.pdf',
-        name: 'invoice.pdf'
-      }
-    },
-    {
-      id: 4,
-      loadId: 'L54321',
-      type: 'Incorrect Billing',
-      status: 'resolved',
-      message: 'The invoice amount does not match the agreed rate.',
-      createdAt: '2023-10-05T11:15:00Z',
-      attachments: {
-        url: 'https://example.com/invoice.pdf',
-        name: 'invoice.pdf'
-      }
-    }
-  ];
-
   // In the component:
   const [disputes, setDisputesState] = useState([]); // Renamed to avoid conflict with variable name in map
   const [loading, setLoading] = useState(true);
