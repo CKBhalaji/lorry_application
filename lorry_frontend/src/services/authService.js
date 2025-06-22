@@ -1,5 +1,3 @@
-
-
 import axios from 'axios'; // Added import for axios, as it's used later
 
 const BACKEND_BASE_URL = 'http://localhost:8000/api/v1';

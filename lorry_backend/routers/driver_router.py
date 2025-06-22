@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import UploadFile, APIRouter, File, Query, HTTPException, status, Depends
+import os
+from ..config import settings
 from sqlalchemy.orm import Session
 from typing import List
-
 from .. import schemas, models, security, database
 from ..models import UserRole
 
@@ -64,7 +65,7 @@ async def get_driver_bids(driver_id: int, current_user: models.User = Depends(se
     # Permission check: User must be the driver themselves or an admin
     if current_user.role != UserRole.ADMIN and driver_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not authorized to view these bids.')
-
+    
     # Ensure the user being queried is actually a driver, if current user is not admin
     if current_user.role != UserRole.ADMIN:
         queried_user_is_driver = db.query(models.User).filter(models.User.id == driver_id, models.User.role == UserRole.DRIVER).first()
@@ -102,10 +103,10 @@ async def update_driver_profile(driver_id: int, profile_data: schemas.DriverProf
     if not db_profile: # Should be caught by get_current_driver_user if profile doesn't exist
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Driver profile not found.')
 
-    update_data = profile_data.model_dump(exclude_unset=True)
+    update_data = profile_data.model_dump(exclude_unset=True) 
     for key, value in update_data.items():
         setattr(db_profile, key, value)
-
+    
     db.add(db_profile)
     db.commit()
     db.refresh(db_profile)
@@ -124,7 +125,7 @@ async def create_driver_dispute(dispute_data: schemas.DisputeCreate, current_dri
         reported_by_user_id=current_driver.id,
         related_load_id=dispute_data.related_load_id,
         dispute_reason=dispute_data.dispute_reason,
-        status='open'
+        status='open' 
     )
     db.add(db_dispute)
     db.commit()
@@ -136,3 +137,39 @@ async def create_driver_dispute(dispute_data: schemas.DisputeCreate, current_dri
 async def get_driver_disputes(current_driver: models.User = Depends(get_current_driver_user), db: Session = Depends(database.get_db)):
     disputes = db.query(models.Dispute).filter(models.Dispute.reported_by_user_id == current_driver.id).order_by(models.Dispute.created_at.desc()).all()
     return disputes
+
+@router.post('/{driver_id}/upload')
+async def upload_driver_document(
+    driver_id: int,
+    docType: str = Query(..., description="Type of document: driving_license, insurance, rc_card"),
+    file: UploadFile = File(...),
+    db: Session = Depends(database.get_db)
+):
+    # Validate docType
+    allowed_types = {
+        "driving_license": "driving_license_filename",
+        "insurance": "insurance_filename",
+        "rc_card": "rc_card_filename"
+    }
+    if docType not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid docType")
+
+    # Get driver profile
+    profile = db.query(models.DriverProfile).filter(models.DriverProfile.user_id == driver_id).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Driver profile not found")
+
+    # Save file to uploads directory
+    upload_dir = settings.UPLOAD_DIRECTORY if hasattr(settings, "UPLOAD_DIRECTORY") else "uploads"
+    os.makedirs(upload_dir, exist_ok=True)
+    file_location = os.path.join(upload_dir, f"driver_{driver_id}_{docType}_{file.filename}")
+    with open(file_location, "wb") as buffer:
+        buffer.write(await file.read())
+
+    # Update the correct field in the profile
+    setattr(profile, allowed_types[docType], os.path.basename(file_location))
+    db.add(profile)
+    db.commit()
+    db.refresh(profile)
+
+    return {"message": f"{docType} uploaded successfully", "filename": os.path.basename(file_location)}

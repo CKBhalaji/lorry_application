@@ -11,7 +11,7 @@ import SignUpGoodsOwner from './components/auth/SignUpGoodsOwner';
 import DriverDashboard from './components/driver/DriverDashboard';
 import GoodsOwnerDashboard from './components/goods-owner/GODashboard';
 import AdminDashboard from './components/admin/Admin_Dashboard';
-// import ProtectedRoute from './components/common/ProtectedRoute';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import AboutUs from './components/common/AboutUs';
 import Contact from './components/common/Contact';
 import PrivacyPolicy from './components/common/PrivacyPolicy';
@@ -33,9 +33,9 @@ function App() {
               <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/signup-driver" element={<SignUpDriver />} />
               <Route path="/signup-goods-owner" element={<SignUpGoodsOwner />} />
-              <Route path="/driver/*" element={<DriverDashboard />} />
-              <Route path="/goods-owner/*" element={<GoodsOwnerDashboard />} />
-              <Route path="/admin/*" element={<AdminDashboard />} />
+              <Route path="/driver/*" element={<ProtectedRoute><DriverDashboard /></ProtectedRoute>} />
+              <Route path="/goods-owner/*" element={<ProtectedRoute><GoodsOwnerDashboard /></ProtectedRoute>} />
+              <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .database import engine, Base # Import Base and engine
+from .database import engine, Base 
 from .routers import auth_router, admin_router, driver_router, goods_owner_router
 from .config import settings # For upload directory or other settings if needed
 

@@ -83,3 +83,22 @@ export const fetchDriverDisputes = async () => {
   }
 };
 // Add more driver-related API calls as needed
+export const uploadDriverDocument = async (driverId, file, docType) => {
+  const token = localStorage.getItem('driverToken');;
+  const formData = new FormData();
+  formData.append('file', file);
+
+  // The backend endpoint and field name may need to be adjusted to your API
+  // Example: /api/v1/drivers/{driverId}/upload?docType=driving_license
+  const response = await axios.post(
+    `${API_BASE_URL}/${driverId}/upload?docType=${docType}`,
+    formData,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+  );
+  return response.data;
+};
