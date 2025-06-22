@@ -35,8 +35,8 @@ async def get_available_loads_for_driver(db: Session = Depends(database.get_db),
     return available_loads
 
 # --- Bid functionalities for Drivers ---
-@router.post('/bids', response_model=schemas.BidResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_driver_user)])
-async def place_bid_on_load(bid_data: schemas.BidCreate, current_driver: models.User = Depends(get_current_driver_user), db: Session = Depends(database.get_db)):
+@router.post('/bids', response_model=schemas.BidResponse, status_code=status.HTTP_201_CREATED)
+async def place_bid_on_load(bid_data: schemas.BidCreate, db: Session = Depends(database.get_db)):
     load_exists = db.query(models.Load).filter(models.Load.id == bid_data.load_id).first()
     if not load_exists:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Load with id {bid_data.load_id} not found.')
@@ -44,17 +44,21 @@ async def place_bid_on_load(bid_data: schemas.BidCreate, current_driver: models.
          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Load is not available for bidding.')
 
     # Check if driver already bid on this load - optional, depends on rules
-    existing_bid = db.query(models.Bid).filter(models.Bid.load_id == bid_data.load_id, models.Bid.driver_id == current_driver.id).first()
+    existing_bid = db.query(models.Bid).filter(models.Bid.load_id == bid_data.load_id, models.Bid.driver_id == bid_data.driver_id).first()
     if existing_bid:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='You have already placed a bid on this load.')
 
     db_bid = models.Bid(
         load_id=bid_data.load_id,
-        driver_id=current_driver.id,
+        driver_id=bid_data.driver_id,
         amount=bid_data.amount,
         bid_status='pending' # Initial status
     )
     db.add(db_bid)
+    # Update the load's current_highest_bid if this bid is higher
+    if load_exists.current_highest_bid is None or bid_data.amount > load_exists.current_highest_bid:
+        load_exists.current_highest_bid = bid_data.amount
+        db.add(load_exists)
     db.commit()
     db.refresh(db_bid)
     return db_bid

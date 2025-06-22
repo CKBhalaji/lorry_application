@@ -3,87 +3,95 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminManagement.css';
 import { fetchAdmins, deleteAdmin } from '../../services/adminService';
-import AddAdmin from './AddAdmin';
-import EditModal from './EditModal';
+import AddAdmin from './AddAdmin'; // Assuming this component is used elsewhere or via routing
+import EditModal from './EditModal'; // Assuming this is a functional modal component
 import { useAuth } from '../../context/AuthContext';
 
 const AdminManagement = () => {
-  const admins = [
-    {
-      id: 1,
-      name: 'John Doe',
-      profile: 'Admin',
-      email: 'john.doe@example.com',
-      phone: '123-456-7890',
-      createdAt: '2023-01-15T09:00:00',
-      isCurrentUser: false
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      profile: 'Super admin',
-      email: 'jane.smith@example.com',
-      phone: '987-654-3210',
-      createdAt: '2023-03-20T14:30:00',
-      isCurrentUser: true
-    },
-    {
-      id: 3,
-      name: 'Michael Brown',
-      profile: 'Manager',
-      email: 'michael.brown@example.com',
-      phone: '555-123-4567',
-      createdAt: '2023-05-10T11:15:00',
-      isCurrentUser: false
-    }
-  ];
-  // const [admins, setAdmins] = useState([]);
+  const [adminsData, setAdminsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const { currentUser } = useAuth();
-  const isSuperAdmin = currentUser && currentUser.role === 'superadmin';
+  const { authUser } = useAuth(); // Changed from currentUser to authUser for consistency with other components
+  // Assuming authUser contains role, and we might need the current admin's ID for 'isCurrentUser' logic
+  const currentAdminId = authUser ? authUser.id : null;
+  const isSuperAdmin = authUser && authUser.type === 'superadmin'; // Assuming 'type' field holds role
 
   useEffect(() => {
     const loadAdmins = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        console.log('AdminManagement: Fetching admin accounts.');
         const data = await fetchAdmins();
-        setAdmins(data);
-      } catch (error) {
-        console.error('Error fetching admins:', error);
+        console.log('AdminManagement: Successfully fetched data:', data);
+        if (!Array.isArray(data)) {
+          console.error('AdminManagement: Data is not an array!', data);
+          throw new Error('Received invalid data format from server for admins.');
+        }
+        // Add isCurrentUser property based on fetched admin ID and current logged-in admin ID
+        const processedData = data.map(admin => ({
+          ...admin,
+          isCurrentUser: admin.id === currentAdminId
+        }));
+        setAdminsData(processedData || []);
+      } catch (err) {
+        console.error('AdminManagement: Detailed error fetching admins:', err);
+        setError(err.message || 'Failed to fetch admin accounts. Please check console for details.');
+        setAdminsData([]);
       } finally {
         setLoading(false);
       }
     };
     loadAdmins();
-  }, []);
+  }, [currentAdminId]); // Depend on currentAdminId if needed for isCurrentUser logic
 
   const handleDelete = async (adminId) => {
     if (window.confirm('Are you sure you want to delete this admin?')) {
       try {
+        console.log(`AdminManagement: Deleting admin ID: ${adminId}`);
         await deleteAdmin(adminId);
-        setAdmins(admins.filter(admin => admin.id !== adminId));
-      } catch (error) {
-        console.error('Error deleting admin:', error);
+        setAdminsData(currentAdmins => currentAdmins.filter(admin => admin.id !== adminId));
+        console.log(`AdminManagement: Admin ID: ${adminId} deleted successfully from UI.`);
+      } catch (err) {
+        console.error('AdminManagement: Error deleting admin:', err);
+        setError(err.message || `Failed to delete admin ${adminId}.`);
       }
     }
   };
 
   const handleEdit = (admin) => {
-    setSelectedAdmin(admin);
+    setSelectedAdmin(admin); // admin object to edit
     setShowEditModal(true);
   };
 
+  const handleSaveEdit = async (updatedAdmin) => {
+    // Placeholder for actual save logic (API call)
+    try {
+      console.log('AdminManagement: Saving admin data (API call to be implemented):', updatedAdmin);
+      // await updateAdminProfile(updatedAdmin.id, updatedAdmin); // Example service call
+      setAdminsData(prevAdmins => prevAdmins.map(admin => admin.id === updatedAdmin.id ? updatedAdmin : admin));
+      setShowEditModal(false);
+      setSelectedAdmin(null);
+      alert('Admin profile updated successfully (locally).');
+    } catch (err) {
+      console.error('AdminManagement: Error saving admin profile:', err);
+      setError(err.message || `Failed to update admin ${updatedAdmin.id}.`);
+    }
+  };
 
-  const filteredAdmins = Array.isArray(admins) ? admins.filter(admin =>
-    admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    admin.email.toLowerCase().includes(searchTerm.toLowerCase())
-  ) : [];
 
-  if (loading) return <div className="ADM-loading">Loading admins...</div>;
+  const filteredAdmins = adminsData.filter(admin =>
+    (admin.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (admin.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) return <div className="ADM-loading">Loading admin accounts...</div>;
+  if (error) return <div className="ADM-error-message">{error}</div>;
 
   return (
     <div className="ADM-admin-management">
@@ -93,17 +101,19 @@ const AdminManagement = () => {
           <div className="ADM-search-box">
             <input
               type="text"
-              placeholder="Search admins..."
+              placeholder="Search admins by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button 
-            className="ADM-add-admin-btn"
-            onClick={() => navigate('?tab=addAdmin')}
-          >
-            Add New Admin
-          </button>
+          {isSuperAdmin && ( // Only superadmin can add new admins
+            <button
+              className="ADM-add-admin-btn"
+              onClick={() => navigate('/admin/dashboard?tab=add-admin')} // Ensure this route is handled in AdminDashboard
+            >
+              Add New Admin
+            </button>
+          )}
         </div>
       </div>
       <div className="ADM-table-container">
@@ -112,7 +122,7 @@ const AdminManagement = () => {
             <tr>
               <th>ID</th>
               <th>Name</th>
-              <th>Profile</th>
+              <th>Profile/Role</th>
               <th>Email</th>
               <th>Phone</th>
               <th>Joined On</th>
@@ -120,96 +130,79 @@ const AdminManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAdmins.length === 0 ? (
+            {!loading && !error && filteredAdmins.length === 0 ? (
               <tr>
-                <td colSpan="7" className="ADM-no-results">No admins found</td>
+                <td colSpan="7" className="ADM-no-results">No admin accounts found.</td>
               </tr>
             ) : (
-              filteredAdmins.map(admin => (
-                <tr key={admin.id}>
-                  <td>{admin.id}</td>
-                  <td>{admin.name}</td>
-                  <td>{admin.profile}</td>
-                  <td>{admin.email}</td>
-                  <td>{admin.phone}</td>
-                  <td>
-                    {new Date(admin.createdAt).toLocaleDateString()}
-                  </td>
-                  <td>
-                    <button
-                      className="ADM-edit-btn"
-                      onClick={() => handleEdit(admin)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="ADM-delete-btn"
-                      onClick={() => handleDelete(admin.id)}
-                      disabled={admin.isCurrentUser}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
+              filteredAdmins.map((admin, index) => {
+                try {
+                  if (!admin || typeof admin !== 'object') {
+                    console.error(`AdminManagement: Invalid admin item at index ${index}:`, admin);
+                    return (
+                      <tr key={`error-${index}`} className="error-row">
+                        <td colSpan="7">Invalid admin data</td>
+                      </tr>
+                    );
+                  }
+                  const id = admin.id || `missing-id-${index}`;
+                  const name = admin.name || 'N/A';
+                  const profileRole = admin.profile || admin.type || 'N/A'; // Use 'profile' or 'type' for role
+                  const email = admin.email || 'N/A';
+                  const phone = admin.phone || 'N/A';
+                  const createdAtStr = admin.createdAt && !isNaN(new Date(admin.createdAt))
+                                     ? new Date(admin.createdAt).toLocaleDateString()
+                                     : 'Invalid Date';
+
+                  return (
+                    <tr key={id}>
+                      <td>{id}</td>
+                      <td>{name}</td>
+                      <td>{profileRole}</td>
+                      <td>{email}</td>
+                      <td>{phone}</td>
+                      <td>{createdAtStr}</td>
+                      <td>
+                        {isSuperAdmin && ( // Only superadmin can edit/delete
+                          <>
+                            <button
+                              className="ADM-edit-btn"
+                              onClick={() => handleEdit(admin)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="ADM-delete-btn"
+                              onClick={() => handleDelete(id)}
+                              disabled={admin.isCurrentUser} // Prevent deleting self
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                } catch (cardError) {
+                  console.error(`AdminManagement: Error rendering admin row for admin at index ${index}:`, admin, cardError);
+                  return (
+                    <tr key={admin && admin.id ? `error-${admin.id}` : `error-idx-${index}`} className="error-row">
+                      <td colSpan="7">Error displaying this admin account.</td>
+                    </tr>
+                  );
+                }
+              })
             )}
           </tbody>
         </table>
       </div>
-      {showEditModal && (
+      {showEditModal && selectedAdmin && (
         <EditModal
           admin={selectedAdmin}
-          onClose={() => setShowEditModal(false)}
-          onSave={(updatedAdmin) => {
-            // Handle save logic
-          }}
-        >
-          <div className="ADM-edit-modal-overlay">
-            <div className="ADM-edit-modal">
-              <h3>Edit Admin Profile</h3>
-              <form>
-                <div className="ADM-form-group">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    value={selectedAdmin.name || ''}
-                    onChange={(e) => setSelectedAdmin({ ...selectedAdmin, name: e.target.value })}
-                  />
-                </div>
-                {isSuperAdmin && (
-                  <div className="ADM-form-group">
-                    <label>Profile</label>
-                    <input
-                      type="text"
-                      value={selectedAdmin.profile || ''}
-                      onChange={(e) => setSelectedAdmin({ ...selectedAdmin, profile: e.target.value })}
-                    />
-                  </div>
-                )}
-                <div className="ADM-form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    value={selectedAdmin.email || ''}
-                    onChange={(e) => setSelectedAdmin({ ...selectedAdmin, email: e.target.value })}
-                  />
-                </div>
-                <div className="ADM-form-group">
-                  <label>Phone Number</label>
-                  <input
-                    type="tel"
-                    value={selectedAdmin.phone || ''}
-                    onChange={(e) => setSelectedAdmin({ ...selectedAdmin, phone: e.target.value })}
-                  />
-                </div>
-                <div className="ADM-modal-actions">
-                  <button onClick={() => setShowEditModal(false)}>Cancel</button>
-                  <button type="submit">Save</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </EditModal>
+          onClose={() => { setShowEditModal(false); setSelectedAdmin(null); }}
+          onSave={handleSaveEdit} // Pass the save handler
+          isSuperAdmin={isSuperAdmin} // Pass isSuperAdmin to modal for conditional fields
+        />
       )}
     </div>
   );

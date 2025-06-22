@@ -5,101 +5,36 @@ import './GOManageDisputes.css';
 import { fetchOwnerDisputes, createOwnerDispute } from '../../services/goodsOwnerService';
 
 const ManageDisputes = () => {
-  const [disputes, setDisputes] = useState([
-    {
-      id: 1,
-      driverId: 'DRV123',
-      loadId: 'LOAD456',
-      type: 'Payment',
-      status: 'pending',
-      message: 'The payment amount is incorrect.',
-      createdAt: '2023-10-01T09:00:00Z',
-      resolution: '',
-      resolvedAt: null,
-      attachments: {
-        name: 'invoice.pdf',
-        url: 'https://example.com/invoice.pdf'
-      }
-    },
-    {
-      id: 2,
-      driverId: 'DRV789',
-      loadId: 'LOAD101',
-      type: 'Delivery',
-      status: 'resolved',
-      message: 'Package was damaged during delivery.',
-      createdAt: '2023-09-28T14:30:00Z',
-      resolution: 'Compensation provided.',
-      resolvedAt: '2023-09-29T10:15:00Z',
-      attachments: null
-    },
-    {
-      id: 3,
-      driverId: 'DRV456',
-      loadId: 'LOAD789',
-      type: 'Service',
-      status: 'accepted',
-      message: 'Driver arrived late for pickup.',
-      createdAt: '2023-09-25T11:45:00Z',
-      resolution: 'Driver warned about punctuality.',
-      resolvedAt: '2023-09-26T09:30:00Z',
-      attachments: null
-    },
-    {
-      id: 4,
-      driverId: 'DRV101',
-      loadId: 'LOAD112',
-      type: 'Documentation',
-      status: 'rejected',
-      message: 'Missing delivery confirmation signature.',
-      createdAt: '2023-09-20T16:20:00Z',
-      resolution: 'Signature not required for this delivery.',
-      resolvedAt: '2023-09-21T10:00:00Z',
-      attachments: {
-        name: 'delivery_note.pdf',
-        url: 'https://example.com/delivery_note.pdf'
-      }
-    }
-  ]);
-
-  // ... existing code ...
-  // const [disputes, setDisputes] = useState([]);
+  const [disputesData, setDisputesData] = useState([]); // Renamed to avoid conflict
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
     driverId: '',
     loadId: '',
     disputeType: 'service',
-    message: '',
-    attachments: null
+    message: ''
   });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const loadDisputes = async () => {
-  //     try {
-  //       const data = await fetchOwnerDisputes();
-  //       setDisputes(data);
-  //     } catch (error) {
-  //       console.error('Error fetching disputes:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   loadDisputes();
-  // }, []);
-
   useEffect(() => {
     const loadDisputes = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        console.log('GOManageDisputes: Fetching owner disputes.');
         const data = await fetchOwnerDisputes();
-        // Only set data if it exists and is an array
-        if (Array.isArray(data) && data.length) {
-          setDisputes(data);
+        console.log('GOManageDisputes: Successfully fetched data:', data);
+        if (!Array.isArray(data)) {
+          console.error('GOManageDisputes: Data is not an array!', data);
+          throw new Error('Received invalid data format from server for disputes.');
         }
-      } catch (error) {
-        console.error('Error fetching disputes:', error);
+        setDisputesData(data || []);
+      } catch (err) {
+        console.error('GOManageDisputes: Detailed error fetching disputes:', err);
+        setError(err.message || 'Failed to fetch disputes. Please check console for details.');
+        setDisputesData([]);
       } finally {
         setLoading(false);
       }
@@ -115,12 +50,7 @@ const ManageDisputes = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      attachments: e.target.files[0]
-    }));
-  };
+  // Attachment logic removed
 
   const validateForm = () => {
     const newErrors = {};
@@ -138,15 +68,20 @@ const ManageDisputes = () => {
     if (!validateForm()) return;
 
     try {
-      const newDispute = await createOwnerDispute(formData);
-      setDisputes([newDispute, ...disputes]);
-      setShowCreateForm(false);
-      setFormData({
+      const payload = {
+        ...formData,
+        driverId: formData.driverId ? parseInt(formData.driverId, 10) : undefined,
+        loadId: formData.loadId ? parseInt(formData.loadId, 10) : undefined
+      };
+      const newDispute = await createOwnerDispute(payload); // Service call
+      setDisputesData(prevDisputes => [newDispute, ...prevDisputes]); // Optimistic update
+      setShowCreateForm(false); // Hide form
+      setFormData({ // Reset form
         driverId: '',
         loadId: '',
         disputeType: 'service',
         message: '',
-        attachments: null
+        // attachments: null
       });
       alert('Dispute created successfully!');
     } catch (error) {
@@ -170,6 +105,7 @@ const ManageDisputes = () => {
   };
 
   if (loading) return <div className="GOMD-loading">Loading disputes...</div>;
+  if (error) return <div className="GOMD-error-message">{error}</div>;
 
   return (
     <div className="GOMD-manage-disputes-owner">
@@ -242,15 +178,7 @@ const ManageDisputes = () => {
               {errors.message && <span className="GOMD-error-message">{errors.message}</span>}
             </div>
 
-            <div className="GOMD-form-group">
-              <label>Attachment (Optional)</label>
-              <input
-                type="file"
-                onChange={handleFileChange}
-                accept="image/*,.pdf,.doc,.docx"
-              />
-              <small>Upload supporting documents (max 5MB)</small>
-            </div>
+            {/* Attachment field removed */}
 
             <div className="GOMD-form-actions">
               <button
@@ -265,49 +193,66 @@ const ManageDisputes = () => {
       )}
 
       <div className="GOMD-disputes-list">
-        {/* {Array.isArray(disputes) ? ( */}
-        {disputes && disputes.length > 0 ? (
-          disputes.length === 0 ? (
-            <div className="GOMD-no-disputes">
-              {showCreateForm ? '' : 'You have no disputes yet.'}
-            </div>
-          ) : (
-            disputes.map(dispute => (
-              <div key={dispute.id} className="GOMD-dispute-card">
-                <div className="GOMD-dispute-header">
-                  <h3>Dispute #{dispute.id}</h3>
-                  {getStatusBadge(dispute.status)}
-                </div>
-                <div className="GOMD-dispute-details">
-                  <p><strong>Driver ID:</strong> {dispute.driverId}</p>
-                  <p><strong>Load ID:</strong> {dispute.loadId}</p>
-                  <p><strong>Type:</strong> {dispute.type}</p>
-                  <p><strong>Date:</strong> {new Date(dispute.createdAt).toLocaleDateString()}</p>
-                </div>
-                <div className="GOMD-dispute-message">
-                  <p><strong>Message:</strong> {dispute.message}</p>
-                </div>
-                {dispute.resolution && (
-                  <div className="GOMD-dispute-resolution">
-                    <p><strong>Resolution:</strong> {dispute.resolution}</p>
-                    {dispute.resolvedAt && (
-                      <p><strong>Resolved on:</strong> {new Date(dispute.resolvedAt).toLocaleDateString()}</p>
-                    )}
-                  </div>
-                )}
-                {dispute.attachments && (
-                  <div className="GOMD-dispute-attachments">
-                    <strong>Attachments:</strong>
-                    <a href={dispute.attachments.url} target="_blank" rel="noopener noreferrer">
-                      {dispute.attachments.name}
-                    </a>
-                  </div>
-                )}
-              </div>
-            ))
-          )
+        {!loading && !error && disputesData.length === 0 ? (
+          <div className="GOMD-no-disputes">
+            {showCreateForm ? '' : 'You have no disputes yet.'}
+          </div>
         ) : (
-          <div className="GOMD-no-disputes">Loading disputes...</div>
+          disputesData.map((dispute, index) => {
+            try {
+              if (!dispute || typeof dispute !== 'object') {
+                console.error(`GOManageDisputes: Invalid dispute item at index ${index}:`, dispute);
+                return <div key={index} className="GOMD-dispute-card error">Invalid dispute data</div>;
+              }
+
+              const id = dispute.id || `missing-id-${index}`;
+              const driverId = dispute.driverId || 'N/A';
+              const loadId = dispute.loadId || 'N/A';
+              const type = dispute.disputeType || 'N/A';
+              const status = dispute.status || 'N/A';
+              const message = dispute.message || 'No message provided.';
+              const createdAtStr = dispute.created_at && !isNaN(new Date(dispute.created_at)) ? new Date(dispute.created_at).toLocaleDateString() : 'Invalid Date';
+              const resolution = dispute.resolution_details || null;
+              const attachments = dispute.attachments || null;
+
+              return (
+                <div key={id} className="GOMD-dispute-card">
+                  <div className="GOMD-dispute-header">
+                    <h3>Dispute #{id}</h3>
+                    {getStatusBadge(status)}
+                  </div>
+                  <div className="GOMD-dispute-details">
+                    <p><strong>Driver ID:</strong> {driverId}</p>
+                    <p><strong>Load ID:</strong> {loadId}</p>
+                    <p><strong>Type:</strong> {type}</p>
+                    <p><strong>Date:</strong> {createdAtStr}</p>
+                  </div>
+                  <div className="GOMD-dispute-message">
+                    <p><strong>Message:</strong> {message}</p>
+                  </div>
+                  {resolution && (
+                    <div className="GOMD-dispute-resolution">
+                      <p><strong>Resolution:</strong> {resolution}</p>
+                      {resolvedAtStr && (
+                        <p><strong>Resolved on:</strong> {resolvedAtStr}</p>
+                      )}
+                    </div>
+                  )}
+                  {attachments && attachments.url && attachments.name && ( // Added check for url and name
+                    <div className="GOMD-dispute-attachments">
+                      <strong>Attachments:</strong>
+                      <a href={attachments.url} target="_blank" rel="noopener noreferrer">
+                        {attachments.name}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              );
+            } catch (cardError) {
+              console.error(`GOManageDisputes: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
+              return <div key={dispute && dispute.id ? dispute.id : index} className="GOMD-dispute-card error">Error displaying this dispute.</div>;
+            }
+          })
         )}
       </div>
     </div>

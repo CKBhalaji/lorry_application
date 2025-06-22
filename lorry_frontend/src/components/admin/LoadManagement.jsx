@@ -4,55 +4,32 @@ import './LoadManagement.css';
 import { fetchAllLoads, updateLoadStatus } from '../../services/adminService';
 
 const LoadManagement = () => {
-  // const [loads, setLoads] = useState([]);
-  const loads = [
-    {
-      id: 1,
-      goodsType: 'Electronics',
-      pickupLocation: 'New York',
-      deliveryLocation: 'Los Angeles',
-      ownerName: 'John Doe',
-      bidCount: 3,
-      status: 'pending'
-    },
-    {
-      id: 2,
-      goodsType: 'Furniture',
-      pickupLocation: 'Chicago',
-      deliveryLocation: 'Houston',
-      ownerName: 'Jane Smith',
-      bidCount: 5,
-      status: 'active'
-    },
-    {
-      id: 3,
-      goodsType: 'Clothing',
-      pickupLocation: 'Miami',
-      deliveryLocation: 'Seattle',
-      ownerName: 'Mike Johnson',
-      bidCount: 2,
-      status: 'completed'
-    },
-    {
-      id: 4,
-      goodsType: 'Clothing',
-      pickupLocation: 'Miami',
-      deliveryLocation: 'Seattle',
-      ownerName: 'Mike Johnson',
-      bidCount: 2,
-      status: 'cancelled'
-    }
-  ];
+  const [allLoadsData, setAllLoadsData] = useState([]); // Stores all fetched loads
+  const [filteredLoads, setFilteredLoads] = useState([]); // Stores loads to be displayed after filtering
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [error, setError] = useState(null);
+  // const [filter, setFilter] = useState('all'); // This state seems unused, selectedStatus in handleFilter is used
+  const [selectedLoad, setSelectedLoad] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        console.log('LoadManagement: Fetching all loads.');
         const data = await fetchAllLoads();
-        setLoads(data);
-      } catch (error) {
-        console.error('Error fetching loads:', error);
+        console.log('LoadManagement: Successfully fetched data:', data);
+        if (!Array.isArray(data)) {
+          console.error('LoadManagement: Data is not an array!', data);
+          throw new Error('Received invalid data format from server for loads.');
+        }
+        setAllLoadsData(data || []);
+        setFilteredLoads(data || []); // Initialize filtered loads with all data
+      } catch (err) {
+        console.error('LoadManagement: Detailed error fetching loads:', err);
+        setError(err.message || 'Failed to fetch loads. Please check console for details.');
+        setAllLoadsData([]);
+        setFilteredLoads([]);
       } finally {
         setLoading(false);
       }
@@ -62,37 +39,43 @@ const LoadManagement = () => {
 
   const handleStatusChange = async (loadId, newStatus) => {
     try {
+      console.log(`LoadManagement: Updating status for load ID ${loadId} to ${newStatus}.`);
       await updateLoadStatus(loadId, newStatus);
-      setLoads(loads.map(load =>
+      // Update local state after successful API call
+      const updatedLoads = allLoadsData.map(load =>
         load.id === loadId ? { ...load, status: newStatus } : load
-      ));
-    } catch (error) {
-      console.error('Error updating load status:', error);
+      );
+      setAllLoadsData(updatedLoads);
+      // Re-apply current filter to the updated list
+      // This assumes a filter state or re-calls handleFilter with current filter criteria
+      // For simplicity, if a filter is active, we might need to re-filter here.
+      // Or, if handleFilter uses a state for selectedStatus, it will be simpler.
+      // Let's assume selectedStatus is available via a state or re-evaluate filter
+      const currentFilterValue = document.querySelector('.LM-filter-controls select').value; // Example to get current filter
+      handleFilter(currentFilterValue, updatedLoads); // Pass updatedLoads to filter on
+      console.log(`LoadManagement: Status updated for load ID ${loadId}.`);
+    } catch (err) {
+      console.error('LoadManagement: Error updating load status:', err);
+      setError(err.message || `Failed to update status for load ${loadId}.`);
     }
   };
 
-  // const filteredLoads = Array.isArray(loads) ? (filter === 'all'
-  //   ? loads
-  //   : loads.filter(load => load.status === filter)) : [];
-
-  const [filteredLoads, setFilteredLoads] = useState(loads);
-
-  const handleFilter = (selectedStatus) => {
+  const handleFilter = (selectedStatus, sourceLoads = allLoadsData) => {
+    // setFilter(selectedStatus); // if filter state was used
     if (selectedStatus === "all") {
-      setFilteredLoads(loads);
+      setFilteredLoads(sourceLoads);
     } else {
-      const filtered = loads.filter(load => load.status.toLowerCase() === selectedStatus.toLowerCase());
+      const filtered = sourceLoads.filter(load => load.status && load.status.toLowerCase() === selectedStatus.toLowerCase());
       setFilteredLoads(filtered);
     }
   };
-
-  const[selectedLoad, setSelectedLoad] = useState(null);
 
   const handleViewDetails = (load) => {
     setSelectedLoad(load);
   };
 
   if (loading) return <div className="LM-loading">Loading loads...</div>;
+  if (error) return <div className="LM-error-message">{error}</div>;
 
   return (
     <div className="LM-load-management">
@@ -100,7 +83,7 @@ const LoadManagement = () => {
         <h2>Load Management</h2>
         <div className="LM-filter-controls">
           <label>Filter by status:</label>
-          <select onChange={(e) => handleFilter(e.target.value)}>
+          <select onChange={(e) => handleFilter(e.target.value, allLoadsData)}>
             <option value="all">All</option>
             <option value="pending">Pending</option>
             <option value="active">Active</option>
@@ -113,17 +96,19 @@ const LoadManagement = () => {
       {selectedLoad && (
         <div className="LM-load-details-card">
           <h3>Load Details</h3>
-          <p><strong>ID:</strong> {selectedLoad.id}</p>
-          <p><strong>Goods Type:</strong> {selectedLoad.goodsType}</p>
-          <p><strong>Route:</strong> {selectedLoad.pickupLocation} to {selectedLoad.deliveryLocation}</p>
-          <p><strong>Owner:</strong> {selectedLoad.ownerName}</p>
-          <p><strong>Status:</strong> {selectedLoad.status}</p>
+          <p><strong>ID:</strong> {selectedLoad.id || 'N/A'}</p>
+          <p><strong>Goods Type:</strong> {selectedLoad.goodsType || 'N/A'}</p>
+          <p><strong>Route:</strong> {selectedLoad.pickupLocation || 'N/A'} to {selectedLoad.deliveryLocation || 'N/A'}</p>
+          <p><strong>Owner:</strong> {selectedLoad.ownerName || 'N/A'}</p>
+          <p><strong>Status:</strong> {selectedLoad.status || 'N/A'}</p>
+          {/* Add more details if available in selectedLoad */}
+          <p><strong>Bids:</strong> {selectedLoad.bidCount !== undefined ? selectedLoad.bidCount : 'N/A'}</p>
           <button onClick={() => setSelectedLoad(null)}>Close</button>
         </div>
       )}
 
-      {filteredLoads.length === 0 ? (
-        <div className="LM-no-results">No loads found</div>
+      {!loading && !error && filteredLoads.length === 0 ? (
+        <div className="LM-no-results">No loads found for the selected filter.</div>
       ) : (
         <div className="LM-table-container">
           <table className="LM-loads-table">
@@ -139,23 +124,57 @@ const LoadManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredLoads.map(load => (
-                <tr key={load.id} onClick={() => handleViewDetails(load)}>
-                  <td>{load.id}</td>
-                  <td>{load.goodsType}</td>
-                  <td>{load.pickupLocation} → {load.deliveryLocation}</td>
-                  <td>{load.ownerName}</td>
-                  <td>{load.bidCount}</td>
-                  <td>
-                    <span className={`LM-status-badge ${load.status}`}>
-                      {load.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button className="LM-view-btn">Details</button>
-                  </td>
-                </tr>
-              ))}
+              {filteredLoads.map((load, index) => {
+                try {
+                  if (!load || typeof load !== 'object') {
+                    console.error(`LoadManagement: Invalid load item at index ${index}:`, load);
+                    return (
+                      <tr key={`error-${index}`} className="error-row">
+                        <td colSpan="7">Invalid load data</td>
+                      </tr>
+                    );
+                  }
+                  const id = load.id || `missing-id-${index}`;
+                  const goodsType = load.goodsType || 'N/A';
+                  const pickupLocation = load.pickupLocation || 'N/A';
+                  const deliveryLocation = load.deliveryLocation || 'N/A';
+                  const ownerName = load.ownerName || 'N/A';
+                  const bidCount = load.bidCount !== undefined ? load.bidCount : 'N/A';
+                  const status = load.status || 'N/A';
+
+                  return (
+                    <tr key={id} >
+                      <td onClick={() => handleViewDetails(load)}>{id}</td>
+                      <td onClick={() => handleViewDetails(load)}>{goodsType}</td>
+                      <td onClick={() => handleViewDetails(load)}>{pickupLocation} → {deliveryLocation}</td>
+                      <td onClick={() => handleViewDetails(load)}>{ownerName}</td>
+                      <td onClick={() => handleViewDetails(load)}>{bidCount}</td>
+                      <td>
+                        <select
+                          value={status}
+                          onChange={(e) => handleStatusChange(id, e.target.value)}
+                          className={`LM-status-select LM-status-badge ${status.toLowerCase()}`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="active">Active</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                      <td>
+                        <button className="LM-view-btn" onClick={() => handleViewDetails(load)}>Details</button>
+                      </td>
+                    </tr>
+                  );
+                } catch (cardError) {
+                  console.error(`LoadManagement: Error rendering load row for load at index ${index}:`, load, cardError);
+                  return (
+                    <tr key={load && load.id ? `error-${load.id}` : `error-idx-${index}`} className="error-row">
+                      <td colSpan="7">Error displaying this load.</td>
+                    </tr>
+                  );
+                }
+              })}
             </tbody>
           </table>
         </div>

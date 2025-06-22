@@ -33,9 +33,17 @@ function App() {
               <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/signup-driver" element={<SignUpDriver />} />
               <Route path="/signup-goods-owner" element={<SignUpGoodsOwner />} />
-              <Route path="/driver/*" element={<ProtectedRoute><DriverDashboard /></ProtectedRoute>} />
-              <Route path="/goods-owner/*" element={<ProtectedRoute><GoodsOwnerDashboard /></ProtectedRoute>} />
-              <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/driver/*" element={<ProtectedRoute allowedUserTypes={['driver']} />}> 
+                <Route path="dashboard" element={<DriverDashboard />} />
+                <Route path="" element={<DriverDashboard />} />
+              </Route>
+              <Route path="/goods-owner/*" element={<ProtectedRoute allowedUserTypes={['goodsOwner']} />}> 
+                <Route path="dashboard" element={<GoodsOwnerDashboard />} />
+                <Route path="" element={<GoodsOwnerDashboard />} />
+              </Route>
+              <Route path="/admin/*" element={<ProtectedRoute allowedUserTypes={['admin']} />}> 
+                <Route path="" element={<AdminDashboard />} />
+              </Route>
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

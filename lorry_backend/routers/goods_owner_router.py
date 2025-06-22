@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 from typing import List
 
 from .. import schemas, models, security, database
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
 from ..models import UserRole # For role checking
 
 router = APIRouter(
@@ -31,8 +34,7 @@ async def get_current_goods_owner_user(current_user: models.User = Depends(secur
 async def post_new_load_by_owner(load_data: schemas.LoadCreate, current_owner: models.User = Depends(get_current_goods_owner_user), db: Session = Depends(database.get_db)):
     db_load = models.Load(
         **(load_data.model_dump() if hasattr(load_data, 'model_dump') else load_data.dict()), # Pydantic v1/v2 compat
-        owner_id=current_owner.id,
-        status='pending' # Initial status
+        owner_id=current_owner.id
     )
     db.add(db_load)
     db.commit()
@@ -43,6 +45,22 @@ async def post_new_load_by_owner(load_data: schemas.LoadCreate, current_owner: m
 async def get_owner_loads(current_owner: models.User = Depends(get_current_goods_owner_user), db: Session = Depends(database.get_db), skip: int = 0, limit: int = 100):
     loads = db.query(models.Load).filter(models.Load.owner_id == current_owner.id).order_by(models.Load.posted_date.desc()).offset(skip).limit(limit).all()
     return loads
+
+# --- Public Goods Owner Info for Loads ---
+@router.get('/{owner_id}/public-profile')
+async def get_goods_owner_public_profile(owner_id: int, db: Session = Depends(database.get_db)):
+    user = db.query(models.User).filter(models.User.id == owner_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found.')
+    profile = db.query(models.GoodsOwnerProfile).filter(models.GoodsOwnerProfile.user_id == owner_id).first()
+    result = {
+        "username": user.username,
+        "email": user.email,
+        "company_name": profile.company_name if profile else None,
+        "gst_number": profile.gst_number if profile else None,
+        "phone_number": profile.phone_number if profile else None
+    }
+    return result
 
 # --- Goods Owner Profile Management ---
 # GET /api/owners/{owner_id}/profile
@@ -57,20 +75,28 @@ async def get_goods_owner_profile(owner_id: int, current_user: models.User = Dep
          raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='User is not a goods owner.')
 
 
-    profile = db.query(models.GoodsOwnerProfile).join(models.User).filter(models.GoodsOwnerProfile.user_id == owner_id, models.User.role == UserRole.GOODS_OWNER).first()
+    user = db.query(models.User).filter(models.User.id == owner_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found.')
 
-    if not profile:
-        # Check if the user exists and is a goods owner but just lacks a profile entry
-        user_exists = db.query(models.User).filter(models.User.id == owner_id, models.User.role == UserRole.GOODS_OWNER).first()
-        if user_exists:
-             # This case might mean the profile was not created during signup, or an error occurred.
-             # Depending on policy, could return 404 or a default/empty profile.
-             # For now, consistent 404 if profile table entry is missing.
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Goods owner profile data not found for this user.')
-        else:
-            # User is not a goods owner or does not exist
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Goods owner not found or user is not a goods owner.')
-    return profile
+    profile = db.query(models.GoodsOwnerProfile).filter(models.GoodsOwnerProfile.user_id == owner_id).first()
+    user_data = user.__dict__.copy()
+    user_data.pop('_sa_instance_state', None)
+    # Explicitly include username and email in the merged response
+    merged = {"username": user.username, "email": user.email, **user_data}
+    if profile:
+        profile_data = profile.__dict__.copy()
+        profile_data.pop('_sa_instance_state', None)
+        merged = {**profile_data, **user_data}  # user_data takes precedence
+        merged['username'] = user.username
+        merged['email'] = user.email
+        # print("DEBUG USER DATA:", user_data)
+        # print("DEBUG PROFILE DATA:", profile_data)
+        # print("DEBUG MERGED:", merged)
+        return merged
+    else:
+        # print("DEBUG USER DATA:", user_data)
+        return user_data
 
 # PUT /api/owners/{owner_id}/profile - Assuming this means updating GoodsOwnerProfile model
 @router.put('/{owner_id}/profile', response_model=schemas.GoodsOwnerProfileResponse, dependencies=[Depends(get_current_goods_owner_user)])
@@ -91,21 +117,61 @@ async def update_goods_owner_profile(owner_id: int, profile_data: schemas.GoodsO
     db.refresh(db_profile)
     return db_profile
 
+# --- Change Password for Goods Owner ---
+
+from pydantic import BaseModel
+
+class PasswordChangeRequest(BaseModel):
+    old_password: str
+    new_password: str
+
+@router.put('/{owner_id}/password', status_code=200)
+async def change_goods_owner_password(
+    owner_id: int,
+    passwords: PasswordChangeRequest,
+    current_user: models.User = Depends(security.get_current_active_user),
+    db: Session = Depends(database.get_db)
+):
+    # Only allow the owner themselves or an admin to change the password
+    if current_user.role != UserRole.ADMIN and owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not authorized to change this password.')
+
+    user = db.query(models.User).filter(models.User.id == owner_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found.')
+
+    # Verify old password
+    if not security.verify_password(passwords.old_password, user.hashed_password):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Old password is incorrect.')
+
+    user.hashed_password = security.get_password_hash(passwords.new_password)
+    db.add(user)
+    db.commit()
+    return {"detail": "Password updated successfully"}
+
+# --- Bids for a Load (Goods Owner) ---
+@router.get('/loads/{load_id}/bids', response_model=List[schemas.BidResponse], dependencies=[Depends(get_current_goods_owner_user)])
+async def get_bids_for_load(load_id: int, db: Session = Depends(database.get_db)):
+    bids = db.query(models.Bid).filter(models.Bid.load_id == load_id).all()
+    return bids
+
 # --- Goods Owner Dispute Management ---
 # POST /api/owner/disputes (Frontend path) -> Our router prefix is /api/v1/owners
 @router.post('/disputes', response_model=schemas.DisputeResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_goods_owner_user)])
 async def create_owner_dispute(dispute_data: schemas.DisputeCreate, current_owner: models.User = Depends(get_current_goods_owner_user), db: Session = Depends(database.get_db)):
-    if dispute_data.related_load_id:
-        load = db.query(models.Load).filter(models.Load.id == dispute_data.related_load_id).first()
+    if dispute_data.loadId:
+        load = db.query(models.Load).filter(models.Load.id == dispute_data.loadId).first()
         if not load:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Related load with id {dispute_data.related_load_id} not found.')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Related load with id {dispute_data.loadId} not found.')
         if load.owner_id != current_owner.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Cannot raise dispute for a load not owned by you.')
 
     db_dispute = models.Dispute(
-        reported_by_user_id=current_owner.id,
-        related_load_id=dispute_data.related_load_id,
-        dispute_reason=dispute_data.dispute_reason,
+        driverId=dispute_data.driverId,
+        loadId=dispute_data.loadId,
+        disputeType=dispute_data.disputeType,
+        message=dispute_data.message,
+        attachments=dispute_data.attachments,
         status='open'
     )
     db.add(db_dispute)
@@ -116,5 +182,8 @@ async def create_owner_dispute(dispute_data: schemas.DisputeCreate, current_owne
 # GET /api/owner/disputes (Frontend path)
 @router.get('/disputes', response_model=List[schemas.DisputeResponse], dependencies=[Depends(get_current_goods_owner_user)])
 async def get_owner_disputes(current_owner: models.User = Depends(get_current_goods_owner_user), db: Session = Depends(database.get_db)):
-    disputes = db.query(models.Dispute).filter(models.Dispute.reported_by_user_id == current_owner.id).order_by(models.Dispute.created_at.desc()).all()
+    # Get all load IDs for the current owner
+    owned_load_ids = db.query(models.Load.id).filter(models.Load.owner_id == current_owner.id).all()
+    owned_load_ids = [lid[0] for lid in owned_load_ids]
+    disputes = db.query(models.Dispute).filter(models.Dispute.loadId.in_(owned_load_ids)).order_by(models.Dispute.created_at.desc()).all()
     return disputes

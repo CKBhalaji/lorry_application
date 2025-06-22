@@ -58,7 +58,8 @@ export const signUpGoodsOwner = async (goodsOwnerData) => {
       role: 'goods_owner', // Explicitly set role
       profile: {
         company_name: goodsOwnerData.companyName,
-        gst_number: goodsOwnerData.gstNumber
+        gst_number: goodsOwnerData.gstNumber,
+        phone_number: goodsOwnerData.phone // Ensure this matches your form field
         // Add any other fields from goodsOwnerData that should be in profile
       }
     };

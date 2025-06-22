@@ -7,9 +7,11 @@ import enum
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user: dict  # Should contain at least 'username' and 'type'
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+    UserRole: Optional[str] = None
 
 # User Schemas
 class UserBase(BaseModel):
@@ -63,10 +65,16 @@ class DriverUserCreate(UserCreate): # For signup
     profile: Optional[DriverProfileCreate] = None
 
 
+# Password Change Schema
+class PasswordChangeRequest(BaseModel):
+    old_password: str
+    new_password: str
+
 # Goods Owner Profile Schemas
 class GoodsOwnerProfileBase(BaseModel):
     company_name: Optional[str] = None
     gst_number: Optional[str] = None
+    phone_number: Optional[str] = None
     # Add other fields as necessary
 
 class GoodsOwnerProfileCreate(GoodsOwnerProfileBase):
@@ -78,6 +86,8 @@ class GoodsOwnerProfileUpdate(GoodsOwnerProfileBase):
 class GoodsOwnerProfileResponse(GoodsOwnerProfileBase):
     id: int
     user_id: int
+    username: Optional[str] = None
+    email: Optional[str] = None
     class Config:
         orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
 
@@ -108,10 +118,14 @@ class OTPVerificationRequest(BaseModel):
 
 # Schemas for Loads
 class LoadBase(BaseModel):
-    pickup_location: str
-    dropoff_location: str
-    load_description: Optional[str] = None
-    load_weight_kg: Optional[int] = None
+    goodsType: str
+    weight: int
+    pickupLocation: str
+    deliveryLocation: str
+    pickupDate: str
+    deliveryDate: str
+    description: Optional[str] = None
+    expectedPrice: Optional[int] = None
     status: Optional[str] = 'pending'
 
 class LoadCreate(LoadBase):
@@ -134,8 +148,11 @@ class LoadResponse(LoadBase):
 
 # Schemas for Disputes
 class DisputeBase(BaseModel):
-    dispute_reason: str
-    related_load_id: Optional[int] = None
+    driverId: Optional[int] = None
+    loadId: Optional[int] = None
+    disputeType: Optional[str] = None
+    message: str
+    attachments: Optional[str] = None
 
 class DisputeCreate(DisputeBase):
     pass # reported_by_user_id will be taken from current user
@@ -146,7 +163,11 @@ class DisputeUpdate(BaseModel):
 
 class DisputeResponse(DisputeBase):
     id: int
-    reported_by_user_id: int
+    driverId: Optional[int] = None
+    loadId: Optional[int] = None
+    disputeType: Optional[str] = None
+    message: str
+    attachments: Optional[str] = None
     status: str
     resolution_details: Optional[str] = None
     created_at: str # Assuming string representation
@@ -158,9 +179,10 @@ class DisputeResponse(DisputeBase):
 class BidBase(BaseModel):
     load_id: int
     amount: int # Or float
+    driver_id: int
 
 class BidCreate(BidBase):
-    pass # driver_id will be from current_user
+    pass
 
 class BidUpdate(BaseModel):
     amount: Optional[int] = None

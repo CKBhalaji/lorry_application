@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './GOChangePassword.css';
-import { changeAdminPassword } from '../../services/adminService';
+import { changeOwnerPassword } from '../../services/goodsOwnerService';
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +29,7 @@ const ChangePassword = () => {
     if (formData.newPassword !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -40,12 +40,20 @@ const ChangePassword = () => {
 
     setIsSubmitting(true);
     try {
-      await changeAdminPassword({
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword
-      });
+      const raw = localStorage.getItem('authUser');
+      const authUser = raw ? JSON.parse(raw) : null;
+      if (!authUser || !authUser.id) {
+        setErrors({ currentPassword: 'User not found or not logged in' });
+        setIsSubmitting(false);
+        return;
+      }
+      await changeOwnerPassword(
+        authUser.id, // not authUser!
+        formData.currentPassword,
+        formData.newPassword
+      );
       alert('Password changed successfully!');
-      navigate('/goods-owner/profile');
+      navigate('/goods-owner/dashboard?tab=profile');
     } catch (error) {
       console.error('Error changing password:', error);
       setErrors({ currentPassword: error.message || 'Failed to change password' });
@@ -71,7 +79,7 @@ const ChangePassword = () => {
             <span className="ACP-error-message">{errors.currentPassword}</span>
           )}
         </div>
-        
+
         <div className="ACP-form-group">
           <label>New Password</label>
           <input
@@ -85,7 +93,7 @@ const ChangePassword = () => {
             <span className="ACP-error-message">{errors.newPassword}</span>
           )}
         </div>
-        
+
         <div className="ACP-form-group">
           <label>Confirm New Password</label>
           <input
@@ -99,17 +107,17 @@ const ChangePassword = () => {
             <span className="ACP-error-message">{errors.confirmPassword}</span>
           )}
         </div>
-        
+
         <div className="ACP-form-actions">
-          <button 
+          <button
             type="button"
             className="ACP-cancel-btn"
             onClick={() => navigate(-1)}
           >
             Cancel
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="ACP-save-btn"
             disabled={isSubmitting}
           >

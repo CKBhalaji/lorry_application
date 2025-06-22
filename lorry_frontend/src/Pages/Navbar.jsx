@@ -34,7 +34,7 @@ const Navbar = () => {
 
   return (
     <nav className="NAV-navbar">
-      <div className={`NAV-navbar-container ${userType === 'driver' ? 'driver' : userType === 'goodsOwner' ? 'goods-owner' : ''}`}>
+      <div className={`NAV-navbar-container ${userType === 'driver' ? 'driver' : userType === 'goods_owner' ? 'goods-owner' : ''}`}>
         <div className="NAV-navbar-header">
           <div className="NAV-navbar-brand">
             <Link to="/">
@@ -45,20 +45,20 @@ const Navbar = () => {
               <span className="NAV-user-type-indicator">
                 <ArrowRightOutlined />
                 {userType === 'driver' ? ' Driver Dashboard' : 
-                 userType === 'goodsOwner' ? ' Goods Owner' :
+                 userType === 'goods_owner' ? ' Goods Owner' :
                  userType === 'admin' ? ' Admin Dashboard' : ''}
               </span>
             )} */}
             {userType && (
               <Link to={
                 userType === 'driver' ? '/driver' :
-                  userType === 'goodsOwner' ? '/goods-owner' :
+                  userType === 'goods_owner' ? '/goods-owner' :
                     userType === 'admin' ? '/admin' : '/'
               }>
                 <span className="NAV-user-type-indicator">
                   <ArrowRightOutlined />
                   {userType === 'driver' ? ' Driver Dashboard' :
-                    userType === 'goodsOwner' ? ' Goods Owner' :
+                    userType === 'goods_owner' ? ' Goods Owner' :
                       userType === 'admin' ? ' Admin Dashboard' : ''}
                 </span>
               </Link>
@@ -110,7 +110,7 @@ const Navbar = () => {
                 <Link to="/driver/profile" className="NAV-nav-link">Profile</Link>
               </>
             )}
-            {userType === 'goodsOwner' && (
+            {userType === 'goods_owner' && (
               <>
                 <Link to="/goods-owner/post" className="NAV-nav-link">Post Load</Link>
                 <Link to="/goods-owner/loads" className="NAV-nav-link">My Loads</Link>

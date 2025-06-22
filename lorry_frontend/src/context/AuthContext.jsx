@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect} from 'react'; // Add useContext to the import
+import React, { useState, useContext, useEffect } from 'react'; // Add useContext to the import
+import { login as apiLogin } from '../services/authService.js';
 
 const AuthContext = React.createContext();
 
@@ -21,41 +22,99 @@ export const AuthProvider = ({ children }) => {
     timestamp: ''
   });
 
-  const login = (userData) => {
-    if (!userData.username) {
-      console.error('Username is required in userData');
-      return;
+  const login = async (credentials) => {
+    try {
+      const response = await apiLogin(credentials);
+      const { access_token, user } = response; // Adjust based on actual API response
+      // The `user` object from `response` (which is response.data from axios)
+      // is expected to be: { username: "...", type: "..." }
+      const apiUser = user;
+
+      if (!apiUser || !apiUser.type || !apiUser.username) {
+        console.error('AuthContext: Login response missing user details or type.', apiUser);
+        throw new Error('Login failed: User role information missing in server response.');
+      }
+
+      // Construct decodedUser directly from the user object in the response
+      const decodedUser = {
+        id: apiUser.id,
+        username: apiUser.username,
+        type: apiUser.type
+        // Potentially include other user fields from apiUser if needed
+      };
+
+      
+      // Role comparison (normalize both sides to lower case and remove underscores)
+      const normalizeRole = (role) => role.toLowerCase().replace(/_/g, '');
+      if (normalizeRole(decodedUser.type) !== normalizeRole(credentials.type)) {
+        console.warn(`AuthContext: Role mismatch. Expected: ${credentials.type}, Got: ${decodedUser.type}`);
+        throw new Error('Login failed: The user account is not registered for this role.');
+      }
+
+      // Proceed with successful login if roles match
+      const newAuthState = {
+        isAuthenticated: true,
+        // userType: decodedUser.type,
+        username: decodedUser.username,
+        timestamp: new Date().toISOString()
+      };
+
+      setIsAuthenticated(true);
+      setUserType(decodedUser.type);
+      setUsername(decodedUser.username);
+      setAuthState(newAuthState);
+      localStorage.setItem('authToken', access_token);
+      localStorage.setItem('authUser', JSON.stringify(decodedUser));
+
+
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
     }
-
-    const newAuthState = {
-      isAuthenticated: true,
-      userType: userData.type,
-      username: userData.username,
-      timestamp: new Date().toISOString()
-    };
-
-    setIsAuthenticated(true);
-    setUserType(userData.type);
-    setUsername(userData.username);
-    setAuthState(newAuthState);
-    localStorage.setItem('auth', JSON.stringify(newAuthState));
   };
 
   const logout = () => {
     setIsAuthenticated(false);
-    setUsername(null);
-    localStorage.removeItem('auth');
+    setUserType(null);
+    setUsername(''); // Reset username to empty string
+    setAuthState({ // Reset authState to initial values
+      isAuthenticated: false,
+      userType: null,
+      username: '',
+      timestamp: ''
+    });
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authUser');
+    localStorage.removeItem('auth'); // Also remove the old 'auth' item if it's being phased out
   };
 
   useEffect(() => {
     const handleStorageChange = (event) => {
-      if (event.key === 'auth') {
-        const newAuth = JSON.parse(event.newValue);
-        if (newAuth) {
-          setIsAuthenticated(newAuth.isAuthenticated);
-          setUserType(newAuth.userType);
-          setUsername(newAuth.username);
-          setAuthState(newAuth);
+      if (event.key === 'authUser') { // Listen for changes to 'authUser'
+        const newAuthUser = JSON.parse(event.newValue);
+        if (newAuthUser) {
+          setIsAuthenticated(true); // Assume if authUser is set, user is authenticated
+          setUserType(newAuthUser.type);
+          setUsername(newAuthUser.username);
+          // Update authState if still used
+          setAuthState(prevState => ({
+            ...prevState,
+            isAuthenticated: true,
+            userType: newAuthUser.type,
+            username: newAuthUser.username,
+            timestamp: new Date().toISOString()
+          }));
+        } else {
+          // If authUser is removed (e.g. logout from another tab)
+          setIsAuthenticated(false);
+          setUserType(null);
+          setUsername('');
+          setAuthState({
+            isAuthenticated: false,
+            userType: null,
+            username: '',
+            timestamp: ''
+          });
         }
       }
     };
@@ -65,11 +124,20 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const storedAuth = JSON.parse(localStorage.getItem('auth'));
-    if (storedAuth && storedAuth.isAuthenticated) {
+    const storedToken = localStorage.getItem('authToken');
+    const storedUser = localStorage.getItem('authUser');
+    if (storedToken && storedUser) {
+      const authUser = JSON.parse(storedUser);
       setIsAuthenticated(true);
-      setUserType(storedAuth.userType);
-      setUsername(storedAuth.username);
+      setUserType(authUser.type);
+      setUsername(authUser.username);
+      // Update authState if still used
+      setAuthState({
+        isAuthenticated: true,
+        userType: authUser.type,
+        username: authUser.username,
+        timestamp: new Date().toISOString()
+      });
     }
   }, []);
 

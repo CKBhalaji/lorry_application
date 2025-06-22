@@ -184,7 +184,7 @@ const SignUpDriver = () => {
         const rcCardFile = document.getElementById('driver-rc-card').files[0];
 
         const loginRes = await login({ username: formData.username, password: formData.password });
-        localStorage.setItem('driverToken', loginRes.access_token);
+        localStorage.setItem('authToken', loginRes.access_token);
 
         // Upload each file if present
         if (drivingLicenseFile) {

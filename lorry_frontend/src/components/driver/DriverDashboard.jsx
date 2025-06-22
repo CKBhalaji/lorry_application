@@ -35,9 +35,10 @@ const DriverDashboard = () => {
   // };
 
   return (
-    <div className="DD-driver-dashboard-baground">
-      <div className="DD-driver-dashboard">
-        {/* <header className="DD-dashboard-header">
+    <>
+      <div className="DD-driver-dashboard-baground">
+        <div className="DD-driver-dashboard">
+          {/* <header className="DD-dashboard-header">
           <h1>Driver Dashboard</h1>
           <button onClick={handleLogout} className="DD-logout-button">
             Logout
@@ -86,6 +87,7 @@ const DriverDashboard = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

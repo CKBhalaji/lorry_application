@@ -5,63 +5,10 @@ import './DriverManageDisputes.css';
 import { fetchDriverDisputes, createDriverDispute } from '../../services/driverService';
 
 const ManageDisputes = () => {
-  const disputes = [
-    {
-      id: 1,
-      loadId: 'L12345',
-      type: 'Late Delivery',
-      status: 'pending',
-      message: 'The delivery was delayed by 2 hours.',
-      createdAt: '2023-10-01T10:00:00Z',
-      attachments: {
-        url: 'https://example.com/invoice.pdf',
-        name: 'invoice.pdf'
-      }
-    },
-    {
-      id: 2,
-      loadId: 'L67890',
-      type: 'Damaged Goods',
-      status: 'accepted',
-      message: 'The goods were damaged during transit.',
-      createdAt: '2023-09-25T09:30:00Z',
-      resolvedAt: '2023-09-28T14:00:00Z',
-      resolution: 'Compensation of $500 was provided.',
-      attachments: {
-        url: 'https://example.com/damage_report.pdf',
-        name: 'damage_report.pdf'
-      }
-    },
-    {
-      id: 3,
-      loadId: 'L54321',
-      type: 'Incorrect Billing',
-      status: 'rejected',
-      message: 'The invoice amount does not match the agreed rate.',
-      createdAt: '2023-10-05T11:15:00Z',
-      attachments: {
-        url: 'https://example.com/invoice.pdf',
-        name: 'invoice.pdf'
-      }
-    },
-    {
-      id: 4,
-      loadId: 'L54321',
-      type: 'Incorrect Billing',
-      status: 'resolved',
-      message: 'The invoice amount does not match the agreed rate.',
-      createdAt: '2023-10-05T11:15:00Z',
-      attachments: {
-        url: 'https://example.com/invoice.pdf',
-        name: 'invoice.pdf'
-      }
-    }
-  ];
-
   // In the component:
-  // const [disputes, setDisputes] = useState(sampleDisputes);
-  // const [disputes, setDisputes] = useState([]);
+  const [disputes, setDisputesState] = useState([]); // Renamed to avoid conflict with variable name in map
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
     loadId: '',
@@ -73,19 +20,27 @@ const ManageDisputes = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDisputes = async () => {
+    const loadDisputes = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        console.log('DriverManageDisputes: Fetching driver disputes.');
         const data = await fetchDriverDisputes();
-        setDisputes(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching disputes:', error);
-        setDisputes([]);
-      }
-      finally {
+        console.log('DriverManageDisputes: Successfully fetched data:', data);
+        if (!Array.isArray(data)) {
+          console.error('DriverManageDisputes: Data is not an array!', data);
+          throw new Error('Received invalid data format from server for disputes.');
+        }
+        setDisputesState(data || []);
+      } catch (err) {
+        console.error('DriverManageDisputes: Detailed error fetching disputes:', err);
+        setError(err.message || 'Failed to fetch disputes. Please check console for details.');
+        setDisputesState([]); // Ensure disputes is an array on error
+      } finally {
         setLoading(false);
       }
     };
-    fetchDisputes();
+    loadDisputes();
   }, []);
 
   const handleChange = (e) => {
@@ -118,9 +73,12 @@ const ManageDisputes = () => {
     if (!validateForm()) return;
 
     try {
-      const newDispute = await createDriverDispute(formData);
-      setDisputes([newDispute, ...disputes]);
-      setShowCreateForm(true);
+      const newDispute = await createDriverDispute(formData); // This service call might need its own error handling/logging
+      setDisputesState(prevDisputes => [newDispute, ...prevDisputes]); // Use functional update
+      // setShowCreateForm(false); // Typically hide form after successful submission
+      alert('Dispute created successfully!'); // Keep alert or use a more integrated notification system
+      // Reset form and hide
+      setShowCreateForm(false);
       setFormData({
         loadId: '',
         disputeType: 'payment',
@@ -149,6 +107,8 @@ const ManageDisputes = () => {
   };
 
   if (loading) return <div className="DMD-loading">Loading disputes...</div>;
+  if (error) return <div className="DMD-error-message">{error}</div>;
+
 
   return (
     <div className="DMD-manage-disputes-driver">
@@ -231,43 +191,65 @@ const ManageDisputes = () => {
       )}
 
       <div className="DMD-disputes-list">
-        {disputes.length === 0 ? (
+        {!loading && !error && disputes.length === 0 ? (
           <div className="DMD-no-disputes">
             {showCreateForm ? '' : 'You have no disputes yet.'}
           </div>
         ) : (
-          disputes.map(dispute => (
-            <div key={dispute.id} className="DMD-dispute-card">
-              <div className="DMD-dispute-header">
-                <h3>Dispute #{dispute.id}</h3>
-                {getStatusBadge(dispute.status)}
-              </div>
-              <div className="DMD-dispute-details">
-                <p><strong>Load ID:</strong> {dispute.loadId}</p>
-                <p><strong>Type:</strong> {dispute.type}</p>
-                <p><strong>Date:</strong> {new Date(dispute.createdAt).toLocaleDateString()}</p>
-              </div>
-              <div className="DMD-dispute-message">
-                <p><strong>Message:</strong> {dispute.message}</p>
-              </div>
-              {dispute.resolution && (
-                <div className="DMD-dispute-resolution">
-                  <p><strong>Resolution:</strong> {dispute.resolution}</p>
-                  {dispute.resolvedAt && (
-                    <p><strong>Resolved on:</strong> {new Date(dispute.resolvedAt).toLocaleDateString()}</p>
+          disputes.map((dispute, index) => {
+            try {
+              if (!dispute || typeof dispute !== 'object') {
+                console.error(`DriverManageDisputes: Invalid dispute item at index ${index}:`, dispute);
+                return <div key={index} className="DMD-dispute-card error">Invalid dispute data</div>;
+              }
+
+              const id = dispute.id || `missing-id-${index}`;
+              const loadId = dispute.loadId || 'N/A';
+              const type = dispute.type || 'N/A';
+              const status = dispute.status || 'N/A';
+              const message = dispute.message || 'No message provided.';
+              const createdAtStr = dispute.createdAt && !isNaN(new Date(dispute.createdAt)) ? new Date(dispute.createdAt).toLocaleDateString() : 'Invalid Date';
+              const resolution = dispute.resolution || null;
+              const resolvedAtStr = dispute.resolvedAt && !isNaN(new Date(dispute.resolvedAt)) ? new Date(dispute.resolvedAt).toLocaleDateString() : null;
+              const attachments = dispute.attachments || null;
+
+              return (
+                <div key={id} className="DMD-dispute-card">
+                  <div className="DMD-dispute-header">
+                    <h3>Dispute #{id}</h3>
+                    {getStatusBadge(status)}
+                  </div>
+                  <div className="DMD-dispute-details">
+                    <p><strong>Load ID:</strong> {loadId}</p>
+                    <p><strong>Type:</strong> {type}</p>
+                    <p><strong>Date:</strong> {createdAtStr}</p>
+                  </div>
+                  <div className="DMD-dispute-message">
+                    <p><strong>Message:</strong> {message}</p>
+                  </div>
+                  {resolution && (
+                    <div className="DMD-dispute-resolution">
+                      <p><strong>Resolution:</strong> {resolution}</p>
+                      {resolvedAtStr && (
+                        <p><strong>Resolved on:</strong> {resolvedAtStr}</p>
+                      )}
+                    </div>
+                  )}
+                  {attachments && (
+                    <div className="DMD-dispute-attachments">
+                      <strong>Attachments:</strong>
+                      <a href={attachments.url} target="_blank" rel="noopener noreferrer">
+                        {attachments.name || 'View Attachment'}
+                      </a>
+                    </div>
                   )}
                 </div>
-              )}
-              {dispute.attachments && (
-                <div className="DMD-dispute-attachments">
-                  <strong>Attachments:</strong>
-                  <a href={dispute.attachments.url} target="_blank" rel="noopener noreferrer">
-                    {dispute.attachments.name}
-                  </a>
-                </div>
-              )}
-            </div>
-          ))
+              );
+            } catch (cardError) {
+              console.error(`DriverManageDisputes: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
+              return <div key={dispute && dispute.id ? dispute.id : index} className="DMD-dispute-card error">Error displaying this dispute.</div>;
+            }
+          })
         )}
       </div>
     </div>
