@@ -128,11 +128,6 @@ const OwnerProfile = () => {
       </div>
     );
   }
-  console.log('RENDER PROFILE DATA:', profile);
-  if (profile) {
-    // Print the full profile object for debugging
-    console.dir(profile, { depth: null });
-  }
   if (loading) return <div className="GOP-loading">Loading profile...</div>; // Standardized class name
   if (error) return <div className="GOP-error-message">{error}</div>;
   if (!profile) return <div className="GOP-no-profile">No profile data available.</div>;

@@ -33,9 +33,10 @@ const AdminProfile = () => {
           setProfile(data);
           setFormData({ // Initialize formData with fetched data
             name: data.name || '',
+            username: data.username || '',
             email: data.email || '',
-            profile: data.profile || data.type || '', // Use profile or type from data
-            phone: data.phone || ''
+            role: data.role || '',
+            phone_number: data.phone_number || ''
           });
         } else {
           console.error('AdminProfile: Data is not an object or is null!', data);
@@ -62,9 +63,7 @@ const AdminProfile = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = 'Name is required';
-    if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) newErrors.email = 'Valid email required';
-    if (!formData.phone.match(/^[0-9]{10}$/)) newErrors.phone = '10-digit phone number required';
-
+    if (!formData.phone_number || !formData.phone_number.match(/^[0-9]{10}$/)) newErrors.phone_number = '10-digit phone number required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -78,14 +77,15 @@ const AdminProfile = () => {
         throw new Error("Cannot update profile: Admin ID not found.");
       }
       console.log(`AdminProfile: Updating profile for admin ID: ${authUser.id}`, formData);
-      const updatedProfile = await updateAdminProfile(authUser.id, formData); // Pass adminId
-      setProfile(updatedProfile);
-      setFormData({ // Reset formData with updated profile data
-            name: updatedProfile.name || '',
-            email: updatedProfile.email || '',
-            profile: updatedProfile.profile || updatedProfile.type || '',
-            phone: updatedProfile.phone || ''
-      });
+      // Only send editable fields
+      const updatePayload = {
+        name: formData.name,
+        phone_number: formData.phone_number
+      };
+      const { updateAdminProfileOnly } = await import('../../services/adminService');
+      const updatedProfile = await updateAdminProfileOnly(authUser.id, updatePayload); // Pass adminId
+      setProfile({ ...profile, ...updatePayload });
+      setFormData(prev => ({ ...prev, ...updatePayload }));
       setEditMode(false);
       alert('Profile updated successfully!');
     } catch (err) {
@@ -127,49 +127,66 @@ const AdminProfile = () => {
               value={formData.name || ''}
               onChange={handleChange}
               className={errors.name ? 'error' : ''}
+              style={errors.name ? { borderColor: 'red' } : {}}
             />
             {errors.name && <span className="AP-error-message">{errors.name}</span>}
           </div>
-
+          <div className="AP-form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              name="username"
+              value={profile?.username || ''}
+              readOnly
+              disabled
+              className="AP-readonly-field"
+            />
+          </div>
           <div className="AP-form-group">
             <label>Email</label>
             <input
               type="email"
               name="email"
-              value={formData.email || ''}
-              onChange={handleChange}
-              className={errors.email ? 'error' : ''}
+              value={profile?.email || ''}
+              readOnly
+              disabled
+              className="AP-readonly-field"
             />
-            {errors.email && <span className="AP-error-message">{errors.email}</span>}
           </div>
-
           <div className="AP-form-group">
-            <label>Profile/Role</label>
-            <select
-              name="profile" // This field in formData should align with what backend expects ('profile' or 'type')
-              value={formData.profile || ''}
-              onChange={handleChange}
-              disabled={!isSuperAdmin} // Only superadmin can change role
-              className={!isSuperAdmin ? 'disabled-field' : ''}
-            >
-              <option value="admin">Admin</option>
-              <option value="superadmin">Super Admin</option>
-              <option value="manager">Manager</option> {/* Ensure these roles match backend enum/values */}
-            </select>
+            <label>Role</label>
+            <input
+              type="text"
+              name="role"
+              value={profile?.role || ''}
+              readOnly
+              disabled
+              className="AP-readonly-field"
+            />
           </div>
-
           <div className="AP-form-group">
             <label>Phone Number</label>
             <input
               type="tel"
-              name="phone"
-              value={formData.phone || ''}
+              name="phone_number"
+              value={formData.phone_number || ''}
               onChange={handleChange}
-              className={errors.phone ? 'error' : ''}
+              className={errors.phone_number ? 'error' : ''}
+              style={errors.phone_number ? { borderColor: 'red' } : {}}
             />
-            {errors.phone && <span className="AP-error-message">{errors.phone}</span>}
+            {errors.phone_number && <span className="AP-error-message">{errors.phone_number}</span>}
           </div>
-
+          <div className="AP-form-group">
+            <label>Status</label>
+            <input
+              type="text"
+              name="status"
+              value={profile?.is_active === true ? 'Active' : profile?.is_active === false ? 'Inactive' : 'N/A'}
+              readOnly
+              disabled
+              className="AP-readonly-field"
+            />
+          </div>
           <div className="AP-form-actions">
             <button
               type="button"
@@ -181,6 +198,7 @@ const AdminProfile = () => {
             <button
               type="submit"
               className="AP-save-btn"
+              onClick={handleSubmit}
             >
               Save Changes
             </button>
@@ -193,24 +211,24 @@ const AdminProfile = () => {
             <span className="AP-detail-value">{profile?.name || 'N/A'}</span>
           </div>
           <div className="AP-detail-row">
+            <span className="AP-detail-label">Username:</span>
+            <span className="AP-detail-value">{profile?.username || 'N/A'}</span>
+          </div>
+          <div className="AP-detail-row">
             <span className="AP-detail-label">Email:</span>
             <span className="AP-detail-value">{profile?.email || 'N/A'}</span>
           </div>
           <div className="AP-detail-row">
-            <span className="AP-detail-label">Profile/Role:</span>
-            <span className="AP-detail-value">{profile?.profile || profile?.type || 'N/A'}</span>
+            <span className="AP-detail-label">Role:</span>
+            <span className="AP-detail-value">{profile?.role || 'N/A'}</span>
           </div>
           <div className="AP-detail-row">
-            <span className="AP-detail-label">Phone:</span>
-            <span className="AP-detail-value">{profile?.phone || 'N/A'}</span>
+            <span className="AP-detail-label">Phone Number:</span>
+            <span className="AP-detail-value">{profile?.phone_number || 'N/A'}</span>
           </div>
           <div className="AP-detail-row">
-            <span className="AP-detail-label">Admin Since:</span>
-            <span className="AP-detail-value">
-              {profile?.createdAt && !isNaN(new Date(profile.createdAt))
-                ? new Date(profile.createdAt).toLocaleDateString()
-                : 'N/A'}
-            </span>
+            <span className="AP-detail-label">Status:</span>
+            <span className="AP-detail-value">{profile?.is_active === true ? 'Active' : profile?.is_active === false ? 'Inactive' : 'N/A'}</span>
           </div>
 
           <button

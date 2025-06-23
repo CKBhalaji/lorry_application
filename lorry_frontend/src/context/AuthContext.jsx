@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
   const [username, setUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Update the logging to properly stringify the state object
   console.log('Auth State:', JSON.stringify({
@@ -139,10 +140,22 @@ export const AuthProvider = ({ children }) => {
         timestamp: new Date().toISOString()
       });
     }
+    setIsLoading(false);
   }, []);
 
+  // Provide the full authUser object (id, username, type) for consumers
+  let authUser = null;
+  const storedUser = localStorage.getItem('authUser');
+  if (storedUser) {
+    try {
+      authUser = JSON.parse(storedUser);
+    } catch (e) {
+      authUser = null;
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userType, username, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userType, username, login, logout, authUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

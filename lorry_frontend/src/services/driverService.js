@@ -34,6 +34,36 @@ export const fetchAvailableLoads = async () => {
   }
 };
 
+// Accept a bid
+export const acceptBid = async (bidId) => {
+  const token = localStorage.getItem('authToken');
+  const url = `${API_BASE_URL}/bids/${bidId}/accept`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) throw new Error('Failed to accept bid');
+  return response.json();
+};
+
+// Decline a bid
+export const declineBid = async (bidId) => {
+  const token = localStorage.getItem('authToken');
+  const url = `${API_BASE_URL}/bids/${bidId}/decline`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) throw new Error('Failed to decline bid');
+  return response.json();
+};
+
 export const placeBid = async (bidData) => {
   const token = localStorage.getItem('authToken');
   const response = await fetch(`${API_BASE_URL}/bids`, {
@@ -163,6 +193,22 @@ export const fetchDriverDisputes = async () => {
     }
   }
 };
+export const updateDriverProfile = async (driverId, updatePayload) => {
+  const token = localStorage.getItem('authToken');
+  const url = `${API_BASE_URL}/${driverId}/profile`;
+  try {
+    const response = await axios.put(url, updatePayload, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.detail || 'Failed to update profile');
+    }
+    throw error;
+  }
+};
+
 // Add more driver-related API calls as needed
 export const uploadDriverDocument = async (driverId, file, docType) => {
   const token = localStorage.getItem('authToken');;
@@ -182,4 +228,23 @@ export const uploadDriverDocument = async (driverId, file, docType) => {
     }
   );
   return response.data;
+};
+
+export const changeDriverPassword = async (driverId, oldPassword, newPassword) => {
+  const token = localStorage.getItem('authToken');
+  const url = `${API_BASE_URL}/${driverId}/password`;
+  try {
+    const response = await axios.put(url, {
+      old_password: oldPassword,
+      new_password: newPassword
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.detail || 'Failed to change password');
+    }
+    throw error;
+  }
 };

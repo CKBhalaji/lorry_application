@@ -31,8 +31,24 @@ const DriverProfile = () => {
                 console.log('DriverProfile: Successfully fetched data:', data);
 
                 if (data && typeof data === 'object') {
-                    setOriginalProfile(data);
-                    setProfile(data);
+                    // Map backend fields to frontend camelCase
+                    const mapped = {
+                        fullName: data.username || '', // or data.full_name if available
+                        email: data.email || '',
+                        phone: data.phone_number || '',
+                        aadhar: data.aadhar_number || '',
+                        experience: data.experience || '',
+                        vehicleType: data.vehicle_type || '',
+                        vehicleName: data.custom_vehicle_type || '',
+                        loadCapacity: data.load_capacity_kg || '',
+                        rcNumber: data.rc_card_filename || '',
+                        paymentMethod: data.upi_id ? 'UPI' : data.gpay_id ? 'GPay' : data.paytm_id ? 'Paytm' : '',
+                        paymentDetails: data.upi_id || data.gpay_id || data.paytm_id || '',
+                        rating: data.rating || '',
+                        // Add other mappings as needed
+                    };
+                    setOriginalProfile(mapped);
+                    setProfile(mapped);
                 } else {
                     console.error('DriverProfile: Data is not an object or is null!', data);
                     throw new Error('Received invalid data format from server for profile.');
@@ -71,19 +87,72 @@ const DriverProfile = () => {
         if (isEditing) {
             if (!validateFields()) return;
             try {
-                // Placeholder for save profile functionality
-                console.log('DriverProfile: Attempting to save profile (API call not implemented yet):', profile);
-                // await saveDriverProfile(profile); // This function needs to be imported and implemented
-                setOriginalProfile(profile); // Optimistically update originalProfile
-                alert('Profile changes would be saved here. API call needs implementation.');
-                setIsEditing(false); // Exit editing mode on successful save
+                // Prepare payload for profile update
+                const updatePayload = {
+                    phone_number: profile.phone,
+                    aadhar_number: profile.aadhar,
+                    vehicle_type: profile.vehicleType,
+                    custom_vehicle_type: profile.vehicleName,
+                    load_capacity_kg: profile.loadCapacity,
+                    // Payment method logic
+                    gpay_id: profile.paymentMethod === 'GPay' ? profile.paymentDetails : '',
+                    paytm_id: profile.paymentMethod === 'Paytm' ? profile.paymentDetails : '',
+                    upi_id: profile.paymentMethod === 'UPI' ? profile.paymentDetails : '',
+                };
+                // Update profile fields
+                const token = localStorage.getItem('authToken');
+                const driverId = authUser.id;
+                await import('../../services/driverService').then(({ updateDriverProfile }) =>
+                    updateDriverProfile(driverId, updatePayload)
+                );
+                // Upload files if selected
+                const { licenseFile, insuranceFile, rcBookFile } = profile;
+                if (licenseFile) {
+                    await import('../../services/driverService').then(({ uploadDriverDocument }) =>
+                        uploadDriverDocument(driverId, licenseFile, 'driving_license')
+                    );
+                }
+                if (insuranceFile) {
+                    await import('../../services/driverService').then(({ uploadDriverDocument }) =>
+                        uploadDriverDocument(driverId, insuranceFile, 'insurance')
+                    );
+                }
+                if (rcBookFile) {
+                    await import('../../services/driverService').then(({ uploadDriverDocument }) =>
+                        uploadDriverDocument(driverId, rcBookFile, 'rc_card')
+                    );
+                }
+                // Refresh profile
+                const data = await fetchDriverProfile(driverId);
+                if (data && typeof data === 'object') {
+                    const mapped = {
+                        fullName: data.username || '',
+                        email: data.email || '',
+                        phone: data.phone_number || '',
+                        aadhar: data.aadhar_number || '',
+                        experience: data.experience || '',
+                        vehicleType: data.vehicle_type || '',
+                        vehicleName: data.custom_vehicle_type || '',
+                        loadCapacity: data.load_capacity_kg || '',
+                        drivingLicense: data.driving_license_filename || '',
+                        insurance: data.insurance_filename || '',
+                        rcBook: data.rc_card_filename || '',
+                        paymentMethod: data.upi_id ? 'UPI' : data.gpay_id ? 'GPay' : data.paytm_id ? 'Paytm' : '',
+                        paymentDetails: data.upi_id || data.gpay_id || data.paytm_id || '',
+                        rating: data.rating || '',
+                    };
+                    setOriginalProfile(mapped);
+                    setProfile(mapped);
+                }
+                setIsEditing(false);
+                alert('Profile updated successfully!');
             } catch (saveError) {
                 console.error('Error saving profile:', saveError);
-                setError(saveError.message || 'Failed to save profile.'); // Show save error
+                setError(saveError.message || 'Failed to save profile.');
             }
         } else {
             // Entering editing mode, ensure 'profile' has data from 'originalProfile'
-             if (originalProfile) {
+            if (originalProfile) {
                 setProfile({ ...originalProfile });
             }
             setIsEditing(true);
@@ -120,31 +189,11 @@ const DriverProfile = () => {
                 <div className="DP-profile-grid">
                     <div className="DP-profile-field">
                         <label>Full Name</label>
-                        {isEditing ? (
-                            <>
-                                <input
-                                    value={profile?.fullName || ''}
-                                    onChange={e => handleChange('fullName', e.target.value)}
-                                />
-                                {errors.fullName && <span className="DP-error">{errors.fullName}</span>}
-                            </>
-                        ) : (
-                            <p>{profile?.fullName || 'N/A'}</p>
-                        )}
+                        <p>{profile?.fullName || 'N/A'}</p>
                     </div>
                     <div className="DP-profile-field">
                         <label>Email</label>
-                        {isEditing ? (
-                            <>
-                                <input
-                                    value={profile?.email || ''}
-                                    onChange={e => handleChange('email', e.target.value)}
-                                />
-                                {errors.email && <span className="DP-error">{errors.email}</span>}
-                            </>
-                        ) : (
-                            <p>{profile?.email || 'N/A'}</p>
-                        )}
+                        <p>{profile?.email || 'N/A'}</p>
                     </div>
                     <div className="DP-profile-field">
                         <label>Phone</label>
@@ -176,18 +225,7 @@ const DriverProfile = () => {
                     </div>
                     <div className="DP-profile-field">
                         <label>Experience</label>
-                        {isEditing ? (
-                            <>
-                                <input
-                                    type="number"
-                                    value={profile?.experience || 0}
-                                    onChange={e => handleChange('experience', parseInt(e.target.value, 10))}
-                                />
-                                {errors.experience && <span className="DP-error">{errors.experience}</span>}
-                            </>
-                        ) : (
-                            <p>{profile?.experience !== undefined ? `${profile.experience} years` : 'N/A'}</p>
-                        )}
+                        <p>{profile?.experience !== undefined ? `${profile.experience} years` : 'N/A'}</p>
                     </div>
                     <div className="DP-profile-field">
                         <label>Rating</label>
@@ -247,20 +285,43 @@ const DriverProfile = () => {
                             <p>{profile?.loadCapacity !== undefined ? `${profile.loadCapacity} kg` : 'N/A'}</p>
                         )}
                     </div>
-                    <div className="DP-profile-field">
-                        <label>RC Number</label>
-                        {isEditing ? (
-                            <>
+                    {isEditing && (
+                        <>
+                            <div className="DP-profile-field">
+                                <label>License (Upload New)</label>
                                 <input
-                                    value={profile?.rcNumber || ''}
-                                    onChange={e => handleChange('rcNumber', e.target.value)}
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    onChange={e => handleChange('licenseFile', e.target.files[0])}
                                 />
-                                {errors.rcNumber && <span className="DP-error">{errors.rcNumber}</span>}
-                            </>
-                        ) : (
-                            <p>{profile?.rcNumber || 'N/A'}</p>
-                        )}
-                    </div>
+                                {profile?.drivingLicense && (
+                                    <span>Current: {profile.drivingLicense}</span>
+                                )}
+                            </div>
+                            <div className="DP-profile-field">
+                                <label>Insurance (Upload New)</label>
+                                <input
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    onChange={e => handleChange('insuranceFile', e.target.files[0])}
+                                />
+                                {profile?.insurance && (
+                                    <span>Current: {profile.insurance}</span>
+                                )}
+                            </div>
+                            <div className="DP-profile-field">
+                                <label>RC Book (Upload New)</label>
+                                <input
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    onChange={e => handleChange('rcBookFile', e.target.files[0])}
+                                />
+                                {profile?.rcBook && (
+                                    <span>Current: {profile.rcBook}</span>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 

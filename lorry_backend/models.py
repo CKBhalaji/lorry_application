@@ -19,14 +19,25 @@ class User(Base):
     role = Column(SQLAlchemyEnum(UserRole), nullable=False)
     is_active = Column(Boolean, default=True)
 
-    driver_profile = relationship('DriverProfile', back_populates='user', uselist=False)
-    goods_owner_profile = relationship('GoodsOwnerProfile', back_populates='user', uselist=False)
+    driver_profile = relationship('DriverProfile', back_populates='user', uselist=False, cascade="all, delete-orphan")
+    goods_owner_profile = relationship('GoodsOwnerProfile', back_populates='user', uselist=False, cascade="all, delete-orphan")
+    admin_profile = relationship('AdminProfile', back_populates='user', uselist=False, cascade="all, delete-orphan")
+
+class AdminProfile(Base):
+    __tablename__ = 'admin_profiles'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    phone_number = Column(String, nullable=True)
+
+    user = relationship('User', back_populates='admin_profile')
 
 class DriverProfile(Base):
     __tablename__ = 'driver_profiles'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), unique=True, nullable=False)
     phone_number = Column(String, nullable=True)
     aadhar_number = Column(String, nullable=True)
     experience = Column(String, nullable=True)
@@ -46,7 +57,7 @@ class GoodsOwnerProfile(Base):
     __tablename__ = 'goods_owner_profiles'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), unique=True, nullable=False)
     company_name = Column(String, nullable=True)
     gst_number = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
@@ -57,7 +68,7 @@ class Load(Base):
     __tablename__ = 'loads'
 
     id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    owner_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
     goodsType = Column(String, nullable=False)
     weight = Column(Integer, nullable=False)
     pickupLocation = Column(String, nullable=False)
@@ -69,15 +80,17 @@ class Load(Base):
     status = Column(String, default='pending')
     posted_date = Column(String, server_default=str(datetime.utcnow()))
     current_highest_bid = Column(Integer, nullable=True)
+    accepted_driver_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=True)
 
-    owner = relationship('User')
+    owner = relationship('User', foreign_keys=[owner_id])
+    accepted_driver = relationship('User', foreign_keys=[accepted_driver_id])
 
 class Bid(Base):
     __tablename__ = 'bids'
 
     id = Column(Integer, primary_key=True, index=True)
-    load_id = Column(Integer, ForeignKey('loads.id'), nullable=False)
-    driver_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    load_id = Column(Integer, ForeignKey('loads.id', ondelete="CASCADE"), nullable=False)
+    driver_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
     amount = Column(Integer, nullable=False)
     bid_status = Column(String, default='pending')
     created_at = Column(String, server_default=str(datetime.utcnow()))
@@ -89,8 +102,8 @@ class Dispute(Base):
     __tablename__ = 'disputes'
 
     id = Column(Integer, primary_key=True, index=True)
-    driverId = Column(Integer, ForeignKey('users.id'), nullable=True)
-    loadId = Column(Integer, ForeignKey('loads.id'), nullable=True)
+    driverId = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=True)
+    loadId = Column(Integer, ForeignKey('loads.id', ondelete="CASCADE"), nullable=True)
     disputeType = Column(String, nullable=True)
     message = Column(Text, nullable=False)
     attachments = Column(String, nullable=True)

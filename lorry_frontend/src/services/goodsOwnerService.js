@@ -174,6 +174,20 @@ export const fetchBidsForLoad = async (loadId) => {
   if (!response.ok) throw new Error('Failed to fetch bids');
   return response.json();
 };
+// Hire a driver for a load
+export const hireDriverForLoad = async (loadId, driverId) => {
+  const token = localStorage.getItem('authToken');
+  const url = `${API_BASE_URL}/loads/${loadId}/hire?driver_id=${driverId}`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) throw new Error('Failed to hire driver');
+  return response.json();
+};
 // Add more owner-related API calls as needed
 
 export const changeOwnerPassword = async (ownerId, oldPassword, newPassword) => {

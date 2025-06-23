@@ -75,12 +75,12 @@ const AdminDashboard = () => {
           >
             Admin Management
           </button>
-          {/* <button
+          <button
             className={`tab-button ${activeTab === 'addAdmin' ? 'active' : ''}`}
             onClick={() => { setActiveTab('addAdmin'); handleTabClick('addAdmin'); }}
           >
             Add Admin
-          </button> */}
+          </button>
           <button
             className={`tab-button ${activeTab === 'admin-profile' ? 'active' : ''}`}
             onClick={() => { setActiveTab('admin-profile'); handleTabClick('admin-profile'); }}

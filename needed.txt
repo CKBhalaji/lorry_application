@@ -18,3 +18,13 @@ if not os.path.exists(settings.UPLOAD_DIRECTORY):
 
 
 testadmin and password with ONEtwo@2003
+
+uvicorn lorry_backend.main:app --reload
+
+admin 
+ONEtwo@2003
+
+
+bhalaji
+ONEtwo@2003
+

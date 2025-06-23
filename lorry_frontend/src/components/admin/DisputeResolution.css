@@ -88,6 +88,11 @@
   color: #4caf50;
 }
 
+.ADR-status-badge.rejected {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
 .ADR-dispute-details {
   margin-bottom: 15px;
 }

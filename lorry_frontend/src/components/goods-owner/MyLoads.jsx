@@ -1,7 +1,7 @@
 // src/components/goods-owner/MyLoads.js
 import React, { useState, useEffect } from 'react';
 import './MyLoads.css';
-import { fetchMyLoads, fetchBidsForLoad } from '../../services/goodsOwnerService';
+import { fetchMyLoads, fetchBidsForLoad, hireDriverForLoad} from '../../services/goodsOwnerService';
 
 const MyLoads = () => {
   const [loads, setLoads] = useState([]);
@@ -13,6 +13,7 @@ const MyLoads = () => {
   const [bids, setBids] = useState([]);
   const [bidsLoading, setBidsLoading] = useState(false);
   const [bidsError, setBidsError] = useState(null);
+//  const [acceptedDriverIds, setAcceptedDriverIds] = useState({}); // REMOVED: always use backend
 
   useEffect(() => {
     const fetchLoads = async () => {
@@ -84,7 +85,12 @@ const MyLoads = () => {
               const highestBid = load.highestBid; // Can be undefined, handled by conditional rendering
 
               return (
-                <div key={id} className={`GOML-load-card ${status.toLowerCase()}`} onClick={() => handleCardClick(id)} style={{ cursor: 'pointer' }}>
+                <div
+                  key={id}
+                  className={`GOML-load-card ${status.toLowerCase()}`}
+                  onClick={() => handleCardClick(id)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="GOML-load-header">
                     <h3>{goodsType}</h3>
                     <span className={`GOML-status-badge ${status.toLowerCase()}`}>{status}</span>
@@ -96,6 +102,7 @@ const MyLoads = () => {
                     <p><strong>Weight:</strong> {weight} kg</p>
                     <p><strong>Dates:</strong> {pickupDateStr} - {deliveryDateStr}</p>
                     <p><strong>Bids Received:</strong> {bidCount}</p>
+                    <p><strong>Current Highest Bid:</strong> ₹{load.current_highest_bid || load.highestBid || 'N/A'}</p>
                     {load.acceptedDriverId && (
                       <p><strong>Driver ID:</strong> {load.acceptedDriverId}</p>
                     )}
@@ -104,9 +111,6 @@ const MyLoads = () => {
                     )}
                     {load.winningBidDriverId && !load.acceptedDriverId && !load.driverId && (
                       <p><strong>Driver ID:</strong> {load.winningBidDriverId}</p>
-                    )}
-                    {highestBid && ( // This check is fine
-                      <p><strong>Highest Bid:</strong> ₹{highestBid}</p>
                     )}
                   </div>
                   <div className="GOML-load-actions">
@@ -118,23 +122,58 @@ const MyLoads = () => {
                     )}
                   </div>
                   {expandedLoadId === id && (
-                    <div className="GOML-bids-section">
-                      {bidsLoading && <p>Loading bids...</p>}
-                      {bidsError && <p className="error-message">{bidsError}</p>}
-                      {!bidsLoading && !bidsError && (
-                        bids.length === 0
-                          ? <p>No bids available for your load.</p>
-                          : (
-                            <ul>
-                              {bids.map((bid) => (
-                                <li key={bid.id}>
-                                  Driver ID: {bid.driver_id}
-                                </li>
-                              ))}
-                            </ul>
-                          )
-                      )}
-                    </div>
+                    <>
+                      {console.log('Rendering expanded for id:', id, 'expandedLoadId:', expandedLoadId)}
+                      <div className="GOML-bids-section">
+                        {bidsLoading && <p>Loading bids...</p>}
+                        {bidsError && <p className="error-message">{bidsError}</p>}
+                        {!bidsLoading && !bidsError && (
+                          bids.length === 0
+                            ? <p>No bids available for your load.</p>
+                            : (
+                              <div>
+                                {Object.values(bids.reduce((acc, bid) => {
+                                  if (!acc[bid.driver_id]) {
+                                    acc[bid.driver_id] = bid;
+                                  }
+                                  return acc;
+                                }, {})).map((bid, idx, arr) => (
+                                  <div key={bid.driver_id} style={{ marginBottom: '1em' }}>
+                                    <div><strong>Driver ID:</strong> {bid.driver_id || 'N/A'}</div>
+                                    <div>Driver Name: {bid.driver_name || 'N/A'}</div>
+                                    <div>Email: {bid.driver_email || 'N/A'}</div>
+                                    <div>Phone: {bid.driver_phone || 'N/A'}</div>
+                                    {load.status === 'active' && load.acceptedDriverId === bid.driver_id ? (
+                                      <button
+                                        style={{ background: 'red', color: 'white', border: 'none', padding: '6px 16px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}
+                                        onClick={e => { e.stopPropagation(); /* Optionally implement cancel logic here */ }}
+                                      >Cancel</button>
+                                    ) : load.status === 'active' ? null : (
+                                      <button onClick={async (e) => {
+                                        e.stopPropagation();
+                                        try {
+                                          const { hireDriverForLoad } = await import('../../services/goodsOwnerService');
+                                          await hireDriverForLoad(id, bid.driver_id);
+                                          // Re-fetch loads to get updated acceptedDriverId and status
+                                          const updatedLoads = await import('../../services/goodsOwnerService').then(mod => mod.fetchMyLoads());
+                                          setLoads(Array.isArray(updatedLoads) ? updatedLoads : []);
+                                          alert('Driver hired and load activated!');
+                                        } catch (err) {
+                                          console.error('Hire driver error:', err);
+                                          alert('Failed to hire driver.');
+                                        }
+                                      }}>Hire</button>
+                                    )}
+                                    {idx < arr.length - 1 && (
+                                      <div style={{ borderBottom: '1px solid var(--border-color)', margin: '1em 0' }}></div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )
+                        )}
+                      </div>
+                    </>
                   )}
                 </div>
               );

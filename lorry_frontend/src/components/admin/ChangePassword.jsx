@@ -40,12 +40,16 @@ const ChangePassword = () => {
 
     setIsSubmitting(true);
     try {
-      await changeAdminPassword({
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword
-      });
+      // Get adminId from localStorage or context if needed
+      const adminUser = JSON.parse(localStorage.getItem('authUser'));
+      const adminId = adminUser && adminUser.id;
+      await changeAdminPassword(
+        adminId,
+        formData.currentPassword,
+        formData.newPassword
+      );
       alert('Password changed successfully!');
-      navigate('/admin/profile');
+      navigate('/admin/dashboard?tab=admin-profile');
     } catch (error) {
       console.error('Error changing password:', error);
       setErrors({ currentPassword: error.message || 'Failed to change password' });

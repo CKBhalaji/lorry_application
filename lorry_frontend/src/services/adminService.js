@@ -118,10 +118,10 @@ export const fetchDisputes = async () => {
   }
 };
 
-export const resolveDispute = async (disputeId, resolution) => {
+export const resolveDispute = async (disputeId, resolutionData) => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.put(`${API_BASE_URL}/disputes/${disputeId}/resolve`, { resolution }, {
+    const response = await axios.put(`${API_BASE_URL}/disputes/${disputeId}/resolve`, resolutionData, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     return response.data;
@@ -230,10 +230,23 @@ export const updateAdminProfile = async (adminId, profileData) => {
   }
 };
 
-export const changeAdminPassword = async (adminId, passwordData) => {
+export const updateAdminProfileOnly = async (adminId, profileData) => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/password`, passwordData, {
+    const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/admin_profile`, profileData, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating admin profile (admin_profile):', error);
+    throw error;
+  }
+};
+
+export const changeAdminPassword = async (adminId, oldPassword, newPassword) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/password`, { old_password: oldPassword, new_password: newPassword }, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     return response.data;

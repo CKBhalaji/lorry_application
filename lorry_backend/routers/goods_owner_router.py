@@ -54,6 +54,7 @@ async def get_goods_owner_public_profile(owner_id: int, db: Session = Depends(da
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found.')
     profile = db.query(models.GoodsOwnerProfile).filter(models.GoodsOwnerProfile.user_id == owner_id).first()
     result = {
+        "owner_id":user.id,
         "username": user.username,
         "email": user.email,
         "company_name": profile.company_name if profile else None,
@@ -153,7 +154,52 @@ async def change_goods_owner_password(
 @router.get('/loads/{load_id}/bids', response_model=List[schemas.BidResponse], dependencies=[Depends(get_current_goods_owner_user)])
 async def get_bids_for_load(load_id: int, db: Session = Depends(database.get_db)):
     bids = db.query(models.Bid).filter(models.Bid.load_id == load_id).all()
-    return bids
+    bid_responses = []
+    for bid in bids:
+        load = db.query(models.Load).filter(models.Load.id == bid.load_id).first()
+        driver = db.query(models.User).filter(models.User.id == bid.driver_id).first()
+        driver_profile = db.query(models.DriverProfile).filter(models.DriverProfile.user_id == bid.driver_id).first()
+        bid_responses.append({
+            'id': bid.id,
+            'load_id': bid.load_id,
+            'amount': bid.amount,
+            'driver_id': bid.driver_id,
+            'bid_status': bid.bid_status,
+            'created_at': str(bid.created_at),
+            'goodsType': load.goodsType if load else '',
+            'pickupLocation': load.pickupLocation if load else '',
+            'deliveryLocation': load.deliveryLocation if load else '',
+            'pickupDate': load.pickupDate if load else '',
+            'deliveryDate': load.deliveryDate if load else '',
+            'status': load.status if load else '',
+            'driver_name': driver.username if driver else '',
+            'driver_email': driver.email if driver else '',
+            'driver_phone': driver_profile.phone_number if driver_profile else '',
+        })
+    return bid_responses
+
+# --- Hire a Driver for a Load (Goods Owner) ---
+from fastapi import Request
+@router.put('/loads/{load_id}/hire', status_code=200)
+async def hire_driver_for_load(load_id: int, driver_id: int = None, db: Session = Depends(database.get_db), request: Request = None):
+    # Only allow if driver_id is provided
+    if not driver_id:
+        raise HTTPException(status_code=400, detail='driver_id is required')
+    load = db.query(models.Load).filter(models.Load.id == load_id).first()
+    if not load:
+        raise HTTPException(status_code=404, detail='Load not found')
+    # Assign driver and set status to active
+    load.status = 'active'
+    load.accepted_driver_id = driver_id
+    db.add(load)
+    # Update the bid status for the hired driver
+    bid = db.query(models.Bid).filter(models.Bid.load_id == load_id, models.Bid.driver_id == driver_id).first()
+    if bid:
+        bid.bid_status = 'AWAITING_DRIVER_RESPONSE'
+        db.add(bid)
+    db.commit()
+    db.refresh(load)
+    return {"detail": "Driver hired and load activated", "load_id": load_id, "driver_id": driver_id}
 
 # --- Goods Owner Dispute Management ---
 # POST /api/owner/disputes (Frontend path) -> Our router prefix is /api/v1/owners
@@ -167,7 +213,7 @@ async def create_owner_dispute(dispute_data: schemas.DisputeCreate, current_owne
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Cannot raise dispute for a load not owned by you.')
 
     db_dispute = models.Dispute(
-        driverId=dispute_data.driverId,
+        driverId=getattr(dispute_data, 'driverId', None),
         loadId=dispute_data.loadId,
         disputeType=dispute_data.disputeType,
         message=dispute_data.message,

@@ -39,6 +39,10 @@
   border-left: 4px solid #4caf50;
 }
 
+.GOML-load-card.pending {
+  border-left: 4px solid  #ffc107;
+}
+
 .GOML-load-card.completed {
   border-left: 4px solid #2196f3;
 }
@@ -69,6 +73,11 @@
 .GOML-status-badge.active {
   background-color: rgba(76, 175, 80, 0.2);
   color: #2e7d32;
+}
+
+.GOML-status-badge.pending {
+  background-color: rgba(76, 175, 80, 0.2);
+  color:  #ffc107;
 }
 
 .GOML-status-badge.completed {

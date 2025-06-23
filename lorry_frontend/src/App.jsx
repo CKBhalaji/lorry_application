@@ -42,6 +42,7 @@ function App() {
                 <Route path="" element={<GoodsOwnerDashboard />} />
               </Route>
               <Route path="/admin/*" element={<ProtectedRoute allowedUserTypes={['admin']} />}> 
+                <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="" element={<AdminDashboard />} />
               </Route>
               <Route path="/about-us" element={<AboutUs />} />
