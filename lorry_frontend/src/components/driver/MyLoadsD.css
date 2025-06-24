@@ -1,0 +1,120 @@
+.DL-my-loads {
+  color: var(--primary-text);
+  padding: 20px;
+}
+
+.DL-my-loads h2 {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.DL-no-loads {
+  font-style: italic;
+  color: var(--primary-text);
+}
+
+.DL-loads-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.DL-load-card {
+  background: var(--dashboard-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 2px var(--primary-text);
+}
+
+.DL-load-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px var(--primary-text);
+}
+
+.DL-load-card.accepted {
+  border-left: 4px solid #4caf50;
+}
+
+.DL-load-card.Cancelled {
+  border-left: 4px solid #f44336;
+}
+
+.DL-load-info h3 {
+  margin-top: 0;
+  color: var(--primary-text);
+}
+
+.DL-load-info p {
+  margin: 8px 0;
+}
+
+.DL-load-info strong {
+  color: var(--input-focus);
+}
+
+.DL-status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.DL-status-badge.accepted {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.DL-status-badge.declined {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.DL-status-badge.pending {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.DL-loading {
+  color: yellow;
+  text-align: center;
+  padding: 20px;
+}
+
+.DL-header-row button{
+  background: transparent;
+  color: var(--primary-text);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.DL-header-row button.active{
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: bold;
+}
+
+.DL-header-row button:hover {
+  color: var(--primary-text);
+  background: var(--tab-hover-bg);
+}
+
+@media (max-width: 768px) {
+  .DL-loads-list {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .DL-my-loads {
+    padding: 15px;
+  }
+  .DL-loads-list {
+    grid-template-columns: 1fr;
+  }
+}

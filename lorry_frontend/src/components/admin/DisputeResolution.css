@@ -29,6 +29,7 @@
 }
 
 .ADR-tab-button:hover {
+  color: var(--primary-text);
   background: var(--tab-hover-bg);
 }
 

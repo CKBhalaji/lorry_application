@@ -154,21 +154,21 @@ const SignUpDriver = () => {
 
     if (validateForm()) {
       const formData = {
-        username: document.getElementById('driver-username').value,
-        phoneNumber: document.getElementById('driver-phone').value,
-        aadharNumber: document.getElementById('driver-aadhar').value,
-        email,
-        experience: document.getElementById('driver-experience').value,
-        drivingLicenseFileName: document.getElementById('driver-license').files[0]?.name || null, // File upload handling needed
-        insuranceFileName: document.getElementById('driver-insurance').files[0]?.name || null, // File upload handling neededdriver-insurance
-        rcCardFileName: document.getElementById('driver-rc-card').files[0]?.name || null, // File upload handling neededdriver-rc-card
-        vehicleType,
-        customVehicleType,
-        loadCapacityKg: document.getElementById('vehicle-load').value,
-        gpayId: selectedPayment === 'gpay' ? document.getElementById('payment-method').value : '',
-        paytmId: selectedPayment === 'paytm' ? document.getElementById('payment-method').value : '',
-        upiId: selectedPayment === 'upi' ? document.getElementById('payment-method').value : '',
-        password,
+        username: document.getElementById('driver-username').value || "",
+        profile: {
+          full_name: document.getElementById('driver-fullname').value || "",
+          phone_number: document.getElementById('driver-phone').value || "",
+          aadhar_number: document.getElementById('driver-aadhar').value || "",
+          experience: document.getElementById('driver-experience').value || "",
+          vehicle_type: vehicleType || "",
+          custom_vehicle_type: customVehicleType || "",
+          load_capacity_kg: document.getElementById('vehicle-load').value ? parseInt(document.getElementById('vehicle-load').value, 10) : 0,
+          gpay_id: selectedPayment === 'gpay' ? document.getElementById('payment-method').value || "" : '',
+          paytm_id: selectedPayment === 'paytm' ? document.getElementById('payment-method').value || "" : '',
+          upi_id: selectedPayment === 'upi' ? document.getElementById('payment-method').value || "" : '',
+        },
+        email: email || "",
+        password: password || "",
       };
 
       try {
@@ -257,6 +257,16 @@ const SignUpDriver = () => {
               type="text"
               className={`driver-signup-input ${errors.username ? 'error' : ''}`}
               placeholder="Enter your username"
+              required
+              disabled={!isVerified}
+            />
+
+            <label htmlFor="driver-fullname" className="driver-signup-label">Full Name</label>
+            <input
+              id="driver-fullname"
+              type="text"
+              className={`driver-signup-input ${errors.fullName ? 'error' : ''}`}
+              placeholder="Enter your full name"
               required
               disabled={!isVerified}
             />

@@ -4,6 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import './GOChangePassword.css';
 import { changeOwnerPassword } from '../../services/goodsOwnerService';
 
+// Cookie utility functions (same as in AuthContext)
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
     currentPassword: '',
@@ -40,7 +55,7 @@ const ChangePassword = () => {
 
     setIsSubmitting(true);
     try {
-      const raw = localStorage.getItem('authUser');
+      const raw = getCookie('authUser');
       const authUser = raw ? JSON.parse(raw) : null;
       if (!authUser || !authUser.id) {
         setErrors({ currentPassword: 'User not found or not logged in' });

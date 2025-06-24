@@ -1,10 +1,25 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1/admin';
+// Cookie utility functions (same as in AuthContext)
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
+const API_BASE_URL = 'http://localhost:8000/api/admin';
 
 export const deleteUser = async (userId) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     const response = await axios.delete(`${API_BASE_URL}/users/${userId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -16,7 +31,7 @@ export const deleteUser = async (userId) => {
 };
 
 export const fetchUsers = async () => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   console.log('AdminService: Attempting to fetch users.');
   console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/users`;
@@ -46,7 +61,7 @@ export const fetchUsers = async () => {
 };
 
 export const fetchAllLoads = async () => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   console.log('AdminService: Attempting to fetch all loads.');
   console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/loads`;
@@ -77,7 +92,7 @@ export const fetchAllLoads = async () => {
 
 export const updateLoadStatus = async (loadId, status) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     const response = await axios.put(`${API_BASE_URL}/loads/${loadId}/status`, { status }, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -89,7 +104,7 @@ export const updateLoadStatus = async (loadId, status) => {
 };
 
 export const fetchDisputes = async () => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   console.log('AdminService: Attempting to fetch all disputes.');
   console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/disputes`;
@@ -120,7 +135,7 @@ export const fetchDisputes = async () => {
 
 export const resolveDispute = async (disputeId, resolutionData) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     const response = await axios.put(`${API_BASE_URL}/disputes/${disputeId}/resolve`, resolutionData, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -133,7 +148,7 @@ export const resolveDispute = async (disputeId, resolutionData) => {
 
 export const addNewAdmin = async (adminData) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     const response = await axios.post(`${API_BASE_URL}/admins`, adminData, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -146,7 +161,7 @@ export const addNewAdmin = async (adminData) => {
 
 export const deleteAdmin = async (adminId) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     const response = await axios.delete(`${API_BASE_URL}/admins/${adminId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -158,7 +173,7 @@ export const deleteAdmin = async (adminId) => {
 };
 
 export const fetchAdmins = async () => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   console.log('AdminService: Attempting to fetch all admin accounts.');
   console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/admins`;
@@ -188,7 +203,7 @@ export const fetchAdmins = async () => {
 };
 
 export const fetchAdminProfile = async (adminId) => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   console.log(`AdminService: Attempting to fetch profile for admin ID: ${adminId}.`);
   console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/admins/${adminId}/profile`;
@@ -219,7 +234,7 @@ export const fetchAdminProfile = async (adminId) => {
 
 export const updateAdminProfile = async (adminId, profileData) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/profile`, profileData, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -232,7 +247,7 @@ export const updateAdminProfile = async (adminId, profileData) => {
 
 export const updateAdminProfileOnly = async (adminId, profileData) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/admin_profile`, profileData, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -245,7 +260,7 @@ export const updateAdminProfileOnly = async (adminId, profileData) => {
 
 export const changeAdminPassword = async (adminId, oldPassword, newPassword) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getCookie('authToken');
     const response = await axios.put(`${API_BASE_URL}/admins/${adminId}/password`, { old_password: oldPassword, new_password: newPassword }, {
       headers: { 'Authorization': `Bearer ${token}` }
     });

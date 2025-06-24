@@ -53,7 +53,7 @@ def test_root_path():
 
 def test_signup_driver():
     response = client.post(
-        '/api/v1/auth/signup/driver',
+        '/api/auth/signup/driver',
         json={
             'username': 'testdriver',
             'email': 'testdriver@example.com',
@@ -84,7 +84,7 @@ def test_signup_driver():
 def test_login_and_get_token():
     # First, create a user to login with
     client.post(
-        '/api/v1/auth/signup/driver',
+        '/api/auth/signup/driver',
         json={
             'username': 'logindriver',
             'email': 'logindriver@example.com',
@@ -95,7 +95,7 @@ def test_login_and_get_token():
     )
 
     response = client.post(
-        '/api/v1/auth/login',
+        '/api/auth/login',
         data={'username': 'logindriver@example.com', 'password': 'loginpass'} # Form data
     )
     assert response.status_code == 200, response.text
@@ -107,10 +107,10 @@ def test_login_and_get_token():
 def test_access_protected_route_with_token():
     token = test_login_and_get_token() # Get token from a logged-in user
 
-    # Example: Try to access a protected driver route, e.g., GET /api/v1/drivers/loads
+    # Example: Try to access a protected driver route, e.g., GET /api/drivers/loads
     # (This endpoint needs to exist and be protected)
     response = client.get(
-        '/api/v1/drivers/loads', # Assuming this is a protected route for drivers
+        '/api/drivers/loads', # Assuming this is a protected route for drivers
         headers={'Authorization': f'Bearer {token}'}
     )
     assert response.status_code == 200, response.text
@@ -118,13 +118,13 @@ def test_access_protected_route_with_token():
     # For example, assert isinstance(response.json(), list)
 
 def test_access_protected_route_without_token():
-    response = client.get('/api/v1/drivers/loads') # No token
+    response = client.get('/api/drivers/loads') # No token
     assert response.status_code == 401 # Expect Unauthorized
     assert response.json()['detail'] == 'Not authenticated' # Or whatever your app returns
 
 def test_access_protected_route_with_invalid_token():
     response = client.get(
-        '/api/v1/drivers/loads',
+        '/api/drivers/loads',
         headers={'Authorization': 'Bearer invalidtokenstring'}
     )
     assert response.status_code == 401

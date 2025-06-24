@@ -40,10 +40,14 @@
 }
 
 .GOML-load-card.pending {
-  border-left: 4px solid  #ffc107;
+  border-left: 4px solid #ffc107;
 }
 
-.GOML-load-card.completed {
+.GOML-load-card.in_transit {
+  border-left: 4px solid  #FF5F15;;
+}
+
+.GOML-load-card.delivered {
   border-left: 4px solid #2196f3;
 }
 
@@ -76,11 +80,16 @@
 }
 
 .GOML-status-badge.pending {
-  background-color: rgba(76, 175, 80, 0.2);
-  color:  #ffc107;
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
 }
 
-.GOML-status-badge.completed {
+.GOML-status-badge.in_transit {
+  background-color: rgba(255, 95, 21, 0.2); /* A very bright orange for the background */
+  color: #FF5F15; /* A highly visible, "safety" orange for the foreground */
+}
+
+.GOML-status-badge.delivered {
   background-color: rgba(33, 150, 243, 0.2);
   color: #1565c0;
 }
@@ -118,6 +127,38 @@
   background: var(--button-bg);
   color: var(--button-text);
   border: 1px solid var(--button-bg);
+}
+
+.GOML-header-row button{
+  background: transparent;
+  color: var(--primary-text);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.GOML-header-row button.active{
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: bold;
+}
+
+.GOML-header-row button:hover {
+  color: var(--primary-text);
+  background: var(--tab-hover-bg);
+}
+
+.GOML-hire-button button{
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: bold;
+}
+
+.GOML-hire-button button:hover {
+  color: var(--primary-text);
+  background: var(--tab-hover-bg);
 }
 
 .GOML-view-bids-btn:hover {

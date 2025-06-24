@@ -38,6 +38,7 @@ class DriverProfile(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), unique=True, nullable=False)
+    full_name = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
     aadhar_number = Column(String, nullable=True)
     experience = Column(String, nullable=True)
@@ -58,6 +59,7 @@ class GoodsOwnerProfile(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), unique=True, nullable=False)
+    full_name = Column(String, nullable=True)
     company_name = Column(String, nullable=True)
     gst_number = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)

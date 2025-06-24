@@ -5,6 +5,21 @@ import './DriverProfile.css';
 import { fetchDriverProfile } from '../../services/driverService'; // Removed saveDriverProfile as it's not defined here
 import { useAuth } from '../../context/AuthContext'; // For authUser
 
+// Cookie utility functions (same as in AuthContext)
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 const DriverProfile = () => {
     const navigate = useNavigate();
     const { authUser } = useAuth();
@@ -100,7 +115,7 @@ const DriverProfile = () => {
                     upi_id: profile.paymentMethod === 'UPI' ? profile.paymentDetails : '',
                 };
                 // Update profile fields
-                const token = localStorage.getItem('authToken');
+                const token = getCookie('authToken');
                 const driverId = authUser.id;
                 await import('../../services/driverService').then(({ updateDriverProfile }) =>
                     updateDriverProfile(driverId, updatePayload)
@@ -189,11 +204,11 @@ const DriverProfile = () => {
                 <div className="DP-profile-grid">
                     <div className="DP-profile-field">
                         <label>Full Name</label>
-                        <p>{profile?.fullName || 'N/A'}</p>
+                        <p>{profile?.fullName || ''}</p>
                     </div>
                     <div className="DP-profile-field">
                         <label>Email</label>
-                        <p>{profile?.email || 'N/A'}</p>
+                        <p>{profile?.email || ''}</p>
                     </div>
                     <div className="DP-profile-field">
                         <label>Phone</label>
@@ -206,7 +221,7 @@ const DriverProfile = () => {
                                 {errors.phone && <span className="DP-error">{errors.phone}</span>}
                             </>
                         ) : (
-                            <p>{profile?.phone || 'N/A'}</p>
+                            <p>{profile?.phone || ''}</p>
                         )}
                     </div>
                     <div className="DP-profile-field">
@@ -220,12 +235,12 @@ const DriverProfile = () => {
                                 {errors.aadhar && <span className="DP-error">{errors.aadhar}</span>}
                             </>
                         ) : (
-                            <p>{profile?.aadhar || 'N/A'}</p>
+                            <p>{profile?.aadhar || ''}</p>
                         )}
                     </div>
                     <div className="DP-profile-field">
                         <label>Experience</label>
-                        <p>{profile?.experience !== undefined ? `${profile.experience} years` : 'N/A'}</p>
+                        <p>{profile?.experience !== undefined ? `${profile.experience} years` : ''}</p>
                     </div>
                     <div className="DP-profile-field">
                         <label>Rating</label>

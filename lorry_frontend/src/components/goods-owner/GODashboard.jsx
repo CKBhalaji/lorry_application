@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import './GODashboard.css';
 import PostLoad from './PostLoad';
-import MyLoads from './MyLoads';
+import GOMyLoads from './GOMyLoads';
 import OwnerProfile from './OwnerProfile';
 import ManageDisputes from './GOManageDisputes';
 import ChangePassword from './GOChangePassword';
@@ -71,7 +71,7 @@ const GoodsOwnerDashboard = () => {
 
         <div className="GOD-dashboard-content">
           {activeTab === 'post' && <PostLoad />}
-          {activeTab === 'loads' && <MyLoads />}
+          {activeTab === 'loads' && <GOMyLoads />}
           {activeTab === 'disputes' && <ManageDisputes />}
           {activeTab === 'profile' && <OwnerProfile />}
           {activeTab === 'change-password' && <ChangePassword />}

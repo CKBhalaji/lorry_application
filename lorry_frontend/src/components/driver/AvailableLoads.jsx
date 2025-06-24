@@ -4,6 +4,21 @@ import './AvailableLoads.css';
 import { fetchAvailableLoads, placeBid } from '../../services/driverService';
 import { fetchOwnerPublicProfile } from '../../services/goodsOwnerService';
 
+// Cookie utility functions (same as in AuthContext)
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 const AvailableLoads = () => {
   const [loads, setLoads] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -80,7 +95,7 @@ const AvailableLoads = () => {
     }
 
     // Get driver ID from localStorage
-    const raw = localStorage.getItem('authUser');
+    const raw = getCookie('authUser');
     const authUser = raw ? JSON.parse(raw) : null;
     if (!authUser || !authUser.id) {
       setSuccessMessage({ type: 'error', message: 'User not found or not logged in' });

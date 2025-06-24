@@ -36,7 +36,7 @@ def admin_auth_token():
 
     # Log in as admin to get token
     response = client.post(
-        '/api/v1/auth/login',
+        '/api/auth/login',
         data={'username': 'testadmin@example.com', 'password': 'adminpass'}
     )
     assert response.status_code == 200, response.text
@@ -54,7 +54,7 @@ def test_get_all_users_as_admin(admin_auth_token, clear_users_table): # clear_us
     # The admin_auth_token fixture creates an admin.
     # We might want another user to be listed. Let's create one.
     client.post(
-        '/api/v1/auth/signup/driver',
+        '/api/auth/signup/driver',
         json={
             'username': 'anotherdriver',
             'email': 'anotherdriver@example.com',
@@ -65,7 +65,7 @@ def test_get_all_users_as_admin(admin_auth_token, clear_users_table): # clear_us
     )
 
     response = client.get(
-        '/api/v1/admin/users',
+        '/api/admin/users',
         headers={'Authorization': f'Bearer {admin_auth_token}'}
     )
     assert response.status_code == 200, response.text
@@ -87,7 +87,7 @@ def test_get_all_users_as_admin(admin_auth_token, clear_users_table): # clear_us
 def test_get_all_users_as_non_admin(clear_users_table): # clear_users_table for clean state
     # Create and login as a driver
     signup_response = client.post(
-        '/api/v1/auth/signup/driver',
+        '/api/auth/signup/driver',
         json={
             'username': 'nonadmin_driver',
             'email': 'nonadmin_driver@example.com',
@@ -99,14 +99,14 @@ def test_get_all_users_as_non_admin(clear_users_table): # clear_users_table for 
     assert signup_response.status_code == 201, signup_response.text
 
     login_response = client.post(
-        '/api/v1/auth/login',
+        '/api/auth/login',
         data={'username': 'nonadmin_driver@example.com', 'password': 'password'}
     )
     assert login_response.status_code == 200, login_response.text
     driver_token = login_response.json()['access_token']
 
     response = client.get(
-        '/api/v1/admin/users',
+        '/api/admin/users',
         headers={'Authorization': f'Bearer {driver_token}'}
     )
     assert response.status_code == 403 # Forbidden for non-admin

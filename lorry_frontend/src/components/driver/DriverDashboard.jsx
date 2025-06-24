@@ -7,6 +7,7 @@ import DriverProfile from './DriverProfile';
 import BidHistory from './BidHistory';
 import ManageDisputes from './DriverManageDisputes';
 import ChangePassword from './DChangePassword';
+import MyLoads from './MyLoads'
 
 const DriverDashboard = () => {
   const location = useLocation();
@@ -59,6 +60,12 @@ const DriverDashboard = () => {
             My Bids
           </button>
           <button
+            className={`DD-tab-button ${activeTab === 'myloads' ? 'active' : ''}`}
+            onClick={() => {setActiveTab('myloads'); handleTabClick('myloads'); }}
+          >
+            My Loads
+          </button>
+          <button
             className={`DD-tab-button ${activeTab === 'disputes'? 'active' : ''}`}
             onClick={() => {setActiveTab('disputes'); handleTabClick('disputes'); }}
           >
@@ -70,6 +77,7 @@ const DriverDashboard = () => {
           >
             Profile
           </button>
+          
           {/* <button
             className={`DD-tab-button ${activeTab === 'change-password'? 'active' : ''}`}
             onClick={() => {setActiveTab('change-password'); handleTabClick('change-password'); }}
@@ -81,6 +89,7 @@ const DriverDashboard = () => {
         <div className="DD-dashboard-content">
           {activeTab === 'loads' && <AvailableLoads />}
           {activeTab === 'bids' && <BidHistory />}
+          {activeTab === 'myloads' && <MyLoads />}
           {activeTab === 'disputes' && <ManageDisputes />}
           {activeTab === 'profile' && <DriverProfile />}
           {activeTab === 'change-password' && <ChangePassword />}

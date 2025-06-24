@@ -104,10 +104,13 @@ const BidHistory = () => {
 
             // Determine display status
             let displayStatus = status;
+            const loadStatus = (bid.load_status || bid.status || '').toLowerCase();
             if (status === 'CANCELLED_BY_USER') {
               displayStatus = 'Cancelled by you';
-            } else if (status === 'CANCELLED') {
+            } else if (status === 'CANCELLED' || loadStatus === 'cancelled') {
               displayStatus = 'Cancelled';
+            } else if (status === 'AWAITING_DRIVER_RESPONSE') {
+              displayStatus = 'Awaiting Driver Response';
             }
 
             return (
@@ -156,6 +159,8 @@ const BidHistory = () => {
                               try {
                                 const { acceptBid, fetchDriverBids } = await import('../../services/driverService');
                                 await acceptBid(id);
+                                // Notify other components to refresh loads
+                                window.dispatchEvent(new Event('driver-loads-updated'));
                                 // Refresh bids
                                 const data = await fetchDriverBids(authUser.id);
                                 setBids(data || []);
@@ -172,6 +177,8 @@ const BidHistory = () => {
                               try {
                                 const { declineBid, fetchDriverBids } = await import('../../services/driverService');
                                 await declineBid(id);
+                                // Notify other components to refresh loads
+                                window.dispatchEvent(new Event('driver-loads-updated'));
                                 // Refresh bids
                                 const data = await fetchDriverBids(authUser.id);
                                 setBids(data || []);

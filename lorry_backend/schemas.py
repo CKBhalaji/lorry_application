@@ -36,6 +36,7 @@ class UserInDB(UserBase):
 
 # Driver Profile Schemas
 class DriverProfileBase(BaseModel):
+    full_name: Optional[str] = None
     phone_number: Optional[str] = None
     aadhar_number: Optional[str] = None
     experience: Optional[str] = None
@@ -74,6 +75,7 @@ class PasswordChangeRequest(BaseModel):
 
 # Goods Owner Profile Schemas
 class GoodsOwnerProfileBase(BaseModel):
+    full_name: Optional[str] = None
     company_name: Optional[str] = None
     gst_number: Optional[str] = None
     phone_number: Optional[str] = None
@@ -264,7 +266,7 @@ class BidResponse(BidBase):
     # Driver details for owner view
     driver_name: str
     driver_email: str
-    driver_phone: str
+    driver_phone: Optional[str] = None
 
     class Config:
         orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2

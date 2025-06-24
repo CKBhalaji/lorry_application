@@ -7,7 +7,7 @@ from .. import schemas, models, security, database # Adjusted import paths
 from ..models import UserRole # For role checking
 
 router = APIRouter(
-    prefix='/api/v1/admin',
+    prefix='/api/admin',
     tags=['Admin'],
     dependencies=[Depends(security.get_current_active_user)] # Base dependency for all admin routes
 )
