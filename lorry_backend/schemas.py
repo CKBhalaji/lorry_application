@@ -36,6 +36,7 @@ class UserInDB(UserBase):
 
 # Driver Profile Schemas
 class DriverProfileBase(BaseModel):
+    full_name: Optional[str] = None
     phone_number: Optional[str] = None
     aadhar_number: Optional[str] = None
     experience: Optional[str] = None
@@ -58,6 +59,8 @@ class DriverProfileUpdate(DriverProfileBase):
 class DriverProfileResponse(DriverProfileBase):
     id: int
     user_id: int
+    username: Optional[str] = None
+    email: Optional[str] = None
     class Config:
         orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
 
@@ -72,6 +75,7 @@ class PasswordChangeRequest(BaseModel):
 
 # Goods Owner Profile Schemas
 class GoodsOwnerProfileBase(BaseModel):
+    full_name: Optional[str] = None
     company_name: Optional[str] = None
     gst_number: Optional[str] = None
     phone_number: Optional[str] = None
@@ -142,9 +146,40 @@ class LoadResponse(LoadBase):
     id: int
     owner_id: int
     posted_date: str # Assuming string representation
+    current_highest_bid: Optional[int] = None
+    accepted_driver_id: Optional[int] = None
 
     class Config:
         orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
+
+# Schemas for AdminProfile
+class AdminProfileBase(BaseModel):
+    name: str
+    phone_number: str = ''
+
+class AdminProfileFullResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    role: str
+    is_active: bool
+    name: str
+    phone_number: str
+    class Config:
+        orm_mode = True
+
+class AdminProfileCreate(AdminProfileBase):
+    pass
+
+class AdminUserCreate(UserCreate):
+    name: str
+    phone_number: str = ''
+
+class AdminProfileResponse(AdminProfileBase):
+    id: int
+    user_id: int
+    class Config:
+        orm_mode = True
 
 # Schemas for Disputes
 class DisputeBase(BaseModel):
@@ -154,8 +189,32 @@ class DisputeBase(BaseModel):
     message: str
     attachments: Optional[str] = None
 
-class DisputeCreate(DisputeBase):
-    pass # reported_by_user_id will be taken from current user
+class AdminDisputeResponse(BaseModel):
+    id: int
+    loadId: Optional[int] = None
+    driverId: Optional[int] = None
+    ownerId: Optional[int] = None
+    driver_name: Optional[str] = None
+    driver_email: Optional[str] = None
+    driver_phone: Optional[str] = None
+    owner_name: Optional[str] = None
+    owner_email: Optional[str] = None
+    owner_phone: Optional[str] = None
+    disputeType: Optional[str] = None
+    created_at: Optional[str] = None
+    message: Optional[str] = None
+    status: Optional[str] = None
+    resolution_details: Optional[str] = None
+    class Config:
+        orm_mode = True
+
+class DisputeCreate(BaseModel):
+    driverId: Optional[int] = None
+    loadId: Optional[int] = None
+    disputeType: Optional[str] = None
+    message: str
+    attachments: Optional[str] = None
+    # reported_by_user_id will be taken from current user
 
 class DisputeUpdate(BaseModel):
     status: Optional[str] = None
@@ -171,6 +230,9 @@ class DisputeResponse(DisputeBase):
     status: str
     resolution_details: Optional[str] = None
     created_at: str # Assuming string representation
+    driver_name: Optional[str] = None
+    driver_email: Optional[str] = None
+    driver_phone: Optional[str] = None
 
     class Config:
         orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
@@ -193,6 +255,18 @@ class BidResponse(BidBase):
     driver_id: int
     bid_status: str
     created_at: str
+    # Load details for bid history display
+    goodsType: str
+    pickupLocation: str
+    deliveryLocation: str
+    pickupDate: str
+    deliveryDate: str
+    status: str
+    owner_id: Optional[int] = None
+    # Driver details for owner view
+    driver_name: str
+    driver_email: str
+    driver_phone: Optional[str] = None
 
     class Config:
         orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2

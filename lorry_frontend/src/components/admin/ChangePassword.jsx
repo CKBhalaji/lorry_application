@@ -4,6 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import './ChangePassword.css';
 import { changeAdminPassword } from '../../services/adminService';
 
+// Cookie utility functions (same as in AuthContext)
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
     currentPassword: '',
@@ -40,12 +55,16 @@ const ChangePassword = () => {
 
     setIsSubmitting(true);
     try {
-      await changeAdminPassword({
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword
-      });
+      // Get adminId from localStorage or context if needed
+      const adminUser = JSON.parse(getCookie('authUser'));
+      const adminId = adminUser && adminUser.id;
+      await changeAdminPassword(
+        adminId,
+        formData.currentPassword,
+        formData.newPassword
+      );
       alert('Password changed successfully!');
-      navigate('/admin/profile');
+      navigate('/admin/dashboard?tab=admin-profile');
     } catch (error) {
       console.error('Error changing password:', error);
       setErrors({ currentPassword: error.message || 'Failed to change password' });

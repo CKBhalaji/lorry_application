@@ -5,12 +5,27 @@ import './OwnerProfile.css';
 import { fetchOwnerProfile, saveOwnerProfile } from '../../services/goodsOwnerService';
 // import { useAuth } from '../../context/AuthContext'; // For authUser
 
+// Cookie utility functions (same as in AuthContext)
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 const OwnerProfile = () => {
   const navigate = useNavigate();
   const [authUserError, setAuthUserError] = useState(false);
   let authUser = null;
   try {
-    const raw = localStorage.getItem('authUser');
+    const raw = getCookie('authUser');
     authUser = raw ? JSON.parse(raw) : null;
     if (!authUser || typeof authUser !== 'object' || !authUser.id) {
       throw new Error();
@@ -124,14 +139,9 @@ const OwnerProfile = () => {
   if (authUserError) {
     return (
       <div className="GOP-error-message">
-        Invalid or missing user session. <button onClick={() => { localStorage.removeItem('authUser'); window.location.href = '/login'; }}>Go to Login</button>
+        Invalid or missing user session. <button onClick={() => { removeCookie('authUser'); window.location.href = '/login'; }}>Go to Login</button>
       </div>
     );
-  }
-  console.log('RENDER PROFILE DATA:', profile);
-  if (profile) {
-    // Print the full profile object for debugging
-    console.dir(profile, { depth: null });
   }
   if (loading) return <div className="GOP-loading">Loading profile...</div>; // Standardized class name
   if (error) return <div className="GOP-error-message">{error}</div>;

@@ -8,6 +8,7 @@ import { addNewAdmin } from '../../services/adminService';
 const AddAdmin = () => {
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     phone: '',
     profile: '',
@@ -30,6 +31,7 @@ const AddAdmin = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = 'Name is required';
+    if (!formData.username) newErrors.username = 'Username is required';
     if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) newErrors.email = 'Valid email required';
     if (!formData.phone.match(/^[0-9]{10}$/)) newErrors.phone = '10-digit phone number required';
     if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
@@ -47,13 +49,14 @@ const AddAdmin = () => {
     try {
       await addNewAdmin({
         name: formData.name,
+        username: formData.username,
         email: formData.email,
-        profile: formData.profile,
-        phone: formData.phone,
-        password: formData.password
+        password: formData.password,
+        role: 'admin',
+        phone_number: formData.phone_number || formData.phone
       });
       alert('Admin added successfully!');
-      navigate('/admin/users');
+      navigate('/tab=admin-mangement');
     } catch (error) {
       console.error('Error adding admin:', error);
       alert(error.message || 'Failed to add admin');
@@ -76,6 +79,17 @@ const AddAdmin = () => {
             className={errors.name ? 'error' : ''}
           />
           {errors.name && <span className="AA-error-message">{errors.name}</span>}
+        </div>
+        <div className="AA-form-group">
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            className={errors.username ? 'error' : ''}
+          />
+          {errors.username && <span className="AA-error-message">{errors.username}</span>}
         </div>
 
         <div className="AA-form-group">

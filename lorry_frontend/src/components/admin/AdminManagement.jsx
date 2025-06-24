@@ -121,11 +121,10 @@ const AdminManagement = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Name</th>
-              <th>Profile/Role</th>
+              <th>Username</th>
+              <th>Role</th>
               <th>Email</th>
-              <th>Phone</th>
-              <th>Joined On</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -146,22 +145,18 @@ const AdminManagement = () => {
                     );
                   }
                   const id = admin.id || `missing-id-${index}`;
-                  const name = admin.name || 'N/A';
-                  const profileRole = admin.profile || admin.type || 'N/A'; // Use 'profile' or 'type' for role
+                  const username = admin.username || 'N/A';
+                  const role = admin.role || 'N/A';
                   const email = admin.email || 'N/A';
-                  const phone = admin.phone || 'N/A';
-                  const createdAtStr = admin.createdAt && !isNaN(new Date(admin.createdAt))
-                                     ? new Date(admin.createdAt).toLocaleDateString()
-                                     : 'Invalid Date';
+                  const status = admin.is_active === true ? 'Active' : admin.is_active === false ? 'Inactive' : 'N/A';
 
                   return (
                     <tr key={id}>
                       <td>{id}</td>
-                      <td>{name}</td>
-                      <td>{profileRole}</td>
+                      <td>{username}</td>
+                      <td>{role}</td>
                       <td>{email}</td>
-                      <td>{phone}</td>
-                      <td>{createdAtStr}</td>
+                      <td>{status}</td>
                       <td>
                         {isSuperAdmin && ( // Only superadmin can edit/delete
                           <>

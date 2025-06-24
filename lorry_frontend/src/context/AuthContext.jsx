@@ -1,12 +1,28 @@
 import React, { useState, useContext, useEffect } from 'react'; // Add useContext to the import
 import { login as apiLogin } from '../services/authService.js';
 
+// Simple cookie utility functions
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
   const [username, setUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Update the logging to properly stringify the state object
   console.log('Auth State:', JSON.stringify({
@@ -63,8 +79,8 @@ export const AuthProvider = ({ children }) => {
       setUserType(decodedUser.type);
       setUsername(decodedUser.username);
       setAuthState(newAuthState);
-      localStorage.setItem('authToken', access_token);
-      localStorage.setItem('authUser', JSON.stringify(decodedUser));
+      setCookie('authToken', access_token);
+      setCookie('authUser', JSON.stringify(decodedUser));
 
 
     } catch (error) {
@@ -83,9 +99,9 @@ export const AuthProvider = ({ children }) => {
       username: '',
       timestamp: ''
     });
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('authUser');
-    localStorage.removeItem('auth'); // Also remove the old 'auth' item if it's being phased out
+    removeCookie('authToken');
+    removeCookie('authUser');
+    removeCookie('auth'); // Also remove the old 'auth' item if it's being phased out
   };
 
   useEffect(() => {
@@ -124,8 +140,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('authToken');
-    const storedUser = localStorage.getItem('authUser');
+    const storedToken = getCookie('authToken');
+    const storedUser = getCookie('authUser');
     if (storedToken && storedUser) {
       const authUser = JSON.parse(storedUser);
       setIsAuthenticated(true);
@@ -139,10 +155,22 @@ export const AuthProvider = ({ children }) => {
         timestamp: new Date().toISOString()
       });
     }
+    setIsLoading(false);
   }, []);
 
+  // Provide the full authUser object (id, username, type) for consumers
+  let authUser = null;
+  const storedUser = getCookie('authUser');
+  if (storedUser) {
+    try {
+      authUser = JSON.parse(storedUser);
+    } catch (e) {
+      authUser = null;
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userType, username, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userType, username, login, logout, authUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

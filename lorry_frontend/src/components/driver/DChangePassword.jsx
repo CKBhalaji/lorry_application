@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DChangePassword.css';
-import { changeAdminPassword } from '../../services/adminService';
+import { changeDriverPassword } from '../../services/driverService';
+import { useAuth } from '../../context/AuthContext';
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const ChangePassword = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { authUser } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,12 +42,14 @@ const ChangePassword = () => {
 
     setIsSubmitting(true);
     try {
-      await changeAdminPassword({
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword
-      });
+      if (!authUser || !authUser.id) throw new Error('User not authenticated');
+      await changeDriverPassword(
+        authUser.id,
+        formData.currentPassword,
+        formData.newPassword
+      );
       alert('Password changed successfully!');
-      navigate('/driver/profile');
+      navigate('/driver/dashboard?tab=profile');
     } catch (error) {
       console.error('Error changing password:', error);
       setErrors({ currentPassword: error.message || 'Failed to change password' });

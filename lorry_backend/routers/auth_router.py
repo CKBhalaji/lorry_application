@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from .. import schemas, models, security, database # Adjusted import paths
 
 router = APIRouter(
-    prefix='/api/v1/auth', # Adding a version prefix
+    prefix='/api/auth', # Adding a version prefix
     tags=['Authentication']
 )
 

@@ -1,6 +1,6 @@
 import axios from 'axios'; // Added import for axios, as it's used later
 
-const BACKEND_BASE_URL = 'http://localhost:8000/api/v1';
+const BACKEND_BASE_URL = 'http://localhost:8000/api';
 
 export const signUpDriver = async (formData) => {
   console.log('Original formData for driver signup:', formData);
@@ -11,18 +11,19 @@ export const signUpDriver = async (formData) => {
       password: formData.password,
       role: 'driver', // Explicitly set role
       profile: {
-        phone_number: formData.phoneNumber,
-        aadhar_number: formData.aadharNumber,
-        experience: formData.experience,
-        driving_license_filename: formData.drivingLicenseFileName, // Assuming these are just names/placeholders
-        insurance_filename: formData.insuranceFileName,
-        rc_card_filename: formData.rcCardFileName,
-        vehicle_type: formData.vehicleType,
-        custom_vehicle_type: formData.customVehicleType,
-        load_capacity_kg: parseInt(formData.loadCapacityKg, 10) || null,
-        gpay_id: formData.gpayId,
-        paytm_id: formData.paytmId,
-        upi_id: formData.upiId
+        full_name: formData.profile.full_name || "",
+        phone_number: formData.profile.phone_number || "",
+        aadhar_number: formData.profile.aadhar_number || "",
+        experience: formData.profile.experience || "",
+        driving_license_filename: formData.profile.driving_license_filename || "",
+        insurance_filename: formData.profile.insurance_filename || "",
+        rc_card_filename: formData.profile.rc_card_filename || "",
+        vehicle_type: formData.profile.vehicle_type || "",
+        custom_vehicle_type: formData.profile.custom_vehicle_type || "",
+        load_capacity_kg: formData.profile.load_capacity_kg ? parseInt(formData.profile.load_capacity_kg, 10) : 0,
+        gpay_id: formData.profile.gpay_id || "",
+        paytm_id: formData.profile.paytm_id || "",
+        upi_id: formData.profile.upi_id || ""
       }
     };
     console.log('Processed payload for driver signup:', payload);
@@ -57,6 +58,7 @@ export const signUpGoodsOwner = async (goodsOwnerData) => {
       password: goodsOwnerData.password,
       role: 'goods_owner', // Explicitly set role
       profile: {
+        full_name: goodsOwnerData.full_name,
         company_name: goodsOwnerData.companyName,
         gst_number: goodsOwnerData.gstNumber,
         phone_number: goodsOwnerData.phone // Ensure this matches your form field

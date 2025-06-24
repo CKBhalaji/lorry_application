@@ -80,10 +80,10 @@ const UserManagement = () => {
         <div className="UM-user-card">
           <h3>User Details</h3>
           <div className="UM-user-details-grid">
-            <p><strong>Name:</strong> {selectedUser.name || 'N/A'}</p>
+            <p><strong>Name:</strong> {selectedUser.username || 'N/A'}</p>
             <p><strong>Email:</strong> {selectedUser.email || 'N/A'}</p>
             <p><strong>Role:</strong> {selectedUser.role || 'N/A'}</p>
-            <p><strong>Status:</strong> {selectedUser.status || 'N/A'}</p>
+            <p><strong>Status:</strong> {selectedUser.is_active === true ? 'Active' : selectedUser.is_active === false ? 'Inactive' : 'N/A'}</p>
           </div>
           <button className="UM-close-button" onClick={() => setSelectedUser(null)}>
             Close
@@ -118,10 +118,10 @@ const UserManagement = () => {
                     );
                   }
                   const id = user.id || `missing-id-${index}`;
-                  const name = user.name || 'N/A';
+                  const name = user.username || 'N/A';
                   const email = user.email || 'N/A';
                   const role = user.role || 'N/A';
-                  const status = user.status || 'N/A';
+                  const status = user.is_active === true ? 'Active' : user.is_active === false ? 'Inactive' : 'N/A';
 
                   return (
                     <tr key={id}>

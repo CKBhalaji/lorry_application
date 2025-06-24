@@ -99,10 +99,11 @@ const LoadManagement = () => {
           <p><strong>ID:</strong> {selectedLoad.id || 'N/A'}</p>
           <p><strong>Goods Type:</strong> {selectedLoad.goodsType || 'N/A'}</p>
           <p><strong>Route:</strong> {selectedLoad.pickupLocation || 'N/A'} to {selectedLoad.deliveryLocation || 'N/A'}</p>
-          <p><strong>Owner:</strong> {selectedLoad.ownerName || 'N/A'}</p>
+          <p><strong>Owner:</strong> {selectedLoad.owner_id || 'N/A'}</p>
           <p><strong>Status:</strong> {selectedLoad.status || 'N/A'}</p>
           {/* Add more details if available in selectedLoad */}
-          <p><strong>Bids:</strong> {selectedLoad.bidCount !== undefined ? selectedLoad.bidCount : 'N/A'}</p>
+          <p><strong>Bids:</strong> {selectedLoad.current_highest_bid !== undefined ? selectedLoad.current_highest_bid : 'N/A'}</p>
+          <p><strong>Driver::</strong> {selectedLoad.accepted_driver_id || 'N/A'}</p>
           <button onClick={() => setSelectedLoad(null)}>Close</button>
         </div>
       )}
@@ -119,6 +120,7 @@ const LoadManagement = () => {
                 <th>Route</th>
                 <th>Owner</th>
                 <th>Bids</th>
+                <th>Driver ID</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -138,8 +140,9 @@ const LoadManagement = () => {
                   const goodsType = load.goodsType || 'N/A';
                   const pickupLocation = load.pickupLocation || 'N/A';
                   const deliveryLocation = load.deliveryLocation || 'N/A';
-                  const ownerName = load.ownerName || 'N/A';
-                  const bidCount = load.bidCount !== undefined ? load.bidCount : 'N/A';
+                  const ownerId = load.owner_id || 'N/A';
+                  const currentHighestBid = load.current_highest_bid !== undefined ? load.current_highest_bid : 'N/A';
+                  const driverId = load.accepted_driver_id || 'N/A';
                   const status = load.status || 'N/A';
 
                   return (
@@ -147,8 +150,9 @@ const LoadManagement = () => {
                       <td onClick={() => handleViewDetails(load)}>{id}</td>
                       <td onClick={() => handleViewDetails(load)}>{goodsType}</td>
                       <td onClick={() => handleViewDetails(load)}>{pickupLocation} → {deliveryLocation}</td>
-                      <td onClick={() => handleViewDetails(load)}>{ownerName}</td>
-                      <td onClick={() => handleViewDetails(load)}>{bidCount}</td>
+                      <td onClick={() => handleViewDetails(load)}>{ownerId}</td>
+                      <td onClick={() => handleViewDetails(load)}>{currentHighestBid}</td>
+                      <td onClick={() => handleViewDetails(load)}>{load.accepted_driver_id ? load.accepted_driver_id : 'N/A'}</td>
                       <td>
                         <select
                           value={status}

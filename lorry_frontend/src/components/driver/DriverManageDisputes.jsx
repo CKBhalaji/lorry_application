@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DriverManageDisputes.css';
 import { fetchDriverDisputes, createDriverDispute } from '../../services/driverService';
+import { useAuth } from '../../context/AuthContext';
 
 const ManageDisputes = () => {
   // In the component:
@@ -10,7 +11,9 @@ const ManageDisputes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const { authUser } = useAuth();
   const [formData, setFormData] = useState({
+    driverId: '',
     loadId: '',
     disputeType: 'payment',
     message: '',
@@ -20,6 +23,10 @@ const ManageDisputes = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Set driverId automatically from authUser
+    if (authUser && authUser.id) {
+      setFormData(prev => ({ ...prev, driverId: authUser.id }));
+    }
     const loadDisputes = async () => {
       setLoading(true);
       setError(null);
@@ -41,7 +48,7 @@ const ManageDisputes = () => {
       }
     };
     loadDisputes();
-  }, []);
+  }, [authUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,13 +80,16 @@ const ManageDisputes = () => {
     if (!validateForm()) return;
 
     try {
-      const newDispute = await createDriverDispute(formData); // This service call might need its own error handling/logging
+      // Always include driverId from authUser
+      const payload = { ...formData, driverId: authUser?.id };
+      const newDispute = await createDriverDispute(payload); // This service call might need its own error handling/logging
       setDisputesState(prevDisputes => [newDispute, ...prevDisputes]); // Use functional update
       // setShowCreateForm(false); // Typically hide form after successful submission
       alert('Dispute created successfully!'); // Keep alert or use a more integrated notification system
       // Reset form and hide
       setShowCreateForm(false);
       setFormData({
+        driverId: authUser?.id || '',
         loadId: '',
         disputeType: 'payment',
         message: '',
@@ -127,6 +137,17 @@ const ManageDisputes = () => {
           <h3>Create New Dispute</h3>
           <form onSubmit={handleSubmit}>
             <div className="DMD-form-group">
+              <label>Driver ID</label>
+              <input
+                type="text"
+                name="driverId"
+                value={formData.driverId}
+                readOnly
+                disabled
+                className="DMD-readonly-field"
+              />
+            </div>
+            <div className="DMD-form-group">
               <label>Load ID</label>
               <input
                 type="text"
@@ -145,9 +166,10 @@ const ManageDisputes = () => {
                 value={formData.disputeType}
                 onChange={handleChange}
               >
-                <option value="payment">Payment Issue</option>
-                <option value="delivery">Delivery Problem</option>
-                <option value="goods">Goods Condition</option>
+                <option value="service">Service Quality</option>
+                <option value="delay">Delivery Delay</option>
+                <option value="damage">Goods Damage</option>
+                <option value="payment">Payment Discrepancy</option>
                 <option value="other">Other</option>
               </select>
             </div>
@@ -166,16 +188,6 @@ const ManageDisputes = () => {
                 {formData.message.length}/500 characters
               </div>
               {errors.message && <span className="DMD-error-message">{errors.message}</span>}
-            </div>
-
-            <div className="DMD-form-group">
-              <label>Attachment (Optional)</label>
-              <input
-                type="file"
-                onChange={handleFileChange}
-                accept="image/*,.pdf,.doc,.docx"
-              />
-              <small>Upload supporting documents (max 5MB)</small>
             </div>
 
             <div className="DMD-form-actions">
@@ -205,10 +217,10 @@ const ManageDisputes = () => {
 
               const id = dispute.id || `missing-id-${index}`;
               const loadId = dispute.loadId || 'N/A';
-              const type = dispute.type || 'N/A';
+              const type = dispute.disputeType || 'N/A';
               const status = dispute.status || 'N/A';
               const message = dispute.message || 'No message provided.';
-              const createdAtStr = dispute.createdAt && !isNaN(new Date(dispute.createdAt)) ? new Date(dispute.createdAt).toLocaleDateString() : 'Invalid Date';
+              const createdAtStr = dispute.created_at && !isNaN(new Date(dispute.created_at)) ? new Date(dispute.created_at).toLocaleDateString() : 'Invalid Date';
               const resolution = dispute.resolution || null;
               const resolvedAtStr = dispute.resolvedAt && !isNaN(new Date(dispute.resolvedAt)) ? new Date(dispute.resolvedAt).toLocaleDateString() : null;
               const attachments = dispute.attachments || null;

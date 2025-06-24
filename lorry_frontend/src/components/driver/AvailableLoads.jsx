@@ -4,14 +4,29 @@ import './AvailableLoads.css';
 import { fetchAvailableLoads, placeBid } from '../../services/driverService';
 import { fetchOwnerPublicProfile } from '../../services/goodsOwnerService';
 
+// Cookie utility functions (same as in AuthContext)
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 const AvailableLoads = () => {
   const [loads, setLoads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bidAmounts, setBidAmounts] = useState({});
   const [successMessage, setSuccessMessage] = useState(null);
-  const [selectedOwner, setSelectedOwner] = useState(null);
-  const [showOwnerModal, setShowOwnerModal] = useState(false);
+  const [ownerDetails, setOwnerDetails] = useState({}); // { [loadId]: ownerData }
+  const [showOwnerDetails, setShowOwnerDetails] = useState({}); // { [loadId]: boolean }
 
   useEffect(() => {
     const getLoads = async () => {
@@ -80,7 +95,7 @@ const AvailableLoads = () => {
     }
 
     // Get driver ID from localStorage
-    const raw = localStorage.getItem('authUser');
+    const raw = getCookie('authUser');
     const authUser = raw ? JSON.parse(raw) : null;
     if (!authUser || !authUser.id) {
       setSuccessMessage({ type: 'error', message: 'User not found or not logged in' });
@@ -108,14 +123,19 @@ const AvailableLoads = () => {
     }
   };
 
-  const handleShowOwner = async (ownerId) => {
-    try {
-      const owner = await fetchOwnerPublicProfile(ownerId);
-      setSelectedOwner(owner);
-      setShowOwnerModal(true);
-    } catch (err) {
-      setSelectedOwner({ error: 'Failed to fetch owner details.' });
-      setShowOwnerModal(true);
+  const handleToggleOwnerDetails = async (loadId, ownerId) => {
+    setShowOwnerDetails(prev => ({
+      ...prev,
+      [loadId]: !prev[loadId]
+    }));
+    // Only fetch if not already fetched and toggling on
+    if (!ownerDetails[loadId] && !showOwnerDetails[loadId]) {
+      try {
+        const owner = await fetchOwnerPublicProfile(ownerId);
+        setOwnerDetails(prev => ({ ...prev, [loadId]: owner }));
+      } catch (err) {
+        setOwnerDetails(prev => ({ ...prev, [loadId]: { error: 'Failed to fetch owner details.' } }));
+      }
     }
   };
 
@@ -141,23 +161,7 @@ const AvailableLoads = () => {
     <div className="DAL-available-loads">
       {successCard}
       <h2>Available Loads</h2>
-      {showOwnerModal && (
-        <div className="DAL-owner-modal">
-          <div className="DAL-owner-modal-content">
-            <button className="DAL-owner-modal-close" onClick={() => setShowOwnerModal(false)}>X</button>
-            {selectedOwner && !selectedOwner.error ? (
-              <>
-                <h3>Owner Details</h3>
-                <p><strong>Username:</strong> {selectedOwner.username || 'N/A'}</p>
-                <p><strong>Email:</strong> {selectedOwner.email || 'N/A'}</p>
-                <p><strong>Phone Number:</strong> {selectedOwner.phone_number || 'N/A'}</p>
-              </>
-            ) : (
-              <p>{selectedOwner?.error || 'No owner details available.'}</p>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Owner modal removed, now shown inline in card */}
       {!loading && !error && loads.length === 0 ? (
         <p>No loads available at the moment.</p>
       ) : (
@@ -180,7 +184,7 @@ const AvailableLoads = () => {
               const currentHighestBid = load.current_highest_bid || 'No bids yet';
 
               return (
-                <div key={id} className="DAL-load-card" onClick={() => handleShowOwner(load.owner_id)} style={{ cursor: 'pointer' }}>
+                <div key={id} className="DAL-load-card" onClick={() => handleToggleOwnerDetails(id, load.owner_id)} style={{ cursor: 'pointer' }}>
                   <div className="DAL-load-info">
                     <h3>{goodsType}</h3>
                     <p><strong>From:</strong> {pickupLocation}</p>
@@ -202,6 +206,25 @@ const AvailableLoads = () => {
                       Place Bid
                     </button>
                   </div>
+                  {showOwnerDetails[load.id] && (
+                    <div className="DAL-owner-details">
+                      {ownerDetails[load.id] ? (
+                        ownerDetails[load.id].error ? (
+                          <p>{ownerDetails[load.id].error}</p>
+                        ) : (
+                          <>
+                            <h4>Owner Details</h4>
+                            <p><strong>Id:</strong> {ownerDetails[load.id].owner_id || 'N/A'}</p>
+                            <p><strong>Username:</strong> {ownerDetails[load.id].username || 'N/A'}</p>
+                            <p><strong>Email:</strong> {ownerDetails[load.id].email || 'N/A'}</p>
+                            <p><strong>Phone Number:</strong> {ownerDetails[load.id].phone_number || 'N/A'}</p>
+                          </>
+                        )
+                      ) : (
+                        <p>Loading owner details...</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             } catch (cardError) {

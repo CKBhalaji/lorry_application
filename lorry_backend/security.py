@@ -18,7 +18,7 @@ ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES # e.g., 30
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='api/v1/auth/login') # Adjusted tokenUrl to match potential router prefix
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='api/auth/login') # Adjusted tokenUrl to match potential router prefix
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)

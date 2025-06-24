@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './SignUpGoodsOwner.css';
 import { signUpGoodsOwner } from '../../services/authService';
 import { sendOTP, verifyOTP } from '../../services/authService';
 
 const SignUpGoodsOwner = () => {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [generatedCode, setGeneratedCode] = useState(null);
@@ -13,19 +14,18 @@ const SignUpGoodsOwner = () => {
   const [phone, setPhone] = useState('');
   const [aadhar, setAadhar] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [password, setPassword] = useState(''); // New state for password
+  const [password, setPassword] = useState('');
   const [strength, setStrength] = useState('');
-  const [progress, setProgress] = useState(0); // Progress for the password strength bar
+  const [progress, setProgress] = useState(0);
   const [errors, setErrors] = useState({});
 
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const sendVerificationEmail = async () => {
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       alert('Incorrect email. Please correct the email.');
       return;
     }
-
     try {
       const otp = await sendOTP(email);
       setGeneratedCode(otp);
@@ -35,15 +35,6 @@ const SignUpGoodsOwner = () => {
       alert('Failed to send OTP. Please try again.');
     }
   };
-
-  // const handleVerifyCode = () => {
-  //   if (verifyOTP(email, verificationCode)) {
-  //     setIsVerified(false);
-  //     // alert('Email verified successfully!');
-  //   } else {
-  //     alert('Invalid OTP. Please try again.');
-  //   }
-  // };
 
   const handleVerifyCode = async () => {
     try {
@@ -57,37 +48,24 @@ const SignUpGoodsOwner = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!name) newErrors.name = true;
+    if (!username) newErrors.username = true;
+    if (!fullName) newErrors.fullName = true;
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) newErrors.email = true;
     if (!phone.match(/^[0-9]{10}$/)) newErrors.phone = true;
     if (!aadhar.match(/^[0-9]{12}$/)) newErrors.aadhar = true;
     if (!paymentMethod) newErrors.paymentMethod = true;
-    if (password.length < 8) newErrors.password = true; // Validate password length
-
+    if (password.length < 8) newErrors.password = true;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const checkPasswordStrength = (value) => {
     let score = 0;
-
-    // Check for at least 2 numbers
     if (value.match(/(.*[0-9].*[0-9])/)) score += 1;
-
-    // Check for at least 3 lowercase alphabets
     if (value.match(/(.*[a-z].*[a-z].*[a-z])/)) score += 1;
-
-    // Check for at least 1 uppercase alphabet
     if (value.match(/(.*[A-Z])/)) score += 1;
-
-    // Check for at least 1 special character
     if (value.match(/(.*[!@#$%^&*(),.?":{}|<>])/)) score += 1;
-
-    // Check for total length of 20 characters
     if (value.length === 20) score += 1;
-
-    // Set strength and progress
     if (score <= 1) {
       setStrength('Low');
       setProgress(20);
@@ -111,18 +89,18 @@ const SignUpGoodsOwner = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (validateForm()) {
       const formData = {
         email,
-        username: name,
+        username,
+        full_name: fullName,
         phone,
         aadhar,
         paymentMethod,
         password,
       };
       try {
-        console.log('Submitting driver signup payload:', formData);
+        console.log('Submitting goods owner signup payload:', formData);
         await signUpGoodsOwner(formData);
         alert('Goods owner signed up successfully!');
         navigate(-1);
@@ -177,14 +155,26 @@ const SignUpGoodsOwner = () => {
         {/* Right Section: Other Details */}
         <div className={`goods-owner-signup-right ${isVerified ? '' : 'disabled'}`}>
           <form className="goods-owner-signup-form" onSubmit={handleSubmit}>
-            <label htmlFor="owner-name" className="goods-owner-signup-label">Name</label>
+            <label htmlFor="owner-username" className="goods-owner-signup-label">Username</label>
             <input
-              id="owner-name"
+              id="owner-username"
               type="text"
-              className={`goods-owner-signup-input ${errors.name ? 'error' : ''}`}
-              placeholder="Enter your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              className={`goods-owner-signup-input ${errors.username ? 'error' : ''}`}
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              disabled={!isVerified}
+            />
+
+            <label htmlFor="owner-fullname" className="goods-owner-signup-label">Full Name</label>
+            <input
+              id="owner-fullname"
+              type="text"
+              className={`goods-owner-signup-input ${errors.fullName ? 'error' : ''}`}
+              placeholder="Enter your full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               required
               disabled={!isVerified}
             />

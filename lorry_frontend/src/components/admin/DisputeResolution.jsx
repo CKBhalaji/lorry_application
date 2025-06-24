@@ -38,10 +38,10 @@ const DisputeResolution = () => {
       console.log(`DisputeResolution: Resolving dispute ID ${disputeId} with action: ${resolutionAction}.`);
       // The actual resolution message/details might come from a form or be predefined
       const resolutionMessage = resolutionAction === 'approved' ? 'Complaint approved by admin.' : 'Complaint rejected by admin.';
-      await resolveDispute(disputeId, resolutionMessage); // Assuming resolveDispute API updates status and adds resolution text
+      const status = resolutionAction === 'approved' ? 'resolved' : 'rejected';
+      await resolveDispute(disputeId, { resolution_details: resolutionMessage, status });
 
       // Refetch or update local state
-      // For simplicity, refetching; ideally, API returns updated object or we update locally more precisely
       setLoading(true); // Show loading while refetching
       const data = await fetchDisputes();
       if (Array.isArray(data)) {
@@ -58,9 +58,16 @@ const DisputeResolution = () => {
     }
   };
 
-  const filteredDisputes = disputesData.filter(dispute =>
-    activeTab === 'open' ? dispute.status === 'open' || dispute.status === 'pending' : dispute.status === 'resolved' // Adjusted to include 'pending' in open
-  );
+  const filteredDisputes = disputesData.filter(dispute => {
+    if (activeTab === 'open') {
+      return dispute.status === 'open' || dispute.status === 'pending';
+    } else if (activeTab === 'resolved') {
+      return dispute.status === 'resolved';
+    } else if (activeTab === 'rejected') {
+      return dispute.status === 'rejected';
+    }
+    return false;
+  });
 
   if (loading) return <div className="ADR-loading">Loading disputes...</div>;
   if (error) return <div className="ADR-error-message">{error}</div>;
@@ -82,6 +89,12 @@ const DisputeResolution = () => {
           >
             Resolved Disputes
           </button>
+          <button
+            className={`ADR-tab-button ${activeTab === 'rejected' ? 'active' : ''}`}
+            onClick={() => setActiveTab('rejected')}
+          >
+            Rejected Disputes
+          </button>
         </div>
       </div>
 
@@ -100,14 +113,19 @@ const DisputeResolution = () => {
 
               const id = dispute.id || `missing-id-${index}`;
               const loadId = dispute.loadId || 'N/A';
-              const complainantName = dispute.complainantName || 'N/A';
-              const againstName = dispute.againstName || 'N/A';
-              const dateStr = dispute.date || dispute.createdAt; // Prefer 'date' if available, else 'createdAt'
-              const formattedDate = dateStr && !isNaN(new Date(dateStr)) ? new Date(dateStr).toLocaleString() : 'Invalid Date';
+              const driverId = dispute.driverId || 'N/A';
+              const ownerId = dispute.ownerId || 'N/A';
+              const disputeType = dispute.disputeType || 'N/A';
+              const createdAtStr = dispute.created_at && !isNaN(new Date(dispute.created_at)) ? new Date(dispute.created_at).toLocaleString() : 'Invalid Date';
               const message = dispute.message || 'No message provided.';
               const status = dispute.status || 'N/A';
-              const resolution = dispute.resolution || null;
-              const resolvedDateStr = dispute.resolvedDate && !isNaN(new Date(dispute.resolvedDate)) ? new Date(dispute.resolvedDate).toLocaleString() : null;
+              const resolutionDetails = dispute.resolution_details || null;
+              const driverName = dispute.driver_name || 'N/A';
+              const driverEmail = dispute.driver_email || 'N/A';
+              const driverPhone = dispute.driver_phone || 'N/A';
+              const ownerName = dispute.owner_name || 'N/A';
+              const ownerEmail = dispute.owner_email || 'N/A';
+              const ownerPhone = dispute.owner_phone || 'N/A';
 
               return (
                 <div key={id} className="ADR-dispute-card">
@@ -119,9 +137,18 @@ const DisputeResolution = () => {
                   </div>
                   <div className="ADR-dispute-details">
                     <p><strong>Load ID:</strong> {loadId}</p>
-                    <p><strong>Complainant:</strong> {complainantName}</p>
-                    <p><strong>Against:</strong> {againstName}</p>
-                    <p><strong>Date:</strong> {formattedDate}</p>
+                    <p><strong>Driver Details:</strong></p>
+                    <p><strong>ID:</strong> {driverId}</p>
+                    <p><strong>Name:</strong> {driverName}</p>
+                    <p><strong>Email:</strong> {driverEmail}</p>
+                    <p><strong>Phone:</strong> {driverPhone}</p>
+                    <p><strong>Owner Details:</strong></p>
+                    <p><strong>ID:</strong> {ownerId}</p>
+                    <p><strong>Name:</strong> {ownerName}</p>
+                    <p><strong>Email:</strong> {ownerEmail}</p>
+                    <p><strong>Phone:</strong> {ownerPhone}</p>
+                    <p><strong>Type:</strong> {disputeType}</p>
+                    <p><strong>Date:</strong> {createdAtStr}</p>
                   </div>
                   <div className="ADR-dispute-message">
                     <p><strong>Message:</strong></p>
@@ -145,10 +172,9 @@ const DisputeResolution = () => {
                     </div>
                   )}
 
-                  {status === 'resolved' && resolution && (
+                  {status === 'resolved' && resolutionDetails && (
                     <div className="ADR-resolution-outcome">
-                      <p><strong>Resolution:</strong> {resolution}</p>
-                      {resolvedDateStr && <p><strong>Resolved on:</strong> {resolvedDateStr}</p>}
+                      <p><strong>Resolution:</strong> {resolutionDetails}</p>
                     </div>
                   )}
                 </div>

@@ -1,10 +1,25 @@
 import axios from 'axios';
 
+// Cookie utility functions (same as in AuthContext)
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+  }, '');
+}
+function removeCookie(name) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
+
 // src/services/driverService.js
-const API_BASE_URL = 'http://localhost:8000/api/v1/drivers';
+const API_BASE_URL = 'http://localhost:8000/api/drivers';
 
 export const fetchAvailableLoads = async () => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   console.log('DriverService: Attempting to fetch available loads.');
   console.log('DriverService: Using token:', token);
   const url = `${API_BASE_URL}/loads`;
@@ -34,8 +49,38 @@ export const fetchAvailableLoads = async () => {
   }
 };
 
+// Accept a bid
+export const acceptBid = async (bidId) => {
+  const token = getCookie('authToken');
+  const url = `${API_BASE_URL}/bids/${bidId}/accept`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) throw new Error('Failed to accept bid');
+  return response.json();
+};
+
+// Decline a bid
+export const declineBid = async (bidId) => {
+  const token = getCookie('authToken');
+  const url = `${API_BASE_URL}/bids/${bidId}/decline`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) throw new Error('Failed to decline bid');
+  return response.json();
+};
+
 export const placeBid = async (bidData) => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   const response = await fetch(`${API_BASE_URL}/bids`, {
     method: 'POST',
     headers: {
@@ -49,7 +94,23 @@ export const placeBid = async (bidData) => {
 };
 
 export const fetchDriverBids = async (driverId) => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
+  const userRaw = getCookie('authUser');
+  let userType = null;
+  try {
+    if (userRaw) {
+      const userObj = JSON.parse(userRaw);
+      userType = userObj.type;
+    }
+  } catch (e) {
+    userType = null;
+  }
+  if (userType !== 'driver') {
+    removeCookie('authToken');
+    removeCookie('authUser');
+    window.location.href = '/login';
+    throw new Error('You must be logged in as a driver to view your bids.');
+  }
   console.log(`DriverService: Attempting to fetch bids for driver ID: ${driverId}.`);
   console.log('DriverService: Using token:', token);
   const url = `${API_BASE_URL}/${driverId}/bids`;
@@ -62,27 +123,24 @@ export const fetchDriverBids = async (driverId) => {
 
     console.log('DriverService: Response status for fetchDriverBids:', response.status);
 
-    // Axios throws an error for non-2xx responses, so response.ok check is implicitly handled by catch block.
-    // However, if we want to access response.text() for error body, we'd need to configure axios not to throw error for status codes.
-    // For simplicity with current axios setup, we'll rely on its error handling.
-    // If response.data is directly available, it means it was a 2xx response.
-
     console.log('DriverService: Successfully fetched driver bids. Data:', response.data);
     return response.data;
   } catch (error) {
     console.error(`DriverService: Exception during fetchDriverBids for driver ID ${driverId}:`, error.response ? error.response.data : error.message);
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       console.error('DriverService: Error status:', error.response.status);
       console.error('DriverService: Error body:', error.response.data);
+      if (error.response.status === 403) {
+        removeCookie('authToken');
+        removeCookie('authUser');
+        window.location.href = '/login';
+        throw new Error('Access denied. Please log in as a driver.');
+      }
       throw new Error(`Failed to fetch driver bids. Status: ${error.response.status}`);
     } else if (error.request) {
-      // The request was made but no response was received
       console.error('DriverService: No response received for fetchDriverBids:', error.request);
       throw new Error('Failed to fetch driver bids: No response from server.');
     } else {
-      // Something happened in setting up the request that triggered an Error
       console.error('DriverService: Error setting up request for fetchDriverBids:', error.message);
       throw new Error(`Failed to fetch driver bids: ${error.message}`);
     }
@@ -90,7 +148,7 @@ export const fetchDriverBids = async (driverId) => {
 };
 
 export const fetchDriverProfile = async (driverId) => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   console.log(`DriverService: Attempting to fetch profile for driver ID: ${driverId}.`);
   console.log('DriverService: Using token:', token);
   const url = `${API_BASE_URL}/${driverId}/profile`;
@@ -120,9 +178,9 @@ export const fetchDriverProfile = async (driverId) => {
 };
 
 export const createDriverDispute = async (disputeData) => {
-  const token = localStorage.getItem('authToken'); // Or a generic 'authToken'
+  const token = getCookie('authToken'); // Or a generic 'authToken'
   try {
-    // Note: The old path was '/api/driver/disputes'. The new backend router for drivers is '/api/v1/drivers'.
+    // Note: The old path was '/api/driver/disputes'. The new backend router for drivers is '/api/drivers'.
     // So the new path should be `${API_BASE_URL}/disputes`.
     const response = await axios.post(`${API_BASE_URL}/disputes`, disputeData, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -135,7 +193,7 @@ export const createDriverDispute = async (disputeData) => {
 };
 
 export const fetchDriverDisputes = async () => {
-  const token = localStorage.getItem('authToken');
+  const token = getCookie('authToken');
   console.log('DriverService: Attempting to fetch driver disputes.');
   console.log('DriverService: Using token:', token);
   const url = `${API_BASE_URL}/disputes`;
@@ -163,14 +221,66 @@ export const fetchDriverDisputes = async () => {
     }
   }
 };
+export const updateDriverProfile = async (driverId, updatePayload) => {
+  const token = getCookie('authToken');
+  const url = `${API_BASE_URL}/${driverId}/profile`;
+  try {
+    const response = await axios.put(url, updatePayload, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.detail || 'Failed to update profile');
+    }
+    throw error;
+  }
+};
+
+// Fetch loads for My Loads page (accepted or declined by driver)
+export const fetchDriverMyLoads = async (status) => {
+  const token = getCookie('authToken');
+  let url = `${API_BASE_URL}/my-loads`;
+  if (status) {
+    url += `?status=${encodeURIComponent(status)}`;
+  }
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch my loads');
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Update load status (for driver to update to in_transit or delivered)
+export const updateLoadStatus = async (loadId, newStatus) => {
+  const token = getCookie('authToken');
+  const url = `http://localhost:8000/api/drivers/loads/${loadId}/status`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ status: newStatus })
+  });
+  if (!response.ok) throw new Error('Failed to update load status');
+  return response.json();
+};
+
 // Add more driver-related API calls as needed
 export const uploadDriverDocument = async (driverId, file, docType) => {
-  const token = localStorage.getItem('authToken');;
+  const token = getCookie('authToken');
   const formData = new FormData();
   formData.append('file', file);
 
   // The backend endpoint and field name may need to be adjusted to your API
-  // Example: /api/v1/drivers/{driverId}/upload?docType=driving_license
+  // Example: /api/drivers/{driverId}/upload?docType=driving_license
   const response = await axios.post(
     `${API_BASE_URL}/${driverId}/upload?docType=${docType}`,
     formData,
@@ -182,4 +292,23 @@ export const uploadDriverDocument = async (driverId, file, docType) => {
     }
   );
   return response.data;
+};
+
+export const changeDriverPassword = async (driverId, oldPassword, newPassword) => {
+  const token = getCookie('authToken');
+  const url = `${API_BASE_URL}/${driverId}/password`;
+  try {
+    const response = await axios.put(url, {
+      old_password: oldPassword,
+      new_password: newPassword
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.detail || 'Failed to change password');
+    }
+    throw error;
+  }
 };
