@@ -16,7 +16,7 @@ function removeCookie(name) {
 }
 
 // src/services/driverService.js
-const API_BASE_URL = 'http://localhost:8000/api/drivers';
+const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || 'https://lorry-application.onrender.com') + '/api/drivers';
 
 export const fetchAvailableLoads = async () => {
   const token = getCookie('authToken');
@@ -260,7 +260,7 @@ export const fetchDriverMyLoads = async (status) => {
 // Update load status (for driver to update to in_transit or delivered)
 export const updateLoadStatus = async (loadId, newStatus) => {
   const token = getCookie('authToken');
-  const url = `http://localhost:8000/api/drivers/loads/${loadId}/status`;
+  const url = `${API_BASE_URL}/loads/${loadId}/status`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: {

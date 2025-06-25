@@ -16,7 +16,7 @@ function removeCookie(name) {
 }
 
 // src/services/goodsOwnerService.js
-const API_BASE_URL = 'http://localhost:8000/api/owners';
+const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || 'https://lorry-application.onrender.com') + '/api/owners';
 
 export const postNewLoad = async (loadData) => {
   const token = getCookie('authToken'); // Or a generic 'authToken'

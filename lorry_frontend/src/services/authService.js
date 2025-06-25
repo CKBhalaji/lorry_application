@@ -3,7 +3,7 @@ import axios from 'axios'; // Added import for axios, as it's used later
 // Remove any legacy authToken from localStorage to enforce cookie-only storage
 localStorage.removeItem('authToken');
 
-const BACKEND_BASE_URL = 'http://localhost:8000/api';
+const BACKEND_BASE_URL = (import.meta.env.VITE_BACKEND_URL || 'https://lorry-application.onrender.com') + '/api';
 
 export const signUpDriver = async (formData) => {
   console.log('Original formData for driver signup:', formData);

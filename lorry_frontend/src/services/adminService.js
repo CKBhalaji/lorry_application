@@ -15,7 +15,7 @@ function removeCookie(name) {
   document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 }
 
-const API_BASE_URL = 'http://localhost:8000/api/admin';
+const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || 'https://lorry-application.onrender.com') + '/api/admin';
 
 export const deleteUser = async (userId) => {
   try {
