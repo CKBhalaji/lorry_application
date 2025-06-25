@@ -1,5 +1,8 @@
 import axios from 'axios'; // Added import for axios, as it's used later
 
+// Remove any legacy authToken from localStorage to enforce cookie-only storage
+localStorage.removeItem('authToken');
+
 const BACKEND_BASE_URL = 'http://localhost:8000/api';
 
 export const signUpDriver = async (formData) => {

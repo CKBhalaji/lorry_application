@@ -9,6 +9,31 @@ from .config import settings # For upload directory or other settings if needed
 # This is suitable for development. For production, use migrations (e.g., Alembic).
 Base.metadata.create_all(bind=engine)
 
+# Create superadmin if not exists
+from . import models, security, database
+from sqlalchemy.orm import Session
+
+def create_superadmin_if_not_exists():
+    db: Session = next(database.get_db())
+    existing = db.query(models.User).filter(models.User.username == 'superadmin').first()
+    if not existing:
+        hashed_password = security.get_password_hash('admin@123')  # Change to a secure password!
+        superadmin = models.User(
+            username='superadmin',
+            email='superadmin@example.com',
+            hashed_password=hashed_password,
+            role=models.UserRole.SUPERADMIN.value,
+            is_active=True
+        )
+        db.add(superadmin)
+        db.commit()
+        db.refresh(superadmin)
+        print("Superadmin created:", superadmin)
+    else:
+        print("Superadmin already exists")
+
+create_superadmin_if_not_exists()
+
 app = FastAPI(
     title="Lorry Backend API",
     description="API for Lorry Transportation Service, managing users (admins, drivers, goods owners), loads, bids, and disputes.",

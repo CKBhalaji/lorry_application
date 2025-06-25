@@ -51,6 +51,10 @@
   border-left: 4px solid #2196f3;
 }
 
+.GOML-load-card.awaiting_driver_response {
+  border-left: 4px solid #2196f3;
+}
+
 .GOML-load-card.cancelled {
   border-left: 4px solid #f44336;
 }
@@ -94,10 +98,17 @@
   color: #1565c0;
 }
 
+.GOML-status-badge.awaiting_driver_response {
+  background-color: rgba(33, 150, 243, 0.2);
+  color: #1565c0;
+}
+
 .GOML-status-badge.cancelled {
   background-color: rgba(244, 67, 54, 0.2);
   color: #c62828;
 }
+
+
 
 .GOML-load-details p {
   margin: 8px 0;

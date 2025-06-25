@@ -46,6 +46,14 @@
   border-left: 4px solid #ffc107;
 }
 
+.DBH-bid-card.delivered {
+  border-left: 4px solid #2196f3;
+}
+
+.DBH-bid-card.AWAITING_DRIVER_RESPONSE {
+  border-left: 4px solid #2196f3;
+}
+
 .DBH-bid-info h3 {
   margin-top: 0;
   color: var(--primary-text);

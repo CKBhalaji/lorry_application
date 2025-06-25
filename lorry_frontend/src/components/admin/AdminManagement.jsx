@@ -158,18 +158,12 @@ const AdminManagement = () => {
                       <td>{email}</td>
                       <td>{status}</td>
                       <td>
-                        {isSuperAdmin && ( // Only superadmin can edit/delete
+                        {(isSuperAdmin || (authUser && authUser.type === 'admin')) && (
                           <>
-                            <button
-                              className="ADM-edit-btn"
-                              onClick={() => handleEdit(admin)}
-                            >
-                              Edit
-                            </button>
                             <button
                               className="ADM-delete-btn"
                               onClick={() => handleDelete(id)}
-                              disabled={admin.isCurrentUser} // Prevent deleting self
+                              disabled={admin.isCurrentUser || (role && role.toLowerCase() === 'superadmin')} // Prevent deleting self or superadmin
                             >
                               Delete
                             </button>

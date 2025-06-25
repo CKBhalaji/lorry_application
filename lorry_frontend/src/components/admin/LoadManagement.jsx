@@ -102,7 +102,8 @@ const LoadManagement = () => {
           <p><strong>Owner:</strong> {selectedLoad.owner_id || 'N/A'}</p>
           <p><strong>Status:</strong> {selectedLoad.status || 'N/A'}</p>
           {/* Add more details if available in selectedLoad */}
-          <p><strong>Bids:</strong> {selectedLoad.current_highest_bid !== undefined ? selectedLoad.current_highest_bid : 'N/A'}</p>
+          <p><strong>Current Lowest Bid:</strong> {selectedLoad.current_lowest_bid !== undefined ? selectedLoad.current_lowest_bid : 'N/A'}</p>
+          <p><strong>Expected Price:</strong> {selectedLoad.expectedPrice !== undefined && selectedLoad.expectedPrice !== null ? selectedLoad.expectedPrice : 'N/A'}</p>
           <p><strong>Driver::</strong> {selectedLoad.accepted_driver_id || 'N/A'}</p>
           <button onClick={() => setSelectedLoad(null)}>Close</button>
         </div>
@@ -119,7 +120,8 @@ const LoadManagement = () => {
                 <th>Goods Type</th>
                 <th>Route</th>
                 <th>Owner</th>
-                <th>Bids</th>
+                <th>Current Lowest Bid</th>
+                <th>Expected Price</th>
                 <th>Driver ID</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -141,7 +143,8 @@ const LoadManagement = () => {
                   const pickupLocation = load.pickupLocation || 'N/A';
                   const deliveryLocation = load.deliveryLocation || 'N/A';
                   const ownerId = load.owner_id || 'N/A';
-                  const currentHighestBid = load.current_highest_bid !== undefined ? load.current_highest_bid : 'N/A';
+                  const currentLowestBid = load.current_lowest_bid !== undefined ? load.current_lowest_bid : 'N/A';
+                  const expectedPrice = load.expectedPrice !== undefined && load.expectedPrice !== null ? load.expectedPrice : 'N/A';
                   const driverId = load.accepted_driver_id || 'N/A';
                   const status = load.status || 'N/A';
 
@@ -151,7 +154,8 @@ const LoadManagement = () => {
                       <td onClick={() => handleViewDetails(load)}>{goodsType}</td>
                       <td onClick={() => handleViewDetails(load)}>{pickupLocation} → {deliveryLocation}</td>
                       <td onClick={() => handleViewDetails(load)}>{ownerId}</td>
-                      <td onClick={() => handleViewDetails(load)}>{currentHighestBid}</td>
+                      <td onClick={() => handleViewDetails(load)}>{currentLowestBid}</td>
+                      <td onClick={() => handleViewDetails(load)}>{expectedPrice}</td>
                       <td onClick={() => handleViewDetails(load)}>{load.accepted_driver_id ? load.accepted_driver_id : 'N/A'}</td>
                       <td>
                         <select

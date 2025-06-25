@@ -116,7 +116,7 @@ const MyLoads = () => {
               const weight = load.weight || 'N/A';
               const pickupDateStr = load.pickupDate && !isNaN(new Date(load.pickupDate)) ? new Date(load.pickupDate).toLocaleDateString() : 'Invalid Date';
               const deliveryDateStr = load.deliveryDate && !isNaN(new Date(load.deliveryDate)) ? new Date(load.deliveryDate).toLocaleDateString() : 'Invalid Date';
-              const highestBid = load.current_highest_bid || load.highestBid;
+              const lowestBid = load.current_lowest_bid || load.lowestBid;
               return (
                 <div
                   key={id}
@@ -134,7 +134,7 @@ const MyLoads = () => {
                     <p><strong>To:</strong> {deliveryLocation}</p>
                     <p><strong>Weight:</strong> {weight} kg</p>
                     <p><strong>Dates:</strong> {pickupDateStr} - {deliveryDateStr}</p>
-                    <p><strong>Current Highest Bid:</strong> ₹{highestBid || 'N/A'}</p>
+                    <p><strong>Current Lowest Bid:</strong> ₹{lowestBid || 'N/A'}</p>
                     {load.acceptedDriverId && (
                       <p><strong>Driver ID:</strong> {load.acceptedDriverId}</p>
                     )}

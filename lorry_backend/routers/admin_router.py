@@ -26,7 +26,8 @@ async def signup_admin(admin_data: schemas.UserCreate = Body(...), db: Session =
         username=admin_data.username,
         email=admin_data.email,
         hashed_password=hashed_password,
-        role=UserRole.ADMIN
+        role=admin_data.role,
+        is_active=True
     )
     db.add(db_admin)
     db.commit()
@@ -35,7 +36,7 @@ async def signup_admin(admin_data: schemas.UserCreate = Body(...), db: Session =
 
 # Dependency to check if the user is an admin
 async def get_current_admin_user(current_user: models.User = Depends(security.get_current_active_user)):
-    if current_user.role != UserRole.ADMIN:
+    if current_user.role not in [UserRole.ADMIN, UserRole.SUPERADMIN]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not authorized to perform this action')
     return current_user
 
@@ -61,6 +62,9 @@ async def delete_user_by_admin(user_id: int, current_admin: models.User = Depend
     if user_to_delete.id == current_admin.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Admin cannot delete self through this endpoint. Use admin management endpoints.')
 
+    # Prevent deletion of superadmin
+    if user_to_delete.role == UserRole.SUPERADMIN:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Superadmin cannot be deleted')
     db.delete(user_to_delete)
     db.commit()
     return
@@ -148,8 +152,9 @@ async def create_new_admin(admin_data: schemas.AdminUserCreate, db: Session = De
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Username or email already exists')
 
     # Ensure the role being assigned is actually ADMIN, even though UserCreate allows any role.
-    if admin_data.role != UserRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Role must be ADMIN for this endpoint")
+    # Allow creation of superadmin, admin, or manager
+    if admin_data.role not in [UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.MANAGER]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Role must be SUPERADMIN, ADMIN, or MANAGER for this endpoint")
 
     hashed_password = security.get_password_hash(admin_data.password)
     db_admin = models.User(
@@ -190,6 +195,9 @@ async def delete_admin_by_admin(admin_id_to_delete: int, current_admin: models.U
     if not admin_to_delete:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Admin with id {admin_id_to_delete} not found')
 
+    # Prevent deletion of superadmin
+    if admin_to_delete.role == UserRole.SUPERADMIN:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Superadmin cannot be deleted')
     db.delete(admin_to_delete)
     db.commit()
     return

@@ -62,25 +62,41 @@ export const AuthProvider = ({ children }) => {
       
       // Role comparison (normalize both sides to lower case and remove underscores)
       const normalizeRole = (role) => role.toLowerCase().replace(/_/g, '');
-      if (normalizeRole(decodedUser.type) !== normalizeRole(credentials.type)) {
+      // Allow superadmin to log in as admin, and allow superadmin/manager to log in as manager
+      const expected = normalizeRole(credentials.type);
+      const actual = normalizeRole(decodedUser.type);
+      const isAllowed =
+        (expected === 'admin' && (actual === 'admin' || actual === 'superadmin')) ||
+        (expected === 'manager' && (actual === 'manager' || actual === 'superadmin')) ||
+        (expected === 'superadmin' && actual === 'superadmin') ||
+        (expected === actual);
+      if (!isAllowed) {
         console.warn(`AuthContext: Role mismatch. Expected: ${credentials.type}, Got: ${decodedUser.type}`);
         throw new Error('Login failed: The user account is not registered for this role.');
       }
 
       // Proceed with successful login if roles match
+      // Determine what userType to store in cookie
+      let cookieUserType = decodedUser.type;
+      if (
+        (credentials.type === 'admin' && decodedUser.type === 'superadmin') ||
+        (credentials.type === 'manager' && decodedUser.type === 'superadmin')
+      ) {
+        cookieUserType = credentials.type;
+      }
       const newAuthState = {
         isAuthenticated: true,
-        // userType: decodedUser.type,
+        userType: cookieUserType, // Set to correct type for context
         username: decodedUser.username,
         timestamp: new Date().toISOString()
       };
 
       setIsAuthenticated(true);
-      setUserType(decodedUser.type);
+      setUserType(cookieUserType); // Set to correct type for context
       setUsername(decodedUser.username);
       setAuthState(newAuthState);
       setCookie('authToken', access_token);
-      setCookie('authUser', JSON.stringify(decodedUser));
+      setCookie('authUser', JSON.stringify({ ...decodedUser, type: cookieUserType }));
 
 
     } catch (error) {

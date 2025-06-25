@@ -181,7 +181,7 @@ const AvailableLoads = () => {
               // Validate dates before formatting
               const pickupDateStr = load.pickupDate && !isNaN(new Date(load.pickupDate)) ? new Date(load.pickupDate).toLocaleDateString() : 'Invalid Date';
               const deliveryDateStr = load.deliveryDate && !isNaN(new Date(load.deliveryDate)) ? new Date(load.deliveryDate).toLocaleDateString() : 'Invalid Date';
-              const currentHighestBid = load.current_highest_bid || 'No bids yet';
+              const currentLowestBid = load.current_lowest_bid || 'No bids yet';
 
               return (
                 <div key={id} className="DAL-load-card" onClick={() => handleToggleOwnerDetails(id, load.owner_id)} style={{ cursor: 'pointer' }}>
@@ -190,9 +190,10 @@ const AvailableLoads = () => {
                     <p><strong>From:</strong> {pickupLocation}</p>
                     <p><strong>To:</strong> {deliveryLocation}</p>
                     <p><strong>Weight:</strong> {weight} kg</p>
+                    <p><strong>Expected Price:</strong> ₹{load.expectedPrice !== undefined && load.expectedPrice !== null ? load.expectedPrice : 'N/A'}</p>
                     <p><strong>Pickup Date:</strong> {pickupDateStr}</p>
                     <p><strong>Delivery Date:</strong> {deliveryDateStr}</p>
-                    <p><strong>Current Highest Bid:</strong> ₹{currentHighestBid}</p>
+                    <p><strong>Current Lowest Bid:</strong> ₹{currentLowestBid}</p>
                   </div>
                   {/* Bid section remains the same */}
                   <div className="DAL-bid-section" onClick={e => e.stopPropagation()}>

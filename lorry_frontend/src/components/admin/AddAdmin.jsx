@@ -18,7 +18,7 @@ const AddAdmin = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const [profile, setProfile] = useState('');
+  const [role, setRole] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,6 +36,7 @@ const AddAdmin = () => {
     if (!formData.phone.match(/^[0-9]{10}$/)) newErrors.phone = '10-digit phone number required';
     if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords must match';
+    if (!role) newErrors.role = 'Role is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -52,11 +53,11 @@ const AddAdmin = () => {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        role: 'admin',
+        role: role.toLowerCase().replace(' ', ''), // 'Super Admin' -> 'superadmin', etc.
         phone_number: formData.phone_number || formData.phone
       });
       alert('Admin added successfully!');
-      navigate('/tab=admin-mangement');
+      navigate('/admin/dashboard?tab=addAdmin');
     } catch (error) {
       console.error('Error adding admin:', error);
       alert(error.message || 'Failed to add admin');
@@ -117,19 +118,19 @@ const AddAdmin = () => {
         </div>
 
         <div className="AA-form-group">
-        <label>Profile</label>
+        <label>Role</label>
           <div className="select-container">
             <Select
-              label="profile"
-              value={profile}
-              onChange={(e) => setProfile(e.target.value)}
+              label="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
             >
-              <MenuItem value="Super Admin">Super Admin</MenuItem>
-              <MenuItem value="Admin">Admin</MenuItem>
-              <MenuItem value="Manager">Manager</MenuItem>
+              <MenuItem value="superadmin">Super Admin</MenuItem>
+              <MenuItem value="admin">Admin</MenuItem>
+              <MenuItem value="manager">Manager</MenuItem>
             </Select>
           </div>
-          {errors.profile && <span className="AA-error-message">{errors.profile}</span>}
+          {errors.role && <span className="AA-error-message">{errors.role}</span>}
         </div>
 
         <div className="AA-form-group">

@@ -110,6 +110,11 @@ const MyLoads = () => {
                 <p><strong>Status:</strong> <span className={`DL-status-badge ${statusClass}`}>{status.charAt(0).toUpperCase() + status.slice(1)}</span></p>
                 <p><strong>Posted:</strong> {load.posted_date ? new Date(load.posted_date).toLocaleString() : 'N/A'}</p>
                 <p><strong>Expected Price:</strong> ₹{load.expectedPrice !== undefined ? load.expectedPrice : 'N/A'}</p>
+                {authUser && load.accepted_driver_id === authUser.id && (
+                  <p style={{color: 'green', fontWeight: 'bold'}}>
+                    You Bet: ₹{load.current_lowest_bid !== undefined ? load.current_lowest_bid : 'N/A'}
+                  </p>
+                )}
                 {(status === 'assigned' || status === 'active' || status === 'in_transit') && (
                   <div style={{ marginTop: 8 }}>
                     <label htmlFor={`status-select-${load.id}`}>Update Status: </label>

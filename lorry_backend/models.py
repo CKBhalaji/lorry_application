@@ -5,7 +5,9 @@ from .database import Base
 import enum
 
 class UserRole(str, enum.Enum):
+    SUPERADMIN = 'superadmin'
     ADMIN = 'admin'
+    MANAGER = 'manager'
     DRIVER = 'driver'
     GOODS_OWNER = 'goods_owner'
 
@@ -81,7 +83,7 @@ class Load(Base):
     expectedPrice = Column(Integer, nullable=True)
     status = Column(String, default='pending')
     posted_date = Column(String, server_default=str(datetime.utcnow()))
-    current_highest_bid = Column(Integer, nullable=True)
+    current_lowest_bid = Column(Integer, nullable=True)
     accepted_driver_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=True)
 
     owner = relationship('User', foreign_keys=[owner_id])

@@ -20,7 +20,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6)
-    role: UserRole # Use the enum here
+    role: UserRole # Accepts 'superadmin', 'admin', 'manager', 'driver', 'goods_owner'
 
 class UserLogin(BaseModel):
     username: str # Can be username or email
@@ -28,7 +28,7 @@ class UserLogin(BaseModel):
 
 class UserInDB(UserBase):
     id: int
-    role: UserRole
+    role: UserRole # Accepts 'superadmin', 'admin', 'manager', 'driver', 'goods_owner'
     is_active: bool
 
     class Config:
@@ -146,7 +146,7 @@ class LoadResponse(LoadBase):
     id: int
     owner_id: int
     posted_date: str # Assuming string representation
-    current_highest_bid: Optional[int] = None
+    current_lowest_bid: Optional[int] = None
     accepted_driver_id: Optional[int] = None
 
     class Config:

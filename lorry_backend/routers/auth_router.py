@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Body
+import smtplib
+import random
+from email.mime.text import MIMEText
+from typing import Dict
+from email_validator import validate_email, EmailNotValidError
 from fastapi.security import OAuth2PasswordRequestForm # For login form
 from sqlalchemy.orm import Session
 
@@ -108,28 +113,50 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         }
     }
 
-# Stubbed OTP endpoints as per plan
+# OTP logic with email sending and verification
+
+
+# In-memory OTP store (for demo; use Redis or DB for production)
+otp_store: Dict[str, str] = {}
+
+def send_otp_email(to_email: str, otp: str):
+    user = 'neelabhalaji2003@gmail.com'
+    password = 'ngibtkttpiptmtgs'
+    subject = " Logistics Transport Your OTP Code"
+    body = f"Welcome! Your OTP code is: {otp}"
+
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = user
+    msg['To'] = to_email
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        server.login(user, password)
+        server.sendmail(user, to_email, msg.as_string())
+
 @router.post('/verification/send')
 async def send_verification_otp(email_data: schemas.EmailSchemaForOTP):
-    # For Pydantic v2, EmailStr is a type, not a schema itself for request body.
-    # Need a schema like: class EmailSchema(BaseModel): email: EmailStr
-    # However, the instruction suggests `email: schemas.EmailStr` which implies it might be part of a larger model
-    # or that FastAPI can handle it directly from query/path params. For a POST body, it needs a Pydantic model.
-    # Let's assume it's meant to be a simple request with an email field.
-    # For now, let's define a simple schema here or assume one exists in schemas.py
-    # For the purpose of this step, proceeding with the direct use, but this might need adjustment.
-    print(f'OTP send request for {email_data.email}') # Server-side log
-    return {'message': 'OTP send request acknowledged. Please use /verify to verify.'}
+    try:
+    # Validate email
+        valid = validate_email(email_data.email)
+        email = valid.email
+    except EmailNotValidError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
+    otp = f'{random.randint(1000, 9999)}'
+    otp_store[email] = otp
+    try:
+        send_otp_email(email, otp)
+        return {"message": "OTP sent"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send OTP: {str(e)}")
 
 @router.post('/verification/verify')
-async def verify_otp(verification_data: schemas.OTPVerificationRequest): # Basic for now
-    # Assuming OTPVerificationRequest is defined in schemas.py:
-    # class OTPVerificationRequest(BaseModel):
-    #     email: EmailStr
-    #     otp: str
-    print(f'OTP verification request for {verification_data.email} with OTP {verification_data.otp}') # Server-side log
-    if verification_data.otp == '1234': # Placeholder verification
-        return {'message': 'OTP verified successfully.'}
+async def verify_otp(verification_data: schemas.OTPVerificationRequest):
+    email = verification_data.email
+    otp = verification_data.otp
+    if otp_store.get(email) == otp:
+        del otp_store[email]
+        return {"message": "OTP verified"}
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Invalid OTP')

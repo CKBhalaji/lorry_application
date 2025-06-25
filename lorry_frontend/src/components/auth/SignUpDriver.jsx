@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SignUpDriver.css';
-import { signUpDriver, login} from '../../services/authService';
+import { signUpDriver, login } from '../../services/authService';
 import { uploadDriverDocument } from '../../services/driverService';
 import { sendOTP, verifyOTP } from '../../services/authService';
+
+// Cookie utility function
+function setCookie(name, value, days = 7) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
 
 const SignUpDriver = () => {
   const [email, setEmail] = useState('');
@@ -154,21 +160,24 @@ const SignUpDriver = () => {
 
     if (validateForm()) {
       const formData = {
-        username: document.getElementById('driver-username').value || "",
-        profile: {
-          full_name: document.getElementById('driver-fullname').value || "",
-          phone_number: document.getElementById('driver-phone').value || "",
-          aadhar_number: document.getElementById('driver-aadhar').value || "",
-          experience: document.getElementById('driver-experience').value || "",
-          vehicle_type: vehicleType || "",
-          custom_vehicle_type: customVehicleType || "",
-          load_capacity_kg: document.getElementById('vehicle-load').value ? parseInt(document.getElementById('vehicle-load').value, 10) : 0,
-          gpay_id: selectedPayment === 'gpay' ? document.getElementById('payment-method').value || "" : '',
-          paytm_id: selectedPayment === 'paytm' ? document.getElementById('payment-method').value || "" : '',
-          upi_id: selectedPayment === 'upi' ? document.getElementById('payment-method').value || "" : '',
-        },
-        email: email || "",
-        password: password || "",
+      username: document.getElementById('driver-username').value || "",
+      profile: {
+      full_name: document.getElementById('driver-fullname').value || "",
+      phone_number: document.getElementById('driver-phone').value || "",
+      aadhar_number: document.getElementById('driver-aadhar').value || "",
+      experience: document.getElementById('driver-experience').value || "",
+      vehicle_type: vehicleType || "",
+      custom_vehicle_type: customVehicleType || "",
+      load_capacity_kg: document.getElementById('vehicle-load').value ? parseInt(document.getElementById('vehicle-load').value, 10) : 0,
+      driving_license_filename: document.getElementById('driver-license').files[0]?.name || "",
+      insurance_filename: document.getElementById('driver-insurance').files[0]?.name || "",
+      rc_card_filename: document.getElementById('driver-rc-card').files[0]?.name || "",
+      gpay_id: selectedPayment === 'gpay' ? document.getElementById('payment-method').value || "" : '',
+      paytm_id: selectedPayment === 'paytm' ? document.getElementById('payment-method').value || "" : '',
+      upi_id: selectedPayment === 'upi' ? document.getElementById('payment-method').value || "" : '',
+      },
+      email: email || "",
+      password: password || "",
       };
 
       try {
@@ -184,7 +193,7 @@ const SignUpDriver = () => {
         const rcCardFile = document.getElementById('driver-rc-card').files[0];
 
         const loginRes = await login({ username: formData.username, password: formData.password });
-        localStorage.setItem('authToken', loginRes.access_token);
+        setCookie('authToken', loginRes.access_token);
 
         // Upload each file if present
         if (drivingLicenseFile) {

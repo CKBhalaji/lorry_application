@@ -57,9 +57,9 @@ async def place_bid_on_load(bid_data: schemas.BidCreate, db: Session = Depends(d
             bid_status='pending' # Initial status
         )
         db.add(db_bid)
-    # Update the load's current_highest_bid if this bid is higher
-    if load_exists.current_highest_bid is None or bid_data.amount > load_exists.current_highest_bid:
-        load_exists.current_highest_bid = bid_data.amount
+    # Update the load's current_lowest_bid if this bid is lower
+    if load_exists.current_lowest_bid is None or bid_data.amount < load_exists.current_lowest_bid:
+        load_exists.current_lowest_bid = bid_data.amount
         db.add(load_exists)
     db.commit()
     db.refresh(db_bid)
