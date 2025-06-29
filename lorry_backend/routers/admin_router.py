@@ -136,7 +136,7 @@ async def resolve_dispute_admin(dispute_id: int, resolution_data: schemas.Disput
     else:
         dispute_to_update.status = 'resolved' # Default to resolved if status not explicitly provided and details are
 
-    print(f"DEBUG: Dispute {dispute_id} status set to {dispute_to_update.status}")
+    # print(f"DEBUG: Dispute {dispute_id} status set to {dispute_to_update.status}")
     db.add(dispute_to_update)
     db.commit()
     db.refresh(dispute_to_update)

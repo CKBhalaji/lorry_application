@@ -20,10 +20,10 @@ const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || 'https://lorry-applica
 
 export const fetchAvailableLoads = async () => {
   const token = getCookie('authToken');
-  console.log('DriverService: Attempting to fetch available loads.');
-  console.log('DriverService: Using token:', token);
+  // console.log('DriverService: Attempting to fetch available loads.');
+  // console.log('DriverService: Using token:', token);
   const url = `${API_BASE_URL}/loads`;
-  console.log('DriverService: Target URL:', url);
+  // console.log('DriverService: Target URL:', url);
 
   try {
     const response = await fetch(url, {
@@ -32,19 +32,19 @@ export const fetchAvailableLoads = async () => {
       }
     });
 
-    console.log('DriverService: Response status:', response.status);
+    // console.log('DriverService: Response status:', response.status);
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error('DriverService: Error fetching loads. Status:', response.status, 'Body:', errorBody);
+      // console.error('DriverService: Error fetching loads. Status:', response.status, 'Body:', errorBody);
       throw new Error(`Failed to fetch loads. Status: ${response.status}`);
     }
 
-    console.log('DriverService: Successfully fetched loads. Preparing to parse JSON.');
+    // console.log('DriverService: Successfully fetched loads. Preparing to parse JSON.');
     return response.json();
   } catch (error) {
     // Log network errors or errors from response.json() if they occur
-    console.error('DriverService: Exception during fetchAvailableLoads:', error);
+    // console.error('DriverService: Exception during fetchAvailableLoads:', error);
     throw error; // Re-throw the error to be caught by the calling component
   }
 };
@@ -111,25 +111,25 @@ export const fetchDriverBids = async (driverId) => {
     window.location.href = '/login';
     throw new Error('You must be logged in as a driver to view your bids.');
   }
-  console.log(`DriverService: Attempting to fetch bids for driver ID: ${driverId}.`);
-  console.log('DriverService: Using token:', token);
+  // console.log(`DriverService: Attempting to fetch bids for driver ID: ${driverId}.`);
+  // console.log('DriverService: Using token:', token);
   const url = `${API_BASE_URL}/${driverId}/bids`;
-  console.log('DriverService: Target URL:', url);
+  // console.log('DriverService: Target URL:', url);
 
   try {
     const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
-    console.log('DriverService: Response status for fetchDriverBids:', response.status);
+    // console.log('DriverService: Response status for fetchDriverBids:', response.status);
 
-    console.log('DriverService: Successfully fetched driver bids. Data:', response.data);
+    // console.log('DriverService: Successfully fetched driver bids. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error(`DriverService: Exception during fetchDriverBids for driver ID ${driverId}:`, error.response ? error.response.data : error.message);
+    // console.error(`DriverService: Exception during fetchDriverBids for driver ID ${driverId}:`, error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('DriverService: Error status:', error.response.status);
-      console.error('DriverService: Error body:', error.response.data);
+      // console.error('DriverService: Error status:', error.response.status);
+      // console.error('DriverService: Error body:', error.response.data);
       if (error.response.status === 403) {
         removeCookie('authToken');
         removeCookie('authUser');
@@ -138,10 +138,10 @@ export const fetchDriverBids = async (driverId) => {
       }
       throw new Error(`Failed to fetch driver bids. Status: ${error.response.status}`);
     } else if (error.request) {
-      console.error('DriverService: No response received for fetchDriverBids:', error.request);
+      // console.error('DriverService: No response received for fetchDriverBids:', error.request);
       throw new Error('Failed to fetch driver bids: No response from server.');
     } else {
-      console.error('DriverService: Error setting up request for fetchDriverBids:', error.message);
+      // console.error('DriverService: Error setting up request for fetchDriverBids:', error.message);
       throw new Error(`Failed to fetch driver bids: ${error.message}`);
     }
   }
@@ -149,29 +149,29 @@ export const fetchDriverBids = async (driverId) => {
 
 export const fetchDriverProfile = async (driverId) => {
   const token = getCookie('authToken');
-  console.log(`DriverService: Attempting to fetch profile for driver ID: ${driverId}.`);
-  console.log('DriverService: Using token:', token);
+  // console.log(`DriverService: Attempting to fetch profile for driver ID: ${driverId}.`);
+  // console.log('DriverService: Using token:', token);
   const url = `${API_BASE_URL}/${driverId}/profile`;
-  console.log('DriverService: Target URL:', url);
+  // console.log('DriverService: Target URL:', url);
 
   try {
     const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    console.log('DriverService: Response status for fetchDriverProfile:', response.status);
-    console.log('DriverService: Successfully fetched driver profile. Data:', response.data);
+    // console.log('DriverService: Response status for fetchDriverProfile:', response.status);
+    // console.log('DriverService: Successfully fetched driver profile. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error(`DriverService: Exception during fetchDriverProfile for driver ID ${driverId}:`, error.response ? error.response.data : error.message);
+    // console.error(`DriverService: Exception during fetchDriverProfile for driver ID ${driverId}:`, error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('DriverService: Error status:', error.response.status);
-      console.error('DriverService: Error body:', error.response.data);
+      // console.error('DriverService: Error status:', error.response.status);
+      // console.error('DriverService: Error body:', error.response.data);
       throw new Error(`Failed to fetch driver profile. Status: ${error.response.status}`);
     } else if (error.request) {
-      console.error('DriverService: No response received for fetchDriverProfile:', error.request);
+      // console.error('DriverService: No response received for fetchDriverProfile:', error.request);
       throw new Error('Failed to fetch driver profile: No response from server.');
     } else {
-      console.error('DriverService: Error setting up request for fetchDriverProfile:', error.message);
+      // console.error('DriverService: Error setting up request for fetchDriverProfile:', error.message);
       throw new Error(`Failed to fetch driver profile: ${error.message}`);
     }
   }
@@ -187,36 +187,36 @@ export const createDriverDispute = async (disputeData) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error creating driver dispute:', error);
+    // console.error('Error creating driver dispute:', error);
     throw error;
   }
 };
 
 export const fetchDriverDisputes = async () => {
   const token = getCookie('authToken');
-  console.log('DriverService: Attempting to fetch driver disputes.');
-  console.log('DriverService: Using token:', token);
+  // console.log('DriverService: Attempting to fetch driver disputes.');
+  // console.log('DriverService: Using token:', token);
   const url = `${API_BASE_URL}/disputes`;
-  console.log('DriverService: Target URL for fetchDriverDisputes:', url);
+  // console.log('DriverService: Target URL for fetchDriverDisputes:', url);
 
   try {
     const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    console.log('DriverService: Response status for fetchDriverDisputes:', response.status);
-    console.log('DriverService: Successfully fetched driver disputes. Data:', response.data);
+    // console.log('DriverService: Response status for fetchDriverDisputes:', response.status);
+    // console.log('DriverService: Successfully fetched driver disputes. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error('DriverService: Exception during fetchDriverDisputes:', error.response ? error.response.data : error.message);
+    // console.error('DriverService: Exception during fetchDriverDisputes:', error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('DriverService: Error status:', error.response.status);
-      console.error('DriverService: Error body:', error.response.data);
+      // console.error('DriverService: Error status:', error.response.status);
+      // console.error('DriverService: Error body:', error.response.data);
       throw new Error(`Failed to fetch driver disputes. Status: ${error.response.status}`);
     } else if (error.request) {
-      console.error('DriverService: No response received for fetchDriverDisputes:', error.request);
+      // console.error('DriverService: No response received for fetchDriverDisputes:', error.request);
       throw new Error('Failed to fetch driver disputes: No response from server.');
     } else {
-      console.error('DriverService: Error setting up request for fetchDriverDisputes:', error.message);
+      // console.error('DriverService: Error setting up request for fetchDriverDisputes:', error.message);
       throw new Error(`Failed to fetch driver disputes: ${error.message}`);
     }
   }

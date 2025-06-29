@@ -31,7 +31,7 @@ const SignUpGoodsOwner = () => {
       setGeneratedCode(otp);
       alert('OTP sent to your email!');
     } catch (error) {
-      console.error('Error sending email:', error);
+      // console.error('Error sending email:', error);
       alert('Failed to send OTP. Please try again.');
     }
   };
@@ -100,12 +100,12 @@ const SignUpGoodsOwner = () => {
         password,
       };
       try {
-        console.log('Submitting goods owner signup payload:', formData);
+        // console.log('Submitting goods owner signup payload:', formData);
         await signUpGoodsOwner(formData);
         alert('Goods owner signed up successfully!');
         navigate(-1);
       } catch (error) {
-        console.error('Error submitting form:', error);
+        // console.error('Error submitting form:', error);
         alert('Failed to sign up. Please try again.');
       }
     } else {

@@ -4,10 +4,6 @@
   padding: 0;
   box-sizing: border-box;
 }
-/* body, html { */
-  /* overflow: hidden; */
-  /* max-width: 1200px; */
-/* } */
 
 /* Home Page Styling */
 .homepage {
@@ -16,8 +12,8 @@
   align-items: center;
   justify-content: flex-start;
   min-height: 100vh;
-  background: black;
-  color: yellow;
+  background: var(--primary-bg);
+  color: var(--primary-text);
   text-align: center;
   padding: 40px 20px 20px;
   position: relative;
@@ -26,7 +22,7 @@
 }
 
 .homepage-baground {
-  background-color: black;
+  background-color: var(--primary-bg);
 }
 
 .content-container {
@@ -56,31 +52,27 @@
   position: relative;
   width: 100%;
   margin-top: -170px;
-  /* z-index: 1; */
 }
 
 .truck {
-  /* width: 100vw; */
   width: 100%;
   height: 100%;
   max-width: 1200px;
-  /* margin-right: 110px; */
   display: block; 
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
-  /* border-radius: 10px; */
-  /* border-bottom: 5px solid white; */
-  /* border : 2px solid yellow; */
+  border-radius: 40px;
+  box-shadow: 0 0 60px 20px var(--primary-bg), 0 8px 32px 0 var(--hover-bg);
+  background: var(--dashboard-bg);
 }
 .truck-visible {
-  opacity: 0.5;
+  opacity: 0.95;
 }
 
 .login-button {
-  /* margin-bottom: 20px; */
   padding: 12px 24px;
-  background: yellow;
-  color: black;
+  background: var(--button-bg);
+  color: var(--button-text);
   border: none;
   border-radius: 8px;
   font-weight: bold;
@@ -89,11 +81,11 @@
   z-index: 2;
   position: relative;
   margin-top: -20px;
-  /* bottom: 150px; */
+  transition: background 0.2s;
 }
 
 .login-button:hover {
-  background: #ffcc00;
+  background: var(--button-hover-bg);
 }
 
 h1 {
@@ -105,21 +97,128 @@ h1 {
   top: 20px;
   right: 10px;
   padding: 10px 20px;
-  background: yellow;
-  color: black;
+  background: var(--button-bg);
+  color: var(--button-text);
   border: none;
-  borderRadius: 5px;
+  border-radius: 5px;
   cursor: pointer;
-  fontWeight: bold;
-  z-index: 2;
   font-weight: bold;
+  z-index: 2;
   font-size: 1rem;
+  transition: background 0.2s;
 }
 
 .admin-login-button:hover {
-  background: #ffcc00;
+  background: var(--button-hover-bg);
 }
 
+/* New Content Styles */
+.features-section {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 100px 0 60px;
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 30px 20px;
+  width: 300px;
+  transition: transform 0.3s ease, background 0.2s;
+  color: var(--primary-text);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  background: var(--hover-bg);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin: 60px 0;
+  padding: 40px 0;
+  background: var(--input-inside);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stat-item h4 {
+  font-size: 2.5rem;
+  color: var(--tab-text);
+  margin-bottom: 10px;
+}
+
+.stat-item p {
+  color: var(--input-placeholder);
+  font-size: 0.9rem;
+}
+
+.cta-section {
+  margin: 60px 0 100px;
+  max-width: 800px;
+}
+
+.cta-section h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.cta-section p {
+  margin-bottom: 30px;
+  color: var(--input-placeholder);
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.cta-button {
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.cta-button.primary {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+}
+
+.cta-button.primary:hover {
+  background: var(--button-hover-bg);
+  color: var(--button-hover-text);
+  transform: scale(1.05);
+}
+
+.cta-button.secondary {
+  background: transparent;
+  color: var(--tab-text);
+  border: 2px solid var(--tab-text);
+}
+
+.cta-button.secondary:hover {
+  background: var(--hover-bg);
+  color: var(--button-bg);
+  transform: scale(1.05);
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
   .tagline {
     font-size: 0.8rem;
@@ -131,6 +230,27 @@ h1 {
 
   .login-button, .admin-login-button {
     font-size: 0.9rem;
+  }
+
+  .features-section {
+    flex-direction: column;
+    align-items: center;
+    margin: 60px 0;
+  }
+
+  .feature-card {
+    width: 80%;
+    margin-bottom: 20px;
+  }
+
+  .stats-section {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -146,36 +266,8 @@ h1 {
   .login-button, .admin-login-button {
     font-size: 0.8rem;
   }
-}
 
-@media (max-width: 768px) {
-  .login-button, .admin-login-button {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .login-button, .admin-login-button {
-    padding: 8px 16px;
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 1024px) {
-  .login-button {
-    margin-top: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .login-button {
-    margin-top: 30px;
-  }
-}
-
-@media (max-width: 480px) {
-  .login-button {
-    margin-top: 40px;
+  .feature-card {
+    width: 100%;
   }
 }

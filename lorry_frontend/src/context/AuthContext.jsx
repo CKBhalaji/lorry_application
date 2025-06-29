@@ -25,11 +25,11 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Update the logging to properly stringify the state object
-  console.log('Auth State:', JSON.stringify({
-    isAuthenticated,
-    userType,
-    timestamp: new Date().toISOString()
-  }, null, 2));
+  // console.log('Auth State:', JSON.stringify({
+  //   isAuthenticated,
+  //   userType,
+  //   timestamp: new Date().toISOString()
+  // }, null, 2));
 
   const [authState, setAuthState] = useState({
     isAuthenticated: false,
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       const apiUser = user;
 
       if (!apiUser || !apiUser.type || !apiUser.username) {
-        console.error('AuthContext: Login response missing user details or type.', apiUser);
+        // console.error('AuthContext: Login response missing user details or type.', apiUser);
         throw new Error('Login failed: User role information missing in server response.');
       }
 
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
         (expected === 'superadmin' && actual === 'superadmin') ||
         (expected === actual);
       if (!isAllowed) {
-        console.warn(`AuthContext: Role mismatch. Expected: ${credentials.type}, Got: ${decodedUser.type}`);
+        // console.warn(`AuthContext: Role mismatch. Expected: ${credentials.type}, Got: ${decodedUser.type}`);
         throw new Error('Login failed: The user account is not registered for this role.');
       }
 
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
 
 
     } catch (error) {
-      console.error('Login failed:', error);
+      // console.error('Login failed:', error);
       throw error;
     }
   };

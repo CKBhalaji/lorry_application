@@ -96,6 +96,15 @@
     flex-direction: column;
     gap: 15px;
   }
+  .GOPL-post-load,
+  .GOPL-post-load button {
+    font-size: 0.7rem;
+  }
+  .GOPL-form-group input,
+  .GOPL-form-group textarea,
+  .GOPL-form-group select {
+    padding:8px;
+  }
 }
 
 @media (max-width: 480px) {

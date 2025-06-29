@@ -112,6 +112,17 @@
   .GOPprofile-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
+  .GOPowner-profile,
+  .GOPprofile-actions button {
+    font-size: 0.7rem;
+  }
+  .GOPprofile-field input,
+  .GOPprofile-field select {
+    padding:8px;
+  }
+  .GOPprofile-field p {
+    font-size: 0.7rem;
+  }
 }
 
 @media (max-width: 480px) {

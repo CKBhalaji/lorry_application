@@ -6,7 +6,7 @@ localStorage.removeItem('authToken');
 const BACKEND_BASE_URL = (import.meta.env.VITE_BACKEND_URL || 'https://lorry-application.onrender.com') + '/api';
 
 export const signUpDriver = async (formData) => {
-  console.log('Original formData for driver signup:', formData);
+  // console.log('Original formData for driver signup:', formData);
   try {
     const payload = {
       username: formData.username,
@@ -29,7 +29,7 @@ export const signUpDriver = async (formData) => {
         upi_id: formData.profile.upi_id || ""
       }
     };
-    console.log('Processed payload for driver signup:', payload);
+    // console.log('Processed payload for driver signup:', payload);
     const response = await fetch(`${BACKEND_BASE_URL}/auth/signup/driver`, {
       method: 'POST',
       headers: { 
@@ -47,13 +47,13 @@ export const signUpDriver = async (formData) => {
 
     return await response.json();
   } catch (error) {
-    console.error('Error during driver signup:', error.message, error.response ? error.response.status : '');
+    // console.error('Error during driver signup:', error.message, error.response ? error.response.status : '');
     throw error.response ? error.response.data : new Error('Request failed');
   }
 };
 
 export const signUpGoodsOwner = async (goodsOwnerData) => {
-  console.log('Original goodsOwnerData for signup:', goodsOwnerData);
+  // console.log('Original goodsOwnerData for signup:', goodsOwnerData);
   try {
     const payload = {
       username: goodsOwnerData.username,
@@ -68,13 +68,13 @@ export const signUpGoodsOwner = async (goodsOwnerData) => {
         // Add any other fields from goodsOwnerData that should be in profile
       }
     };
-    console.log('Processed payload for goods owner signup:', payload);
+    // console.log('Processed payload for goods owner signup:', payload);
     // Assuming goodsOwnerData is structured correctly for the backend:
     // { username, email, password, role, profile: { company_name, ... } }
     const response = await axios.post(`${BACKEND_BASE_URL}/auth/signup/goods-owner`, payload);
     return response.data;
   } catch (error) {
-    console.error('Error during goods owner signup:', error.message, error.response ? error.response.status : '');
+    // console.error('Error during goods owner signup:', error.message, error.response ? error.response.status : '');
     throw error.response ? error.response.data : new Error('Request failed');
   }
 };
@@ -92,7 +92,7 @@ export const login = async (credentials) => {
     });
     return response.data; // Should be { access_token: "...", token_type: "bearer" }
   } catch (error) {
-    console.error('Error during login:', error.message, error.response ? error.response.status : '');
+    // console.error('Error during login:', error.message, error.response ? error.response.status : '');
     throw error.response ? error.response.data : new Error('Request failed');
   }
 };
@@ -114,7 +114,7 @@ export const sendOTP = async (email) => {
     // For now, returning a success indication or the response itself.
     return await response.json(); // Or handle based on actual backend response
   } catch (error) {
-    console.error('Error sending OTP:', error.message, error.response ? error.response.status : '');
+    // console.error('Error sending OTP:', error.message, error.response ? error.response.status : '');
     throw error.response ? error.response.data : new Error('Request failed');
   }
 };
@@ -134,7 +134,7 @@ export const verifyOTP = async (email, otp) => {
     }
     return response.text(); // Or response.json() if backend sends JSON
   } catch (error) {
-    console.error('Error verifying OTP:', error.message, error.response ? error.response.status : '');
+    // console.error('Error verifying OTP:', error.message, error.response ? error.response.status : '');
     // If error is already an Error object from response.text() failure or custom new Error:
     if (error instanceof Error) throw error;
     // Else, wrap it or use a generic one

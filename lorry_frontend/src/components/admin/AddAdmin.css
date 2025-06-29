@@ -78,6 +78,13 @@
   .AA-add-admin {
     padding: 15px;
   }
+
+  .AA-add-admin, .AA-submit-btn, .AA-error-message{
+    font-size:0.7rem;
+  }
+  .AA-form-group input {
+    padding: 8px;
+  }
 }
 
 @media (max-width: 480px) {

@@ -274,12 +274,27 @@
     text-align: center;
   }
   
-  .GOMD-create-dispute-form {
+  .GOMD-manage-disputes-owner {
     padding: 15px;
   }
   
   .GOMD-dispute-details {
     grid-template-columns: 1fr;
+  }
+  
+  .GOMD-create-dispute-form {
+    padding: 15px;
+  }
+
+  .GOMD-manage-disputes-owner,
+  .GOMD-dispute-card {
+    font-size: 0.7rem;
+  }
+
+  .GOMD-manage-disputes-owner .GOMD-form-group input,
+  .GOMD-manage-disputes-owner .GOMD-form-group select,
+  .GOMD-manage-disputes-owner .GOMD-form-group textarea {
+    padding:8px;
   }
 }
 

@@ -148,6 +148,14 @@
   .AP-detail-label {
     width: 100%;
   }
+
+  .AP-admin-profile, .AP-error-message {
+    font-size:0.7rem;
+  }
+  
+  .AP-form-group input {
+    padding: 8px;
+  }
 }
 
 @media (max-width: 480px) {

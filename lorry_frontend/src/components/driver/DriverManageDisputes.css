@@ -156,7 +156,7 @@
 }
 
 .DMD-error-message {
-  color: #F44336;
+  color: #f44336;
   font-size: 0.9rem;
   margin-top: 5px;
 }
@@ -240,22 +240,22 @@
 
 .DMD-manage-disputes-driver .DMD-status-badge.pending {
   background: rgba(255, 193, 7, 0.2);
-  color: #FFC107;
+  color: #ffc107;
 }
 
 .DMD-manage-disputes-driver .DMD-status-badge.accepted {
   background: rgba(76, 175, 80, 0.2);
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .DMD-manage-disputes-driver .DMD-status-badge.rejected {
   background: rgba(244, 67, 54, 0.2);
-  color: #F44336;
+  color: #f44336;
 }
 
 .DMD-manage-disputes-driver .DMD-status-badge.resolved {
   background: rgba(33, 150, 243, 0.2);
-  color: #2196F3;
+  color: #2196f3;
 }
 
 /* Responsive styles */
@@ -264,23 +264,34 @@
   .DMD-manage-disputes-owner {
     padding: 15px;
   }
-  
+
   .DMD-disputes-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .DMD-toggle-form-btn {
     width: 100%;
     text-align: center;
   }
-  
+
   .DMD-create-dispute-form {
     padding: 15px;
   }
-  
+
   .DMD-dispute-details {
     grid-template-columns: 1fr;
+  }
+
+  .DMD-manage-disputes-driver,
+  .DMD-dispute-card {
+    font-size: 0.7rem;
+  }
+
+  .DMD-manage-disputes-driver .DMD-form-group input,
+  .DMD-manage-disputes-driver .DMD-form-group select,
+  .DMD-manage-disputes-driver .DMD-form-group textarea {
+    padding:8px;
   }
 }
 
@@ -289,11 +300,11 @@
   .manage-disputes-owner {
     padding: 10px;
   }
-  
+
   .DMD-form-actions {
     flex-direction: column;
   }
-  
+
   .DMD-submit-btn {
     width: 100%;
   }

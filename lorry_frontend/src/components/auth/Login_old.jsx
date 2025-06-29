@@ -26,7 +26,7 @@ const Login = () => {
       username: driverUsername,
       // Add other necessary fields
     };
-    console.log('Attempting driver login with:', userData);
+    // console.log('Attempting driver login with:', userData);
     login(userData);
     navigate('/driver');
   };
@@ -37,7 +37,7 @@ const Login = () => {
       username: goodsOwnerUsername,
       // Add other necessary fields
     };
-    console.log('Attempting goods owner login with:', userData);
+    // console.log('Attempting goods owner login with:', userData);
     login(userData);
     navigate('/goods-owner');
   };

@@ -70,7 +70,7 @@ const ChangePassword = () => {
       alert('Password changed successfully!');
       navigate('/goods-owner/dashboard?tab=profile');
     } catch (error) {
-      console.error('Error changing password:', error);
+      // console.error('Error changing password:', error);
       setErrors({ currentPassword: error.message || 'Failed to change password' });
     } finally {
       setIsSubmitting(false);

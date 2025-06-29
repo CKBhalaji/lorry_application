@@ -41,9 +41,9 @@ const DriverProfile = () => {
             setLoading(true);
             setError(null);
             try {
-                console.log(`DriverProfile: Fetching profile for driver ID: ${authUser.id}`);
+                // console.log(`DriverProfile: Fetching profile for driver ID: ${authUser.id}`);
                 const data = await fetchDriverProfile(authUser.id);
-                console.log('DriverProfile: Successfully fetched data:', data);
+                // console.log('DriverProfile: Successfully fetched data:', data);
 
                 if (data && typeof data === 'object') {
                     // Map backend fields to frontend camelCase
@@ -65,11 +65,11 @@ const DriverProfile = () => {
                     setOriginalProfile(mapped);
                     setProfile(mapped);
                 } else {
-                    console.error('DriverProfile: Data is not an object or is null!', data);
+                    // console.error('DriverProfile: Data is not an object or is null!', data);
                     throw new Error('Received invalid data format from server for profile.');
                 }
             } catch (err) {
-                console.error('DriverProfile: Detailed error fetching profile:', err);
+                // console.error('DriverProfile: Detailed error fetching profile:', err);
                 setError(err.message || 'Failed to fetch profile. Please check console for details.');
             } finally {
                 setLoading(false);
@@ -162,7 +162,7 @@ const DriverProfile = () => {
                 setIsEditing(false);
                 alert('Profile updated successfully!');
             } catch (saveError) {
-                console.error('Error saving profile:', saveError);
+                // console.error('Error saving profile:', saveError);
                 setError(saveError.message || 'Failed to save profile.');
             }
         } else {

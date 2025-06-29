@@ -66,7 +66,7 @@ const ChangePassword = () => {
       alert('Password changed successfully!');
       navigate('/admin/dashboard?tab=admin-profile');
     } catch (error) {
-      console.error('Error changing password:', error);
+      // console.error('Error changing password:', error);
       setErrors({ currentPassword: error.message || 'Failed to change password' });
     } finally {
       setIsSubmitting(false);

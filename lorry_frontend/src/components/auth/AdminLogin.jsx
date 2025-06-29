@@ -20,11 +20,11 @@ const AdminLogin = () => {
       type: 'admin'
     };
     try {
-      console.log('Attempting admin login with:', credentials);
+      // console.log('Attempting admin login with:', credentials);
       await login(credentials);
       navigate('/admin'); // Or '/admin/dashboard' if preferred
     } catch (err) {
-      console.error('Admin login failed:', err);
+      // console.error('Admin login failed:', err);
       setError(err.message || 'Login failed. Please check your credentials.');
     }
   };

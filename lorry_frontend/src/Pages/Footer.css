@@ -1,16 +1,15 @@
 /* src/components/common/Footer.css */
 .footer {
-  background-color: black;
-  color: yellow;
+  background-color: var(--dashboard-bg);
+  color: var(--primary-text);
   padding: 30px 20px 0;
-  border-top: 2px solid yellow;
-  /* max-width: 1200px; */
+  border-top: 2px solid var(--border-color);
   margin: 0 auto;
 }
 
 /* .footer-background {
-  background-color: black;
-  border-top: 2px solid yellow;
+  background-color: var(--dashboard-bg);
+  border-top: 2px solid var(--border-color);
 } */
 
 .footer-container {
@@ -28,9 +27,9 @@
 
 .footer-section h3,
 .footer-section h4 {
-  color: yellow;
+  color: var(--tab-text);
   margin-bottom: 15px;
-  border-bottom: 1px solid rgba(255, 255, 0, 0.3);
+  border-bottom: 1px solid var(--tab-hover-bg);
   padding-bottom: 10px;
 }
 
@@ -48,20 +47,20 @@
 }
 
 .footer-section a {
-  color: yellow;
+  color: var(--tab-text);
   text-decoration: none;
   transition: color 0.3s;
 }
 
 .footer-section a:hover {
-  color: #ffcc00;
+  color: var(--button-bg);
   text-decoration: underline;
 }
 
 .footer-bottom {
   text-align: center;
   padding: 15px 0;
-  border-top: 1px solid rgba(255, 255, 0, 0.3);
+  border-top: 1px solid var(--border-color);
   max-width: 1225px;
   margin: 0 auto;
 }

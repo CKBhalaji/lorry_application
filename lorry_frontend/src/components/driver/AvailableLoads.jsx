@@ -34,9 +34,9 @@ const AvailableLoads = () => {
       setError(null);
       try {
         const data = await fetchAvailableLoads();
-        console.log('AvailableLoads: Successfully fetched data:', data);
+        // console.log('AvailableLoads: Successfully fetched data:', data);
         if (!Array.isArray(data)) {
-          console.error('AvailableLoads: Data is not an array!', data);
+          // console.error('AvailableLoads: Data is not an array!', data);
           throw new Error('Received invalid data format from server.');
         }
         setLoads(data || []); // Ensure loads is always an array
@@ -51,7 +51,7 @@ const AvailableLoads = () => {
         }
         setBidAmounts(initialBids);
       } catch (error) {
-        console.error('AvailableLoads: Detailed error fetching loads:', error);
+        // console.error('AvailableLoads: Detailed error fetching loads:', error);
         setError(error.message || 'Failed to fetch available loads. Please check console for details.');
       } finally {
         setLoading(false);
@@ -114,12 +114,13 @@ const AvailableLoads = () => {
         amount: amount,
         loadId: loadId
       });
+      setBidAmounts(prev => ({ ...prev, [loadId]: '' })); // Clear the input after successful bid
       const updatedLoads = await fetchAvailableLoads();
       setLoads(updatedLoads);
       setTimeout(() => setSuccessMessage(null), 3000); // Auto-hide after 3 seconds
     } catch (error) {
       setSuccessMessage({ type: 'error', message: 'Failed to place bid. Please try again.' });
-      console.error('Error placing bid:', error);
+      // console.error('Error placing bid:', error);
     }
   };
 
@@ -169,7 +170,7 @@ const AvailableLoads = () => {
           {loads.map((load, index) => {
             try {
               if (!load || typeof load !== 'object') {
-                console.error(`AvailableLoads: Invalid load item at index ${index}:`, load);
+                // console.error(`AvailableLoads: Invalid load item at index ${index}:`, load);
                 return <div key={index} className="DAL-load-card error">Invalid load data</div>;
               }
               // Ensure essential properties exist
@@ -229,7 +230,7 @@ const AvailableLoads = () => {
                 </div>
               );
             } catch (cardError) {
-              console.error(`AvailableLoads: Error rendering load card for load at index ${index}:`, load, cardError);
+              // console.error(`AvailableLoads: Error rendering load card for load at index ${index}:`, load, cardError);
               return <div key={load && load.id ? load.id : index} className="DAL-load-card error">Error displaying this load.</div>;
             }
           })}

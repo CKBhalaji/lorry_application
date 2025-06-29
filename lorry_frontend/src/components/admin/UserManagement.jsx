@@ -16,16 +16,16 @@ const UserManagement = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log('UserManagement: Fetching users.');
+        // console.log('UserManagement: Fetching users.');
         const data = await fetchUsers();
-        console.log('UserManagement: Successfully fetched data:', data);
+        // console.log('UserManagement: Successfully fetched data:', data);
         if (!Array.isArray(data)) {
-          console.error('UserManagement: Data is not an array!', data);
+          // console.error('UserManagement: Data is not an array!', data);
           throw new Error('Received invalid data format from server for users.');
         }
         setUsersData(data || []);
       } catch (err) {
-        console.error('UserManagement: Detailed error fetching users:', err);
+        // console.error('UserManagement: Detailed error fetching users:', err);
         setError(err.message || 'Failed to fetch users. Please check console for details.');
         setUsersData([]);
       } finally {
@@ -42,12 +42,12 @@ const UserManagement = () => {
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        console.log(`UserManagement: Deleting user ID: ${userId}`);
+        // console.log(`UserManagement: Deleting user ID: ${userId}`);
         await deleteUser(userId); // Service call
         setUsersData(currentUsers => currentUsers.filter(user => user.id !== userId));
-        console.log(`UserManagement: User ID: ${userId} deleted successfully from UI.`);
+        // console.log(`UserManagement: User ID: ${userId} deleted successfully from UI.`);
       } catch (err) {
-        console.error('UserManagement: Error deleting user:', err);
+        // console.error('UserManagement: Error deleting user:', err);
         // Optionally set an error message to display to the admin
         setError(err.message || `Failed to delete user ${userId}.`);
       }
@@ -110,7 +110,7 @@ const UserManagement = () => {
               {filteredUsers.map((user, index) => {
                 try {
                   if (!user || typeof user !== 'object') {
-                    console.error(`UserManagement: Invalid user item at index ${index}:`, user);
+                    // console.error(`UserManagement: Invalid user item at index ${index}:`, user);
                     return (
                       <tr key={`error-${index}`} className="error-row">
                         <td colSpan="6">Invalid user data</td>
@@ -145,7 +145,7 @@ const UserManagement = () => {
                     </tr>
                   );
                 } catch (cardError) {
-                  console.error(`UserManagement: Error rendering user row for user at index ${index}:`, user, cardError);
+                  // console.error(`UserManagement: Error rendering user row for user at index ${index}:`, user, cardError);
                   return (
                     <tr key={user && user.id ? `error-${user.id}` : `error-idx-${index}`} className="error-row">
                       <td colSpan="6">Error displaying this user.</td>

@@ -27,28 +27,3 @@ ONEtwo@2003
 
 bhalaji
 ONEtwo@2003
-
-.GOML-status-badge.active {
-  background-color: rgba(76, 175, 80, 0.2);
-  color: #2e7d32;
-}
-
-.GOML-status-badge.pending {
-  background-color: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-}
-
-.GOML-status-badge.in_transit {
-  background-color: rgba(255, 95, 21, 0.2); /* A very bright orange for the background */
-  color: #FF5F15; /* A highly visible, "safety" orange for the foreground */
-}
-
-.GOML-status-badge.completed {
-  background-color: rgba(33, 150, 243, 0.2);
-  color: #1565c0;
-}
-
-.GOML-status-badge.cancelled {
-  background-color: rgba(244, 67, 54, 0.2);
-  color: #c62828;
-}

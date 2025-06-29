@@ -25,16 +25,16 @@ const BidHistory = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log(`BidHistory: Fetching bids for driver ID: ${authUser.id}`);
+        // console.log(`BidHistory: Fetching bids for driver ID: ${authUser.id}`);
         const data = await fetchDriverBids(authUser.id);
-        console.log('BidHistory: Successfully fetched data:', data);
+        // console.log('BidHistory: Successfully fetched data:', data);
         if (!Array.isArray(data)) {
-          console.error('BidHistory: Data is not an array!', data);
+          // console.error('BidHistory: Data is not an array!', data);
           throw new Error('Received invalid data format from server for bids.');
         }
         setBids(data || []);
       } catch (err) {
-        console.error('BidHistory: Detailed error fetching bids:', err);
+        // console.error('BidHistory: Detailed error fetching bids:', err);
         setError(err.message || 'Failed to fetch bid history. Please check console for details.');
         setBids([]); // Ensure bids is an array on error
       } finally {
@@ -63,7 +63,7 @@ const BidHistory = () => {
 
   const handleCancelBid = (bidId) => {
     // This is a placeholder. Actual cancellation would involve an API call.
-    console.log(`Attempting to cancel bid ID: ${bidId} (UI only)`);
+    // console.log(`Attempting to cancel bid ID: ${bidId} (UI only)`);
     setBids(prevBids =>
       prevBids.map(bid =>
         bid.id === bidId ? { ...bid, status: 'CANCELLED_BY_USER' } : bid // Changed status to reflect user action

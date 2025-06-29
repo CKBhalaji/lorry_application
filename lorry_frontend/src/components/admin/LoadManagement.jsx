@@ -16,17 +16,17 @@ const LoadManagement = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log('LoadManagement: Fetching all loads.');
+        // console.log('LoadManagement: Fetching all loads.');
         const data = await fetchAllLoads();
-        console.log('LoadManagement: Successfully fetched data:', data);
+        // console.log('LoadManagement: Successfully fetched data:', data);
         if (!Array.isArray(data)) {
-          console.error('LoadManagement: Data is not an array!', data);
+          // console.error('LoadManagement: Data is not an array!', data);
           throw new Error('Received invalid data format from server for loads.');
         }
         setAllLoadsData(data || []);
         setFilteredLoads(data || []); // Initialize filtered loads with all data
       } catch (err) {
-        console.error('LoadManagement: Detailed error fetching loads:', err);
+        // console.error('LoadManagement: Detailed error fetching loads:', err);
         setError(err.message || 'Failed to fetch loads. Please check console for details.');
         setAllLoadsData([]);
         setFilteredLoads([]);
@@ -39,7 +39,7 @@ const LoadManagement = () => {
 
   const handleStatusChange = async (loadId, newStatus) => {
     try {
-      console.log(`LoadManagement: Updating status for load ID ${loadId} to ${newStatus}.`);
+      // console.log(`LoadManagement: Updating status for load ID ${loadId} to ${newStatus}.`);
       await updateLoadStatus(loadId, newStatus);
       // Update local state after successful API call
       const updatedLoads = allLoadsData.map(load =>
@@ -53,9 +53,9 @@ const LoadManagement = () => {
       // Let's assume selectedStatus is available via a state or re-evaluate filter
       const currentFilterValue = document.querySelector('.LM-filter-controls select').value; // Example to get current filter
       handleFilter(currentFilterValue, updatedLoads); // Pass updatedLoads to filter on
-      console.log(`LoadManagement: Status updated for load ID ${loadId}.`);
+      // console.log(`LoadManagement: Status updated for load ID ${loadId}.`);
     } catch (err) {
-      console.error('LoadManagement: Error updating load status:', err);
+      // console.error('LoadManagement: Error updating load status:', err);
       setError(err.message || `Failed to update status for load ${loadId}.`);
     }
   };
@@ -131,7 +131,7 @@ const LoadManagement = () => {
               {filteredLoads.map((load, index) => {
                 try {
                   if (!load || typeof load !== 'object') {
-                    console.error(`LoadManagement: Invalid load item at index ${index}:`, load);
+                    // console.error(`LoadManagement: Invalid load item at index ${index}:`, load);
                     return (
                       <tr key={`error-${index}`} className="error-row">
                         <td colSpan="7">Invalid load data</td>
@@ -175,7 +175,7 @@ const LoadManagement = () => {
                     </tr>
                   );
                 } catch (cardError) {
-                  console.error(`LoadManagement: Error rendering load row for load at index ${index}:`, load, cardError);
+                  // console.error(`LoadManagement: Error rendering load row for load at index ${index}:`, load, cardError);
                   return (
                     <tr key={load && load.id ? `error-${load.id}` : `error-idx-${index}`} className="error-row">
                       <td colSpan="7">Error displaying this load.</td>

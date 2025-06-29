@@ -23,16 +23,16 @@ const ManageDisputes = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log('GOManageDisputes: Fetching owner disputes.');
+        // console.log('GOManageDisputes: Fetching owner disputes.');
         const data = await fetchOwnerDisputes();
-        console.log('GOManageDisputes: Successfully fetched data:', data);
+        // console.log('GOManageDisputes: Successfully fetched data:', data);
         if (!Array.isArray(data)) {
-          console.error('GOManageDisputes: Data is not an array!', data);
+          // console.error('GOManageDisputes: Data is not an array!', data);
           throw new Error('Received invalid data format from server for disputes.');
         }
         setDisputesData(data || []);
       } catch (err) {
-        console.error('GOManageDisputes: Detailed error fetching disputes:', err);
+        // console.error('GOManageDisputes: Detailed error fetching disputes:', err);
         setError(err.message || 'Failed to fetch disputes. Please check console for details.');
         setDisputesData([]);
       } finally {
@@ -85,7 +85,7 @@ const ManageDisputes = () => {
       });
       alert('Dispute created successfully!');
     } catch (error) {
-      console.error('Error creating dispute:', error);
+      // console.error('Error creating dispute:', error);
       alert(error.message || 'Failed to create dispute');
     }
   };
@@ -201,7 +201,7 @@ const ManageDisputes = () => {
           disputesData.map((dispute, index) => {
             try {
               if (!dispute || typeof dispute !== 'object') {
-                console.error(`GOManageDisputes: Invalid dispute item at index ${index}:`, dispute);
+                // console.error(`GOManageDisputes: Invalid dispute item at index ${index}:`, dispute);
                 return <div key={index} className="GOMD-dispute-card error">Invalid dispute data</div>;
               }
 
@@ -233,9 +233,6 @@ const ManageDisputes = () => {
                   {resolution && (
                     <div className="GOMD-dispute-resolution">
                       <p><strong>Resolution:</strong> {resolution}</p>
-                      {resolvedAtStr && (
-                        <p><strong>Resolved on:</strong> {resolvedAtStr}</p>
-                      )}
                     </div>
                   )}
                   {attachments && attachments.url && attachments.name && ( // Added check for url and name
@@ -249,7 +246,7 @@ const ManageDisputes = () => {
                 </div>
               );
             } catch (cardError) {
-              console.error(`GOManageDisputes: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
+              // console.error(`GOManageDisputes: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
               return <div key={dispute && dispute.id ? dispute.id : index} className="GOMD-dispute-card error">Error displaying this dispute.</div>;
             }
           })

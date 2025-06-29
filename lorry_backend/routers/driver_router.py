@@ -324,7 +324,7 @@ async def create_driver_dispute(dispute_data: schemas.DisputeCreate, current_dri
 async def get_driver_disputes(current_driver: models.User = Depends(get_current_driver_user), db: Session = Depends(database.get_db)):
     # Fetch disputes where the driver is the subject (against him)
     disputes = db.query(models.Dispute).filter(models.Dispute.driverId == current_driver.id).order_by(models.Dispute.created_at.desc()).all()
-    print(f"DEBUG: Found {len(disputes)} disputes for driverId={current_driver.id}")
+    # print(f"DEBUG: Found {len(disputes)} disputes for driverId={current_driver.id}")
     dispute_responses = []
     for dispute in disputes:
         driver = db.query(models.User).filter(models.User.id == dispute.driverId).first()

@@ -1,12 +1,55 @@
-# React + Vite
+# Lorry Application Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the React frontend for the Lorry logistics platform.
 
-Currently, two official plugins are available:
+## Features
+- Modern, responsive UI
+- User registration and login (Driver, Goods Owner, Admin)
+- Dashboard for each user type
+- Load posting, bidding, and management
+- Dispute management
+- Light/dark theme support
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Folder Structure
+```
+lorry_frontend/
+├── public/
+├── src/
+│   ├── Pages/           # Main pages (Home, Register, Login, etc.)
+│   ├── components/      # Reusable components (Navbar, Footer, Dashboard, etc.)
+│   ├── context/         # React context (AuthContext)
+│   ├── services/        # API service functions
+│   ├── assets/          # Images and static assets
+│   ├── index.js(x)      # Entry point
+│   └── App.jsx          # Main router and layout
+├── package.json
+└── ...
+```
 
-## Expanding the ESLint configuration
+## How to Run
+```sh
+cd lorry_frontend
+npm install
+npm start
+```
+- The app will run at `http://localhost:3000`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Key Files
+- `src/Pages/Home.jsx` — Home page
+- `src/Pages/RegisterChoice.jsx` — Register as Driver or Goods Owner
+- `src/components/driver/DriverDashboard.jsx` — Driver dashboard
+- `src/components/goods-owner/GODashboard.jsx` — Goods Owner dashboard
+- `src/components/common/ProtectedRoute.jsx` — Route protection logic
+- `src/context/AuthContext.jsx` — Authentication context
+- `src/services/` — API calls to backend
+
+## Theming
+- All colors and themes are managed with CSS variables in `Navbar.css` and other CSS files.
+
+## API
+- The frontend communicates with the FastAPI backend (see backend README).
+- API endpoints are configured in the service files in `src/services/`.
+
+## Contribution
+- Please follow the existing folder structure and use functional components with hooks.
+- Use CSS modules or scoped CSS for styling.

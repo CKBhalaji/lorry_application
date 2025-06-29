@@ -194,6 +194,9 @@ table {
     justify-content: flex-end;
     margin-top: 10px;
   }
+  .UM-user-management, .UM-management-header, .UM-status-badge, .UM-view-btn, .UM-delete-btn {
+    font-size: 0.7rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -209,6 +212,7 @@ table {
   .UM-filter-controls select {
     width: 100%;
   }
+  
 }
 
 .UM-user-card {

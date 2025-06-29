@@ -221,6 +221,9 @@ table {
   .LM-table-container {
     max-height: 100vh;
   }
+  .LM-load-management, .LM-status-badge, .LM-filter-controls{
+    font-size: 0.7rem;
+  }
 }
 
 .LM-loads-table tr:hover {

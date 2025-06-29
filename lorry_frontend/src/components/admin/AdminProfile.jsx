@@ -26,9 +26,9 @@ const AdminProfile = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log(`AdminProfile: Fetching profile for admin ID: ${authUser.id}`);
+        // console.log(`AdminProfile: Fetching profile for admin ID: ${authUser.id}`);
         const data = await fetchAdminProfile(authUser.id); // Pass adminId
-        console.log('AdminProfile: Successfully fetched data:', data);
+        // console.log('AdminProfile: Successfully fetched data:', data);
         if (data && typeof data === 'object') {
           setProfile(data);
           setFormData({ // Initialize formData with fetched data
@@ -39,11 +39,11 @@ const AdminProfile = () => {
             phone_number: data.phone_number || ''
           });
         } else {
-          console.error('AdminProfile: Data is not an object or is null!', data);
+          // console.error('AdminProfile: Data is not an object or is null!', data);
           throw new Error('Received invalid data format from server for admin profile.');
         }
       } catch (err) {
-        console.error('AdminProfile: Detailed error fetching profile:', err);
+        // console.error('AdminProfile: Detailed error fetching profile:', err);
         setError(err.message || 'Failed to fetch profile. Please check console for details.');
       } finally {
         setLoading(false);
@@ -76,7 +76,7 @@ const AdminProfile = () => {
       if (!authUser || !authUser.id) {
         throw new Error("Cannot update profile: Admin ID not found.");
       }
-      console.log(`AdminProfile: Updating profile for admin ID: ${authUser.id}`, formData);
+      // console.log(`AdminProfile: Updating profile for admin ID: ${authUser.id}`, formData);
       // Only send editable fields
       const updatePayload = {
         name: formData.name,
@@ -89,7 +89,7 @@ const AdminProfile = () => {
       setEditMode(false);
       alert('Profile updated successfully!');
     } catch (err) {
-      console.error('AdminProfile: Error updating profile:', err);
+      // console.error('AdminProfile: Error updating profile:', err);
       setError(err.message || 'Failed to update profile. Please try again.');
       // alert('Failed to update profile. Please try again.'); // setError will display the message
     }

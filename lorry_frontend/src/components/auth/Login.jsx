@@ -27,9 +27,9 @@ const Login = () => {
       type: 'driver',
     };
     try {
-      console.log('Attempting driver login with:', credentials);
+      // console.log('Attempting driver login with:', credentials);
       await login(credentials);
-      navigate('/driver/dashboard?tab=post');
+      navigate('/driver/dashboard?tab=loads');
     } catch (error) {
       setErrorMessage(error.message || 'Login failed. Please check your credentials.');
     }
@@ -42,7 +42,7 @@ const Login = () => {
       type: 'goodsOwner',
     };
     try {
-      console.log('Attempting goods owner login with:', credentials);
+      // console.log('Attempting goods owner login with:', credentials);
       await login(credentials);
       navigate('/goods-owner/dashboard?tab=post');
     } catch (error) {

@@ -113,6 +113,17 @@
   .DP-profile-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
+  .DP-driver-profile,
+  .DP-profile-actions button {
+    font-size: 0.7rem;
+  }
+  .DP-profile-field input,
+  .DP-profile-field select {
+    padding:8px;
+  }
+  .DP-profile-field p {
+    font-size: 0.7rem;
+  }
 }
 
 @media (max-width: 480px) {

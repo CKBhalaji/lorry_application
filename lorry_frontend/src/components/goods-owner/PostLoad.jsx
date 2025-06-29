@@ -61,7 +61,7 @@ const PostLoad = () => {
         expectedPrice: ''
       });
     } catch (error) {
-      console.error('Error posting load:', error);
+      // console.error('Error posting load:', error);
       alert('Failed to post load. Please try again.');
     } finally {
       setIsSubmitting(false);

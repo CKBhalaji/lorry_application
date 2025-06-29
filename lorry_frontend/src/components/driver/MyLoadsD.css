@@ -7,6 +7,7 @@
   margin-bottom: 20px;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 10px;
+  text-align: right;
 }
 
 .DL-no-loads {
@@ -104,9 +105,26 @@
   background: var(--tab-hover-bg);
 }
 
+@media (max-width: 600px) {
+  .DL-header-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .DL-header-row button {
+    width: 100%;
+    text-align: left;
+  }
+}
+
 @media (max-width: 768px) {
   .DL-loads-list {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .DL-my-loads, .DL-status-badge, .DL-header-row button, .DL-load-card {
+    font-size:0.7rem;
   }
 }
 

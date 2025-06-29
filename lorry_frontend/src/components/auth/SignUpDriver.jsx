@@ -40,7 +40,7 @@ const SignUpDriver = () => {
       setGeneratedCode(otp);
       alert('OTP sent to your email!');
     } catch (error) {
-      console.error('Error sending email:', error);
+      // console.error('Error sending email:', error);
       alert('Failed to send OTP. Please try again.');
     }
   };
@@ -181,7 +181,7 @@ const SignUpDriver = () => {
       };
 
       try {
-        console.log('Submitting driver signup payload:', formData);
+        // console.log('Submitting driver signup payload:', formData);
         const signupRes = await signUpDriver(formData);
 
         // Get driverId from signupRes (adjust if your backend returns a different property)
@@ -209,7 +209,7 @@ const SignUpDriver = () => {
         alert('Driver signed up and documents uploaded successfully!');
         navigate(-1);
       } catch (error) {
-        console.error('Error submitting form:', error);
+        // console.error('Error submitting form:', error);
         alert(`Failed to sign up: ${error.message}`);
       }
     } else {

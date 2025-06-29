@@ -59,7 +59,7 @@ const AddAdmin = () => {
       alert('Admin added successfully!');
       navigate('/admin/dashboard?tab=addAdmin');
     } catch (error) {
-      console.error('Error adding admin:', error);
+      // console.error('Error adding admin:', error);
       alert(error.message || 'Failed to add admin');
     } finally {
       setIsSubmitting(false);

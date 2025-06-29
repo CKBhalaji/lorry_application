@@ -3,7 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useContext, useEffect } from 'react';
 import './Navbar.css'; // Add this import
-import { ArrowRightOutlined ,MoonOutlined, SunOutlined, MoonFilled ,SunFilled} from '@ant-design/icons';
+import { ArrowRightOutlined, MoonOutlined, SunOutlined, MoonFilled, SunFilled, MenuOutlined, CloseOutlined } from '@ant-design/icons';
 
 
 const Navbar = () => {
@@ -14,7 +14,7 @@ const Navbar = () => {
     logout();
     navigate('/login');
     window.location.reload();
-    console.log('User logged out successfully');
+    // console.log('User logged out successfully');
   };
 
   useEffect(() => {
@@ -22,6 +22,7 @@ const Navbar = () => {
   }, [isAuthenticated, userType]);
 
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [showUserInfoDropdown, setShowUserInfoDropdown] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -40,15 +41,6 @@ const Navbar = () => {
             <Link to="/">
               <h1>Lorry Link </h1>
             </Link>
-            {/* <h1>Lorry Link<ArrowRightOutlined /> </h1> */}
-            {/* {userType && (
-              <span className="NAV-user-type-indicator">
-                <ArrowRightOutlined />
-                {userType === 'driver' ? ' Driver Dashboard' : 
-                 userType === 'goods_owner' ? ' Goods Owner' :
-                 userType === 'admin' ? ' Admin Dashboard' : ''}
-              </span>
-            )} */}
             {userType && (
               <Link to={
                 userType === 'driver' ? '/driver' :
@@ -64,26 +56,22 @@ const Navbar = () => {
               </Link>
             )}
           </div>
-          <div className="NAV-user-info">
+          {/* User Info for Desktop */}
+          <div className="NAV-user-info NAV-user-info-desktop">
             {isAuthenticated && userType ? (
               <>
-                <span className="NAV-username">Welcome, {username}</span>
+                <span className="NAV-username-desktop">Welcome, {username}</span>
                 <button className="NAV-theme-toggle" onClick={toggleTheme}>
                   {theme === 'light' ? <MoonFilled /> : <SunFilled />}
                 </button>
                 <button className="NAV-logout-btn" onClick={handleLogout}>Logout</button>
               </>
-              // <>
-              //   <span className="NAV-username">Welcome, {username}</span>
-              //   <button className="NAV-logout-btn" onClick={handleLogout}>Logout</button>
-              // </>
             ) : (
               <div className="NAV-auth-links">
                 <button className="NAV-theme-toggle" onClick={toggleTheme}>
                   {theme === 'light' ? <MoonFilled /> : <SunFilled />}
                 </button>
                 <Link className="NAV-nav-link" to="/login">Login</Link>
-                {/* <Link className="NAV-nav-link" to="/register">Register</Link> */}
                 <div className="NAV-register-dropdown">
                   <span>Register</span>
                   <div className="NAV-register-dropdown-content">
@@ -93,6 +81,45 @@ const Navbar = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Three-dot menu for mobile/tablet */}
+          <div className="NAV-user-info-mobile-menu">
+            {/* Username next to 3-dot button for >=600px */}
+            {isAuthenticated && userType && (
+              <span className="NAV-username-next-btn">Welcome, {username}</span>
+            )}
+            <button className="NAV-menu-btn" onClick={() => setShowUserInfoDropdown(!showUserInfoDropdown)}>
+              {showUserInfoDropdown ? <CloseOutlined /> : <MenuOutlined />}
+            </button>
+            {/* Side drawer overlay */}
+            <div className={`NAV-user-info-drawer-overlay${showUserInfoDropdown ? ' open' : ''}`} onClick={() => setShowUserInfoDropdown(false)} />
+            {/* Side drawer */}
+            <div className={`NAV-user-info-drawer${showUserInfoDropdown ? ' open' : ''}`}>
+              {isAuthenticated && userType ? (
+                <>
+                  <span className="NAV-username-mobile">Welcome, {username}</span>
+                  <button className="NAV-theme-toggle" onClick={toggleTheme}>
+                    {theme === 'light' ? <MoonFilled /> : <SunFilled />}
+                  </button>
+                  <button className="NAV-logout-btn" onClick={handleLogout}>Logout</button>
+                </>
+              ) : (
+                <div className="NAV-auth-links">
+                  <button className="NAV-theme-toggle" onClick={toggleTheme}>
+                    {theme === 'light' ? <MoonFilled /> : <SunFilled />}
+                  </button>
+                  <Link className="NAV-nav-link" to="/login">Login</Link>
+                  <div className="NAV-register-dropdown">
+                    <span>Register</span>
+                    <div className="NAV-register-dropdown-content">
+                      <Link to="/signup-goods-owner">Goods Owner</Link>
+                      <Link to="/signup-driver">Driver</Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

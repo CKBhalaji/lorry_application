@@ -1,0 +1,88 @@
+
+
+.register-choice-page {
+  width: 100%;
+  min-height: 90vh;
+  background: var(--primary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+.register-choice-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background: var(--dashboard-bg);
+  border-radius: 28px;
+  box-shadow: 0 6px 36px 0 var(--hover-bg);
+  padding: 56px 28px 44px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1.5px solid var(--border-color);
+}
+
+.register-choice-container h1 {
+  color: var(--primary-text);
+  margin-bottom: 36px;
+  font-size: 2.3rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.register-choice-buttons {
+  display: flex;
+  gap: 36px;
+  width: 100%;
+  justify-content: center;
+}
+
+.cta-button.large {
+  font-size: 1.25rem;
+  padding: 20px 52px;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px 0 var(--hover-bg);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.cta-button.large.primary {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+}
+
+.cta-button.large.primary:hover {
+  background: var(--button-hover-bg);
+  color: var(--button-hover-text);
+  transform: scale(1.06);
+}
+
+.cta-button.large.secondary {
+  background: transparent;
+  color: var(--tab-text);
+  border: 2.5px solid var(--tab-text);
+}
+
+.cta-button.large.secondary:hover {
+  background: var(--hover-bg);
+  color: var(--button-bg);
+  transform: scale(1.06);
+}
+
+@media (max-width: 600px) {
+  .register-choice-container {
+    padding: 28px 6px 18px 6px;
+  }
+  .register-choice-buttons {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .cta-button.large {
+    width: 100%;
+    padding: 14px 0;
+  }
+}

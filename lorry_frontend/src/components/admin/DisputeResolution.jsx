@@ -14,16 +14,16 @@ const DisputeResolution = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log('DisputeResolution: Fetching all disputes.');
+        // console.log('DisputeResolution: Fetching all disputes.');
         const data = await fetchDisputes();
-        console.log('DisputeResolution: Successfully fetched data:', data);
+        // console.log('DisputeResolution: Successfully fetched data:', data);
         if (!Array.isArray(data)) {
-          console.error('DisputeResolution: Data is not an array!', data);
+          // console.error('DisputeResolution: Data is not an array!', data);
           throw new Error('Received invalid data format from server for disputes.');
         }
         setDisputesData(data || []);
       } catch (err) {
-        console.error('DisputeResolution: Detailed error fetching disputes:', err);
+        // console.error('DisputeResolution: Detailed error fetching disputes:', err);
         setError(err.message || 'Failed to fetch disputes. Please check console for details.');
         setDisputesData([]);
       } finally {
@@ -35,7 +35,7 @@ const DisputeResolution = () => {
 
   const handleResolve = async (disputeId, resolutionAction) => {
     try {
-      console.log(`DisputeResolution: Resolving dispute ID ${disputeId} with action: ${resolutionAction}.`);
+      // console.log(`DisputeResolution: Resolving dispute ID ${disputeId} with action: ${resolutionAction}.`);
       // The actual resolution message/details might come from a form or be predefined
       const resolutionMessage = resolutionAction === 'approved' ? 'Complaint approved by admin.' : 'Complaint rejected by admin.';
       const status = resolutionAction === 'approved' ? 'resolved' : 'rejected';
@@ -49,9 +49,9 @@ const DisputeResolution = () => {
       } else {
         setDisputesData([]); // Or handle error from refetch
       }
-      console.log(`DisputeResolution: Dispute ID ${disputeId} resolved.`);
+      // console.log(`DisputeResolution: Dispute ID ${disputeId} resolved.`);
     } catch (err) {
-      console.error(`DisputeResolution: Error resolving dispute ID ${disputeId}:`, err);
+      // console.error(`DisputeResolution: Error resolving dispute ID ${disputeId}:`, err);
       setError(err.message || `Failed to resolve dispute ${disputeId}.`);
     } finally {
       setLoading(false); // Ensure loading is false even if refetch fails
@@ -107,7 +107,7 @@ const DisputeResolution = () => {
           {filteredDisputes.map((dispute, index) => {
             try {
               if (!dispute || typeof dispute !== 'object') {
-                console.error(`DisputeResolution: Invalid dispute item at index ${index}:`, dispute);
+                // console.error(`DisputeResolution: Invalid dispute item at index ${index}:`, dispute);
                 return <div key={index} className="ADR-dispute-card error">Invalid dispute data</div>;
               }
 
@@ -180,7 +180,7 @@ const DisputeResolution = () => {
                 </div>
               );
             } catch (cardError) {
-              console.error(`DisputeResolution: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
+              // console.error(`DisputeResolution: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
               return <div key={dispute && dispute.id ? dispute.id : index} className="ADR-dispute-card error">Error displaying this dispute.</div>;
             }
           })}

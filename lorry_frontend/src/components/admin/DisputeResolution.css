@@ -198,6 +198,10 @@
   .ADR-disputes-list {
     grid-template-columns: 1fr;
   }
+
+  .ADR-status-badge, .ADR-dispute-resolution, .ADR-dispute-card {
+    font-size: 0.7rem;
+  }
 }
 
 @media (max-width: 480px) {

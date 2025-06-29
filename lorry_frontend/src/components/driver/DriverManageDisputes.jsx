@@ -31,16 +31,16 @@ const ManageDisputes = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log('DriverManageDisputes: Fetching driver disputes.');
+        // console.log('DriverManageDisputes: Fetching driver disputes.');
         const data = await fetchDriverDisputes();
-        console.log('DriverManageDisputes: Successfully fetched data:', data);
+        // console.log('DriverManageDisputes: Successfully fetched data:', data);
         if (!Array.isArray(data)) {
-          console.error('DriverManageDisputes: Data is not an array!', data);
+          // console.error('DriverManageDisputes: Data is not an array!', data);
           throw new Error('Received invalid data format from server for disputes.');
         }
         setDisputesState(data || []);
       } catch (err) {
-        console.error('DriverManageDisputes: Detailed error fetching disputes:', err);
+        // console.error('DriverManageDisputes: Detailed error fetching disputes:', err);
         setError(err.message || 'Failed to fetch disputes. Please check console for details.');
         setDisputesState([]); // Ensure disputes is an array on error
       } finally {
@@ -85,7 +85,6 @@ const ManageDisputes = () => {
       const newDispute = await createDriverDispute(payload); // This service call might need its own error handling/logging
       setDisputesState(prevDisputes => [newDispute, ...prevDisputes]); // Use functional update
       // setShowCreateForm(false); // Typically hide form after successful submission
-      alert('Dispute created successfully!'); // Keep alert or use a more integrated notification system
       // Reset form and hide
       setShowCreateForm(false);
       setFormData({
@@ -97,7 +96,7 @@ const ManageDisputes = () => {
       });
       alert('Dispute created successfully!');
     } catch (error) {
-      console.error('Error creating dispute:', error);
+      // console.error('Error creating dispute:', error);
       alert(error.message || 'Failed to create dispute');
     }
   };
@@ -211,7 +210,7 @@ const ManageDisputes = () => {
           disputes.map((dispute, index) => {
             try {
               if (!dispute || typeof dispute !== 'object') {
-                console.error(`DriverManageDisputes: Invalid dispute item at index ${index}:`, dispute);
+                // console.error(`DriverManageDisputes: Invalid dispute item at index ${index}:`, dispute);
                 return <div key={index} className="DMD-dispute-card error">Invalid dispute data</div>;
               }
 
@@ -258,7 +257,7 @@ const ManageDisputes = () => {
                 </div>
               );
             } catch (cardError) {
-              console.error(`DriverManageDisputes: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
+              // console.error(`DriverManageDisputes: Error rendering dispute card for dispute at index ${index}:`, dispute, cardError);
               return <div key={dispute && dispute.id ? dispute.id : index} className="DMD-dispute-card error">Error displaying this dispute.</div>;
             }
           })

@@ -107,7 +107,7 @@ const MyLoads = () => {
                 return <div key={index} className="GOML-load-card error">Invalid load data</div>;
               }
               // DEBUG: Log the load status for each load
-              console.log(`Load ID: ${load.id}, Status: ${load.status}`);
+              // console.log(`Load ID: ${load.id}, Status: ${load.status}`);
               const id = load.id !== undefined ? load.id : index;
               const goodsType = load.goodsType || 'N/A';
               const status = load.status || 'N/A';

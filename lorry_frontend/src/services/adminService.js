@@ -25,36 +25,36 @@ export const deleteUser = async (userId) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error deleting user:', error);
+    // console.error('Error deleting user:', error);
     throw error;
   }
 };
 
 export const fetchUsers = async () => {
   const token = getCookie('authToken');
-  console.log('AdminService: Attempting to fetch users.');
-  console.log('AdminService: Using token:', token);
+  // console.log('AdminService: Attempting to fetch users.');
+  // console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/users`;
-  console.log('AdminService: Target URL for fetchUsers:', url);
+  // console.log('AdminService: Target URL for fetchUsers:', url);
 
   try {
     const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    console.log('AdminService: Response status for fetchUsers:', response.status);
-    console.log('AdminService: Successfully fetched users. Data:', response.data);
+    // console.log('AdminService: Response status for fetchUsers:', response.status);
+    // console.log('AdminService: Successfully fetched users. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error('AdminService: Exception during fetchUsers:', error.response ? error.response.data : error.message);
+    // console.error('AdminService: Exception during fetchUsers:', error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('AdminService: Error status:', error.response.status);
-      console.error('AdminService: Error body:', error.response.data);
+      // console.error('AdminService: Error status:', error.response.status);
+      // console.error('AdminService: Error body:', error.response.data);
       throw new Error(`Failed to fetch users. Status: ${error.response.status}`);
     } else if (error.request) {
-      console.error('AdminService: No response received for fetchUsers:', error.request);
+      // console.error('AdminService: No response received for fetchUsers:', error.request);
       throw new Error('Failed to fetch users: No response from server.');
     } else {
-      console.error('AdminService: Error setting up request for fetchUsers:', error.message);
+      // console.error('AdminService: Error setting up request for fetchUsers:', error.message);
       throw new Error(`Failed to fetch users: ${error.message}`);
     }
   }
@@ -62,29 +62,29 @@ export const fetchUsers = async () => {
 
 export const fetchAllLoads = async () => {
   const token = getCookie('authToken');
-  console.log('AdminService: Attempting to fetch all loads.');
-  console.log('AdminService: Using token:', token);
+  // console.log('AdminService: Attempting to fetch all loads.');
+  // console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/loads`;
-  console.log('AdminService: Target URL for fetchAllLoads:', url);
+  // console.log('AdminService: Target URL for fetchAllLoads:', url);
 
   try {
     const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    console.log('AdminService: Response status for fetchAllLoads:', response.status);
-    console.log('AdminService: Successfully fetched all loads. Data:', response.data);
+    // console.log('AdminService: Response status for fetchAllLoads:', response.status);
+    // console.log('AdminService: Successfully fetched all loads. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error('AdminService: Exception during fetchAllLoads:', error.response ? error.response.data : error.message);
+    // console.error('AdminService: Exception during fetchAllLoads:', error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('AdminService: Error status:', error.response.status);
-      console.error('AdminService: Error body:', error.response.data);
+      // console.error('AdminService: Error status:', error.response.status);
+      // console.error('AdminService: Error body:', error.response.data);
       throw new Error(`Failed to fetch all loads. Status: ${error.response.status}`);
     } else if (error.request) {
-      console.error('AdminService: No response received for fetchAllLoads:', error.request);
+      // console.error('AdminService: No response received for fetchAllLoads:', error.request);
       throw new Error('Failed to fetch all loads: No response from server.');
     } else {
-      console.error('AdminService: Error setting up request for fetchAllLoads:', error.message);
+      // console.error('AdminService: Error setting up request for fetchAllLoads:', error.message);
       throw new Error(`Failed to fetch all loads: ${error.message}`);
     }
   }
@@ -98,36 +98,36 @@ export const updateLoadStatus = async (loadId, status) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error updating load status:', error);
+    // console.error('Error updating load status:', error);
     throw error;
   }
 };
 
 export const fetchDisputes = async () => {
   const token = getCookie('authToken');
-  console.log('AdminService: Attempting to fetch all disputes.');
-  console.log('AdminService: Using token:', token);
+  // console.log('AdminService: Attempting to fetch all disputes.');
+  // console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/disputes`;
-  console.log('AdminService: Target URL for fetchDisputes:', url);
+  // console.log('AdminService: Target URL for fetchDisputes:', url);
 
   try {
     const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    console.log('AdminService: Response status for fetchDisputes:', response.status);
-    console.log('AdminService: Successfully fetched all disputes. Data:', response.data);
+    // console.log('AdminService: Response status for fetchDisputes:', response.status);
+    // console.log('AdminService: Successfully fetched all disputes. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error('AdminService: Exception during fetchDisputes:', error.response ? error.response.data : error.message);
+    // console.error('AdminService: Exception during fetchDisputes:', error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('AdminService: Error status:', error.response.status);
-      console.error('AdminService: Error body:', error.response.data);
+      // console.error('AdminService: Error status:', error.response.status);
+      // console.error('AdminService: Error body:', error.response.data);
       throw new Error(`Failed to fetch all disputes. Status: ${error.response.status}`);
     } else if (error.request) {
-      console.error('AdminService: No response received for fetchDisputes:', error.request);
+      // console.error('AdminService: No response received for fetchDisputes:', error.request);
       throw new Error('Failed to fetch all disputes: No response from server.');
     } else {
-      console.error('AdminService: Error setting up request for fetchDisputes:', error.message);
+      // console.error('AdminService: Error setting up request for fetchDisputes:', error.message);
       throw new Error(`Failed to fetch all disputes: ${error.message}`);
     }
   }
@@ -141,7 +141,7 @@ export const resolveDispute = async (disputeId, resolutionData) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error resolving dispute:', error);
+    // console.error('Error resolving dispute:', error);
     throw error;
   }
 };
@@ -154,7 +154,7 @@ export const addNewAdmin = async (adminData) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error adding new admin:', error);
+    // console.error('Error adding new admin:', error);
     throw error;
   }
 };
@@ -167,36 +167,36 @@ export const deleteAdmin = async (adminId) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error deleting admin:', error);
+    // console.error('Error deleting admin:', error);
     throw error;
   }
 };
 
 export const fetchAdmins = async () => {
   const token = getCookie('authToken');
-  console.log('AdminService: Attempting to fetch all admin accounts.');
-  console.log('AdminService: Using token:', token);
+  // console.log('AdminService: Attempting to fetch all admin accounts.');
+  // console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/admins`;
-  console.log('AdminService: Target URL for fetchAdmins:', url);
+  // console.log('AdminService: Target URL for fetchAdmins:', url);
 
   try {
     const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    console.log('AdminService: Response status for fetchAdmins:', response.status);
-    console.log('AdminService: Successfully fetched all admin accounts. Data:', response.data);
+    // console.log('AdminService: Response status for fetchAdmins:', response.status);
+    // console.log('AdminService: Successfully fetched all admin accounts. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error('AdminService: Exception during fetchAdmins:', error.response ? error.response.data : error.message);
+    // console.error('AdminService: Exception during fetchAdmins:', error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('AdminService: Error status:', error.response.status);
-      console.error('AdminService: Error body:', error.response.data);
+      // console.error('AdminService: Error status:', error.response.status);
+      // console.error('AdminService: Error body:', error.response.data);
       throw new Error(`Failed to fetch admin accounts. Status: ${error.response.status}`);
     } else if (error.request) {
-      console.error('AdminService: No response received for fetchAdmins:', error.request);
+      // console.error('AdminService: No response received for fetchAdmins:', error.request);
       throw new Error('Failed to fetch admin accounts: No response from server.');
     } else {
-      console.error('AdminService: Error setting up request for fetchAdmins:', error.message);
+      // console.error('AdminService: Error setting up request for fetchAdmins:', error.message);
       throw new Error(`Failed to fetch admin accounts: ${error.message}`);
     }
   }
@@ -204,29 +204,29 @@ export const fetchAdmins = async () => {
 
 export const fetchAdminProfile = async (adminId) => {
   const token = getCookie('authToken');
-  console.log(`AdminService: Attempting to fetch profile for admin ID: ${adminId}.`);
-  console.log('AdminService: Using token:', token);
+  // console.log(`AdminService: Attempting to fetch profile for admin ID: ${adminId}.`);
+  // console.log('AdminService: Using token:', token);
   const url = `${API_BASE_URL}/admins/${adminId}/profile`;
-  console.log('AdminService: Target URL for fetchAdminProfile:', url);
+  // console.log('AdminService: Target URL for fetchAdminProfile:', url);
 
   try {
     const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    console.log('AdminService: Response status for fetchAdminProfile:', response.status);
-    console.log('AdminService: Successfully fetched admin profile. Data:', response.data);
+    // console.log('AdminService: Response status for fetchAdminProfile:', response.status);
+    // console.log('AdminService: Successfully fetched admin profile. Data:', response.data);
     return response.data;
   } catch (error) {
-    console.error(`AdminService: Exception during fetchAdminProfile for admin ID ${adminId}:`, error.response ? error.response.data : error.message);
+    // console.error(`AdminService: Exception during fetchAdminProfile for admin ID ${adminId}:`, error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('AdminService: Error status:', error.response.status);
-      console.error('AdminService: Error body:', error.response.data);
+      // console.error('AdminService: Error status:', error.response.status);
+      // console.error('AdminService: Error body:', error.response.data);
       throw new Error(`Failed to fetch admin profile. Status: ${error.response.status}`);
     } else if (error.request) {
-      console.error('AdminService: No response received for fetchAdminProfile:', error.request);
+      // console.error('AdminService: No response received for fetchAdminProfile:', error.request);
       throw new Error('Failed to fetch admin profile: No response from server.');
     } else {
-      console.error('AdminService: Error setting up request for fetchAdminProfile:', error.message);
+      // console.error('AdminService: Error setting up request for fetchAdminProfile:', error.message);
       throw new Error(`Failed to fetch admin profile: ${error.message}`);
     }
   }
@@ -240,7 +240,7 @@ export const updateAdminProfile = async (adminId, profileData) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error updating admin profile:', error);
+    // console.error('Error updating admin profile:', error);
     throw error;
   }
 };
@@ -253,7 +253,7 @@ export const updateAdminProfileOnly = async (adminId, profileData) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error updating admin profile (admin_profile):', error);
+    // console.error('Error updating admin profile (admin_profile):', error);
     throw error;
   }
 };
@@ -266,7 +266,7 @@ export const changeAdminPassword = async (adminId, oldPassword, newPassword) => 
     });
     return response.data;
   } catch (error) {
-    console.error('Error changing admin password:', error);
+    // console.error('Error changing admin password:', error);
     throw error;
   }
 };

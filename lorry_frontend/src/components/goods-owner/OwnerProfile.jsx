@@ -52,20 +52,20 @@ const OwnerProfile = () => {
       setLoading(false);
       setError(null);
       try {
-        console.log(`OwnerProfile: Fetching profile for owner ID: ${authUser.id}`);
+        // console.log(`OwnerProfile: Fetching profile for owner ID: ${authUser.id}`);
         const data = await fetchOwnerProfile(authUser.id);
-        console.log('OwnerProfile: Successfully fetched data:', data);
+        // console.log('OwnerProfile: Successfully fetched data:', data);
 
         if (data && typeof data === 'object') {
           setOriginalProfile(data);
           setProfile(data);
-          console.log('DEBUG PROFILE DATA:', data);
+          // console.log('DEBUG PROFILE DATA:', data);
         } else {
-          console.error('OwnerProfile: Data is not an object or is null!', data);
+          // console.error('OwnerProfile: Data is not an object or is null!', data);
           throw new Error('Received invalid data format from server for profile.');
         }
       } catch (err) {
-        console.error('OwnerProfile: Detailed error fetching profile:', err);
+        // console.error('OwnerProfile: Detailed error fetching profile:', err);
         setError(err.message || 'Failed to fetch profile. Please check console for details.');
       } finally {
         setLoading(false);
@@ -83,32 +83,32 @@ const OwnerProfile = () => {
   };
 
   const handleEdit = async (e) => {
-    console.log('handleEdit called, isEditing:', isEditing);
+    // console.log('handleEdit called, isEditing:', isEditing);
     if (e) e.preventDefault();
     if (isEditing) {
       if (!validateFields()) return;
       try {
         // Save profile to backend
         try {
-          console.log('Attempting to save profile:', profile);
+          // console.log('Attempting to save profile:', profile);
           const updated = await saveOwnerProfile(authUser.id, {
             company_name: profile.company_name,
             gst_number: profile.gst_number
           });
-          console.log('Profile save response:', updated);
+          // console.log('Profile save response:', updated);
           // Refetch the profile from backend to ensure latest data
           const fresh = await fetchOwnerProfile(authUser.id);
-          console.log('Refetched profile:', fresh);
+          // console.log('Refetched profile:', fresh);
           setOriginalProfile(fresh);
           setProfile(fresh);
           setIsEditing(false);
           setError(null);
         } catch (err) {
-          console.error('Error during save:', err);
+          // console.error('Error during save:', err);
           setError(err.message || 'Failed to save profile.');
         }
       } catch (saveError) {
-        console.error('Error saving owner profile:', saveError);
+        // console.error('Error saving owner profile:', saveError);
         setError(saveError.message || 'Failed to save profile.');
       }
     } else {

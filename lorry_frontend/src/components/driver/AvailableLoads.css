@@ -82,6 +82,18 @@
   .DAL-loads-list {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
+  .DAL-available-loads {
+    font-size: 0.7rem;
+  }
+  .DAL-load-card {
+    font-size: 0.7rem !important;
+  }
+  .DAL-load-info h3 {
+    font-size: 1rem;
+  }
+  .DAL-load-info p {
+    font-size: 0.85rem;
+  }
 }
 
 @media (max-width: 480px) {

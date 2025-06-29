@@ -42,9 +42,25 @@ html {
   }
 }
 
+@media (max-width: 600px) {
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.2rem; }
+  h3 { font-size: 1.05rem; }
+  h4, h5, h6 { font-size: 1rem; }
+  p, label, input, button, textarea, select {
+    font-size: 0.95rem;
+  }
+}
+
 @media (max-width: 480px) {
   html {
     font-size: 13px;
+  }
+  h1 { font-size: 1.2rem; }
+  h2 { font-size: 1rem; }
+  h3, h4, h5, h6 { font-size: 0.95rem; }
+  p, label, input, button, textarea, select {
+    font-size: 0.9rem;
   }
 }
 

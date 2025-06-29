@@ -26,11 +26,11 @@ const AdminManagement = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log('AdminManagement: Fetching admin accounts.');
+        // console.log('AdminManagement: Fetching admin accounts.');
         const data = await fetchAdmins();
-        console.log('AdminManagement: Successfully fetched data:', data);
+        // console.log('AdminManagement: Successfully fetched data:', data);
         if (!Array.isArray(data)) {
-          console.error('AdminManagement: Data is not an array!', data);
+          // console.error('AdminManagement: Data is not an array!', data);
           throw new Error('Received invalid data format from server for admins.');
         }
         // Add isCurrentUser property based on fetched admin ID and current logged-in admin ID
@@ -40,7 +40,7 @@ const AdminManagement = () => {
         }));
         setAdminsData(processedData || []);
       } catch (err) {
-        console.error('AdminManagement: Detailed error fetching admins:', err);
+        // console.error('AdminManagement: Detailed error fetching admins:', err);
         setError(err.message || 'Failed to fetch admin accounts. Please check console for details.');
         setAdminsData([]);
       } finally {
@@ -53,12 +53,12 @@ const AdminManagement = () => {
   const handleDelete = async (adminId) => {
     if (window.confirm('Are you sure you want to delete this admin?')) {
       try {
-        console.log(`AdminManagement: Deleting admin ID: ${adminId}`);
+        // console.log(`AdminManagement: Deleting admin ID: ${adminId}`);
         await deleteAdmin(adminId);
         setAdminsData(currentAdmins => currentAdmins.filter(admin => admin.id !== adminId));
-        console.log(`AdminManagement: Admin ID: ${adminId} deleted successfully from UI.`);
+        // console.log(`AdminManagement: Admin ID: ${adminId} deleted successfully from UI.`);
       } catch (err) {
-        console.error('AdminManagement: Error deleting admin:', err);
+        // console.error('AdminManagement: Error deleting admin:', err);
         setError(err.message || `Failed to delete admin ${adminId}.`);
       }
     }
@@ -72,14 +72,14 @@ const AdminManagement = () => {
   const handleSaveEdit = async (updatedAdmin) => {
     // Placeholder for actual save logic (API call)
     try {
-      console.log('AdminManagement: Saving admin data (API call to be implemented):', updatedAdmin);
+      // console.log('AdminManagement: Saving admin data (API call to be implemented):', updatedAdmin);
       // await updateAdminProfile(updatedAdmin.id, updatedAdmin); // Example service call
       setAdminsData(prevAdmins => prevAdmins.map(admin => admin.id === updatedAdmin.id ? updatedAdmin : admin));
       setShowEditModal(false);
       setSelectedAdmin(null);
       alert('Admin profile updated successfully (locally).');
     } catch (err) {
-      console.error('AdminManagement: Error saving admin profile:', err);
+      // console.error('AdminManagement: Error saving admin profile:', err);
       setError(err.message || `Failed to update admin ${updatedAdmin.id}.`);
     }
   };
@@ -137,7 +137,7 @@ const AdminManagement = () => {
               filteredAdmins.map((admin, index) => {
                 try {
                   if (!admin || typeof admin !== 'object') {
-                    console.error(`AdminManagement: Invalid admin item at index ${index}:`, admin);
+                    // console.error(`AdminManagement: Invalid admin item at index ${index}:`, admin);
                     return (
                       <tr key={`error-${index}`} className="error-row">
                         <td colSpan="7">Invalid admin data</td>
@@ -173,7 +173,7 @@ const AdminManagement = () => {
                     </tr>
                   );
                 } catch (cardError) {
-                  console.error(`AdminManagement: Error rendering admin row for admin at index ${index}:`, admin, cardError);
+                  // console.error(`AdminManagement: Error rendering admin row for admin at index ${index}:`, admin, cardError);
                   return (
                     <tr key={admin && admin.id ? `error-${admin.id}` : `error-idx-${index}`} className="error-row">
                       <td colSpan="7">Error displaying this admin account.</td>

@@ -16,6 +16,7 @@ import AboutUs from './components/common/AboutUs';
 import Contact from './components/common/Contact';
 import PrivacyPolicy from './components/common/PrivacyPolicy';
 import TermsOfService from './components/common/TermsOfService';
+import RegisterChoice from './Pages/RegisterChoice';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/login-old" element={<Login_old />} />
               <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/register-choice" element={<RegisterChoice />} />
               <Route path="/signup-driver" element={<SignUpDriver />} />
               <Route path="/signup-goods-owner" element={<SignUpGoodsOwner />} />
               <Route path="/driver/*" element={<ProtectedRoute allowedUserTypes={['driver']} />}> 

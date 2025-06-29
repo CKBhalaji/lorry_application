@@ -32,7 +32,7 @@ class UserInDB(UserBase):
     is_active: bool
 
     class Config:
-        orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
+        from_attributes = True # Pydantic v1, or from_attributes = True for Pydantic v2
 
 # Driver Profile Schemas
 class DriverProfileBase(BaseModel):
@@ -62,7 +62,7 @@ class DriverProfileResponse(DriverProfileBase):
     username: Optional[str] = None
     email: Optional[str] = None
     class Config:
-        orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
+        from_attributes = True # Pydantic v1, or from_attributes = True for Pydantic v2
 
 class DriverUserCreate(UserCreate): # For signup
     profile: Optional[DriverProfileCreate] = None
@@ -93,7 +93,7 @@ class GoodsOwnerProfileResponse(GoodsOwnerProfileBase):
     username: Optional[str] = None
     email: Optional[str] = None
     class Config:
-        orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
+        from_attributes = True # Pydantic v1, or from_attributes = True for Pydantic v2
 
 class GoodsOwnerUserCreate(UserCreate): # For signup
     profile: Optional[GoodsOwnerProfileCreate] = None
@@ -150,7 +150,7 @@ class LoadResponse(LoadBase):
     accepted_driver_id: Optional[int] = None
 
     class Config:
-        orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
+        from_attributes = True # Pydantic v1, or from_attributes = True for Pydantic v2
 
 # Schemas for AdminProfile
 class AdminProfileBase(BaseModel):
@@ -166,7 +166,7 @@ class AdminProfileFullResponse(BaseModel):
     name: str
     phone_number: str
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AdminProfileCreate(AdminProfileBase):
     pass
@@ -179,7 +179,7 @@ class AdminProfileResponse(AdminProfileBase):
     id: int
     user_id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Schemas for Disputes
 class DisputeBase(BaseModel):
@@ -206,7 +206,7 @@ class AdminDisputeResponse(BaseModel):
     status: Optional[str] = None
     resolution_details: Optional[str] = None
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class DisputeCreate(BaseModel):
     driverId: Optional[int] = None
@@ -235,7 +235,7 @@ class DisputeResponse(DisputeBase):
     driver_phone: Optional[str] = None
 
     class Config:
-        orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
+        from_attributes = True # Pydantic v1, or from_attributes = True for Pydantic v2
 
 # Schemas for Bids
 class BidBase(BaseModel):
@@ -269,4 +269,4 @@ class BidResponse(BidBase):
     driver_phone: Optional[str] = None
 
     class Config:
-        orm_mode = True # Pydantic v1, or from_attributes = True for Pydantic v2
+        from_attributes = True # Pydantic v1, or from_attributes = True for Pydantic v2

@@ -244,6 +244,10 @@ table {
     justify-content: flex-end;
     margin-top: 10px;
   }
+  
+  .ADM-admin-management, .ADM-edit-btn, .ADM-delete-btn {
+    font-size: 0.7rem;
+  }
 }
 
 .ADM-edit-modal-overlay {
