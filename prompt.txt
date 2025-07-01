@@ -1,0 +1,108 @@
+Prompt for Jules AI: Lorry Application (React ViteJS Frontend + FastAPI Backend + postgres fo the Database)
+
+---
+
+# Project Overview
+This project is a logistics management platform called "Lorry Link". It is built with a React (ViteJS) frontend and a Python FastAPI backend. The application supports three main user roles: Admin, Driver, and Goods Owner. Each role has a dedicated dashboard and set of features. The frontend is highly interactive, supports theme switching (light/dark), and uses a clear color palette for usability. The backend provides RESTful APIs for all business logic, though it is somewhat basic and can be improved for robustness and alignment with frontend flows.
+
+---
+
+# Frontend (React ViteJS)
+
+## Theme and Color Palette
+- The application supports both light and dark themes, switchable via a toggle in the Navbar.
+- The theme is stored in localStorage and applied by setting a `data-theme` attribute on the document root.
+- The color palette is consistent across the app, with primary colors for buttons, backgrounds, and highlights. For example, dashboard test banners use red/yellow, and various UI elements use blue, silver, black, gray, and yellow for visual clarity.
+
+## Main Pages and Components
+
+### 1. Home Page (`/`)
+- Welcomes users to "Truck Logistics".
+- Contains a prominent truck image and a blinking animation for visual engagement.
+- Provides buttons for Admin Login and general Login.
+- Tagline highlights the platform's purpose: managing goods transportation and driver coordination.
+
+### 2. Navbar
+- Persistent navigation bar at the top of all pages.
+- Shows the app name and, if logged in, the user type and username.
+- Provides navigation links based on user role (Driver, Goods Owner, Admin).
+- Includes a theme toggle button (light/dark) with icons.
+- Handles login/logout and registration dropdown for new users.
+
+### 3. Authentication Pages
+- **Login**: Standard login for all users. Handles authentication and redirects to the appropriate dashboard.
+- **Admin Login**: Dedicated login for admins.
+- **Sign Up (Driver/Goods Owner)**: Registration forms for new drivers and goods owners, including profile and document upload for drivers.
+
+### 4. Driver Dashboard (`/driver/dashboard`)
+- Tabbed interface with the following sections:
+  - **Available Loads**: List of loads available for bidding.
+  - **My Bids**: Shows the driver's bid history.
+  - **Manage Disputes**: Allows drivers to view and raise disputes related to loads.
+  - **Profile**: Driver's profile information and document management.
+  - **Change Password**: (Accessible via profile)
+- Tabs are navigable and update the URL query string for deep linking.
+- Uses color highlights for active tabs and important notices.
+
+### 5. Goods Owner Dashboard (`/goods-owner/dashboard`)
+- Tabbed interface with the following sections:
+  - **Post New Load**: Form to post a new load for transport.
+  - **My Loads**: List and status of all loads posted by the owner.
+  - **Manage Disputes**: View and raise disputes related to loads.
+  - **Profile**: Owner's profile information.
+  - **Change Password**: (Accessible via profile)
+- Tabs are navigable and update the URL query string for deep linking.
+
+### 6. Admin Dashboard (`/admin/dashboard`)
+- Tabbed interface with the following sections:
+  - **User Management**: View, add, and delete users (drivers, goods owners, other admins).
+  - **Load Management**: View and update the status of all loads in the system.
+  - **Dispute Resolution**: View and resolve disputes raised by drivers or goods owners.
+  - **Admin Management**: Manage admin users (add, delete, update profiles).
+  - **Admin Profile**: View and update admin profile.
+  - **Change Password**: (Accessible via profile)
+- Tabs are navigable and update the URL query string for deep linking.
+
+### 7. Static Pages
+- **About Us**: Information about the platform and its mission.
+- **Contact**: Contact form or details for support.
+- **Privacy Policy**: Legal/privacy information.
+- **Terms of Service**: User agreement and terms.
+
+### 8. Footer
+- Persistent footer with links to static pages and copyright.
+
+---
+
+# Frontend Connections and Flow
+- Navigation is handled by React Router, with protected routes for each dashboard based on user type.
+- Auth context manages user state and authentication across the app.
+- Each dashboard tab loads its respective component, which fetches data from the backend via REST APIs.
+- Theme switching is global and affects all pages instantly.
+- Color palette and theme are consistent, ensuring accessibility and a modern look.
+
+---
+
+# Backend (FastAPI)
+- Provides RESTful APIs for authentication, user management, loads, bids, disputes, and profile management.
+- Endpoints are grouped by user role: `/api/auth`, `/api/drivers`, `/api/owners`, `/api/admin`.
+- Uses SQLAlchemy ORM for database operations.
+- Authentication is via OAuth2 with JWT tokens.
+- CORS is enabled for local development and can be restricted for production.
+- The backend logic is functional but can be improved for:
+  - More robust error handling.
+  - Better alignment with frontend flows (e.g., more granular permissions, improved validation).
+  - Enhanced documentation and response consistency.
+
+---
+
+# Alignment and Recommendations
+- The frontend is well-structured, visually appealing, and user-friendly, with clear separation of concerns and role-based access.
+- The backend covers all required features but would benefit from refactoring for maintainability and closer alignment with frontend needs.
+- Ensure all API responses are consistent and provide clear error messages for frontend consumption.
+- Consider adding more automated tests and API documentation (e.g., using FastAPI's built-in OpenAPI support).
+
+---
+
+# Summary
+This project is a full-stack logistics management platform with a modern, themeable React frontend and a functional FastAPI backend. Each page and feature is designed for clarity, usability, and role-based access. The color palette and theme switching enhance the user experience. Backend improvements are recommended for production readiness and tighter integration with the frontend.

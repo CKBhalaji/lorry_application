@@ -14,7 +14,7 @@ router = APIRouter(
 
 # --- Admin Signup (Open) ---
 from fastapi import Body
-@router.post('/admins/signup', response_model=schemas.UserInDB, status_code=status.HTTP_201_CREATED, dependencies=[])
+@router.post('/admins/signup', response_model=schemas.UserInDB, status_code=status.HTTP_201_CREATED)
 async def signup_admin(admin_data: schemas.UserCreate = Body(...), db: Session = Depends(database.get_db)):
     existing_user = db.query(models.User).filter(
         (models.User.email == admin_data.email) | (models.User.username == admin_data.username)

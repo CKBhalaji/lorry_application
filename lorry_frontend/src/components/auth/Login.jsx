@@ -5,10 +5,10 @@ import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
   const { login } = useAuth();
-  const [driverUsername, setDriverUsername] = useState('');
-  const [driverPassword, setDriverPassword] = useState('');
-  const [goodsOwnerUsername, setGoodsOwnerUsername] = useState('');
-  const [goodsOwnerPassword, setGoodsOwnerPassword] = useState('');
+  const [driverUsername, setDriverUsername] = useState('sampled');
+  const [driverPassword, setDriverPassword] = useState('sampled@123');
+  const [goodsOwnerUsername, setGoodsOwnerUsername] = useState('samplego');
+  const [goodsOwnerPassword, setGoodsOwnerPassword] = useState('samplego@123');
   const [errorMessage, setErrorMessage] = useState('');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [selectedSection, setSelectedSection] = useState(null);

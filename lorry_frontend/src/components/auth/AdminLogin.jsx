@@ -5,8 +5,8 @@ import './AdminLogin.css';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminLogin = () => {
-  const [username, setUsername] = useState('testadmin');
-  const [password, setPassword] = useState('ONEtwo@2003');
+  const [username, setUsername] = useState('superadmin');
+  const [password, setPassword] = useState('admin@123');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
