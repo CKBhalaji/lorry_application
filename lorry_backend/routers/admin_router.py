@@ -204,7 +204,7 @@ async def delete_admin_by_admin(admin_id_to_delete: int, current_admin: models.U
 
 @router.get('/admins/{admin_id}/profile', response_model=schemas.AdminProfileFullResponse, dependencies=[Depends(get_current_admin_user)])
 async def get_admin_profile(admin_id: int, db: Session = Depends(database.get_db)):
-    admin_user = db.query(models.User).filter(models.User.id == admin_id, models.User.role == UserRole.ADMIN).first()
+    admin_user = db.query(models.User).filter(models.User.id == admin_id, models.User.role.in_([UserRole.ADMIN, UserRole.SUPERADMIN])).first()
     if not admin_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Admin with id {admin_id} not found')
     profile = db.query(models.AdminProfile).filter(models.AdminProfile.user_id == admin_id).first()
