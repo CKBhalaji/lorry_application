@@ -7,7 +7,7 @@ from .. import schemas, models, security, database
 from ..models import UserRole
 
 router = APIRouter(
-    prefix='/api/drivers', # Aligning with frontend /api/drivers path structure
+    prefix='api/drivers', # Aligning with frontend /api/drivers path structure
     tags=['Drivers'],
     dependencies=[Depends(security.get_current_active_user)]
 )
