@@ -9,7 +9,7 @@ from typing import List
 from ..models import UserRole # For role checking
 
 router = APIRouter(
-    prefix='api/owners', # Aligning with frontend /api/owners path structure
+    prefix='/api/owners', # Aligning with frontend /api/owners path structure
     tags=['Goods Owners'],
     dependencies=[Depends(security.get_current_active_user)]
 )
