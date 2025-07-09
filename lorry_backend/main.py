@@ -48,7 +48,7 @@ origins = [
     "http://localhost:5173",    # Default Vite dev server port
     "http://localhost:3000",    # Common React dev server port (if applicable)
     "https://lorry-application-frontend.onrender.com",
-    "https://lorry-application-frontend-lj9e.onrender.com"
+    "https://lorry-application-frontend-c0zv.onrender.com"
     # Add your deployed frontend URL here for production
 ]
 
