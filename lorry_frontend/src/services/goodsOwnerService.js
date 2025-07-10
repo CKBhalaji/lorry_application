@@ -20,16 +20,13 @@ const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || 'https://lorry-applica
 
 export const postNewLoad = async (loadData) => {
   const token = getCookie('authToken'); // Or a generic 'authToken'
-  const response = await fetch(`${API_BASE_URL}/loads`, {
-    method: 'POST',
+  const response = await axios.post(`${API_BASE_URL}/loads`, loadData, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(loadData)
+    }
   });
-  if (!response.ok) throw new Error('Failed to post load');
-  return response.json();
+  return response.data;
 };
 
 export const fetchMyLoads = async (status) => {
@@ -43,24 +40,13 @@ export const fetchMyLoads = async (status) => {
   // console.log('GoodsOwnerService: Target URL:', url);
 
   try {
-    const response = await fetch(url, {
+    const response = await axios.get(url, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
-
-    // console.log('GoodsOwnerService: Response status:', response.status);
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      // console.error('GoodsOwnerService: Error fetching loads. Status:', response.status, 'Body:', errorBody);
-      throw new Error(`Failed to fetch loads. Status: ${response.status}`);
-    }
-
-    // console.log('GoodsOwnerService: Successfully fetched loads. Preparing to parse JSON.');
-    return response.json();
+    return response.data;
   } catch (error) {
-    // console.error('GoodsOwnerService: Exception during fetchMyLoads:', error);
     throw error; // Re-throw to be caught by the component
   }
 };
@@ -188,31 +174,17 @@ export const fetchOwnerDisputes = async () => {
   // console.log('GoodsOwnerService: Target URL for fetchOwnerDisputes:', url);
 
   try {
-    const response = await fetch(url, {
+    const response = await axios.get(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-
-    // console.log('GoodsOwnerService: Response status for fetchOwnerDisputes:', response.status);
-
-    if (response.status === 403) {
-      // Clear cookies and redirect to login
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
       removeCookie('authToken');
       removeCookie('authUser');
       window.location.href = '/login';
       throw new Error('Access denied. Please log in as a goods owner.');
     }
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      // console.error('GoodsOwnerService: Error fetching owner disputes. Status:', response.status, 'Body:', errorBody);
-      throw new Error(`Failed to fetch owner disputes. Status: ${response.status}`);
-    }
-
-    // console.log('GoodsOwnerService: Successfully fetched owner disputes. Preparing to parse JSON.');
-    return response.json();
-  } catch (error) {
-    // This will catch network errors or errors from response.json()
-    // console.error('GoodsOwnerService: Exception during fetchOwnerDisputes:', error);
     throw error; // Re-throw to be caught by the component
   }
 };
@@ -235,46 +207,45 @@ export const fetchBidsForLoad = async (loadId) => {
     window.location.href = '/login';
     throw new Error('You must be logged in as a goods owner to view bids.');
   }
-  const response = await fetch(`${API_BASE_URL}/loads/${loadId}/bids`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  if (response.status === 403) {
-    removeCookie('authToken');
-    removeCookie('authUser');
-    window.location.href = '/login';
-    throw new Error('Access denied. Please log in as a goods owner.');
+  try {
+    const response = await axios.get(`${API_BASE_URL}/loads/${loadId}/bids`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      removeCookie('authToken');
+      removeCookie('authUser');
+      window.location.href = '/login';
+      throw new Error('Access denied. Please log in as a goods owner.');
+    }
+    throw error;
   }
-  if (!response.ok) throw new Error('Failed to fetch bids');
-  return response.json();
 };
 // Hire a driver for a load
 export const hireDriverForLoad = async (loadId, driverId) => {
   const token = getCookie('authToken');
   const url = `${API_BASE_URL}/loads/${loadId}/hire?driver_id=${driverId}`;
-  const response = await fetch(url, {
-    method: 'PUT',
+  const response = await axios.put(url, {}, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     }
   });
-  if (!response.ok) throw new Error('Failed to hire driver');
-  return response.json();
+  return response.data;
 };
 // Add more owner-related API calls as needed
 
 export const cancelLoad = async (loadId) => {
   const token = getCookie('authToken');
   const url = `${API_BASE_URL}/loads/${loadId}/cancel`;
-  const response = await fetch(url, {
-    method: 'PUT',
+  const response = await axios.put(url, {}, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     }
   });
-  if (!response.ok) throw new Error('Failed to cancel load');
-  return response.json();
+  return response.data;
 };
 
 export const changeOwnerPassword = async (ownerId, oldPassword, newPassword) => {

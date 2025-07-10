@@ -26,22 +26,12 @@ export const fetchAvailableLoads = async () => {
   // console.log('DriverService: Target URL:', url);
 
   try {
-    const response = await fetch(url, {
+    const response = await axios.get(url, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
-
-    // console.log('DriverService: Response status:', response.status);
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      // console.error('DriverService: Error fetching loads. Status:', response.status, 'Body:', errorBody);
-      throw new Error(`Failed to fetch loads. Status: ${response.status}`);
-    }
-
-    // console.log('DriverService: Successfully fetched loads. Preparing to parse JSON.');
-    return response.json();
+    return response.data;
   } catch (error) {
     // Log network errors or errors from response.json() if they occur
     // console.error('DriverService: Exception during fetchAvailableLoads:', error);
@@ -53,44 +43,37 @@ export const fetchAvailableLoads = async () => {
 export const acceptBid = async (bidId) => {
   const token = getCookie('authToken');
   const url = `${API_BASE_URL}/bids/${bidId}/accept`;
-  const response = await fetch(url, {
-    method: 'PUT',
+  const response = await axios.put(url, {}, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     }
   });
-  if (!response.ok) throw new Error('Failed to accept bid');
-  return response.json();
+  return response.data;
 };
 
 // Decline a bid
 export const declineBid = async (bidId) => {
   const token = getCookie('authToken');
   const url = `${API_BASE_URL}/bids/${bidId}/decline`;
-  const response = await fetch(url, {
-    method: 'PUT',
+  const response = await axios.put(url, {}, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     }
   });
-  if (!response.ok) throw new Error('Failed to decline bid');
-  return response.json();
+  return response.data;
 };
 
 export const placeBid = async (bidData) => {
   const token = getCookie('authToken');
-  const response = await fetch(`${API_BASE_URL}/bids`, {
-    method: 'POST',
+  const response = await axios.post(`${API_BASE_URL}/bids`, bidData, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(bidData)
+    }
   });
-  if (!response.ok) throw new Error('Failed to place bid');
-  return response.json();
+  return response.data;
 };
 
 export const fetchDriverBids = async (driverId) => {
@@ -245,13 +228,12 @@ export const fetchDriverMyLoads = async (status) => {
     url += `?status=${encodeURIComponent(status)}`;
   }
   try {
-    const response = await fetch(url, {
+    const response = await axios.get(url, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
-    if (!response.ok) throw new Error('Failed to fetch my loads');
-    return response.json();
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -261,16 +243,13 @@ export const fetchDriverMyLoads = async (status) => {
 export const updateLoadStatus = async (loadId, newStatus) => {
   const token = getCookie('authToken');
   const url = `${API_BASE_URL}/loads/${loadId}/status`;
-  const response = await fetch(url, {
-    method: 'PUT',
+  const response = await axios.put(url, { status: newStatus }, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ status: newStatus })
+    }
   });
-  if (!response.ok) throw new Error('Failed to update load status');
-  return response.json();
+  return response.data;
 };
 
 // Add more driver-related API calls as needed

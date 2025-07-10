@@ -30,22 +30,13 @@ export const signUpDriver = async (formData) => {
       }
     };
     // console.log('Processed payload for driver signup:', payload);
-    const response = await fetch(`${BACKEND_BASE_URL}/auth/signup/driver`, {
-      method: 'POST',
-      headers: { 
+    const response = await axios.post(`${BACKEND_BASE_URL}/auth/signup/driver`, payload, {
+      headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-      },
-      body: JSON.stringify(payload)
+      }
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      // Use a more specific error message if possible
-      throw new Error(errorData.detail || errorData.message || 'Driver signup failed');
-    }
-
-    return await response.json();
+    return response.data;
   } catch (error) {
     // console.error('Error during driver signup:', error.message, error.response ? error.response.status : '');
     throw error.response ? error.response.data : new Error('Request failed');
@@ -103,16 +94,10 @@ export const sendOTP = async (email) => {
     // The old frontend sent OTP in body too, which is not what the new backend expects.
     // The old frontend also generated OTP client-side, which is insecure.
     // The new backend's /send endpoint is just for initiating, not verifying a client-generated OTP.
-    const response = await fetch(`${BACKEND_BASE_URL}/auth/verification/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email }), // Corrected body
+    const response = await axios.post(`${BACKEND_BASE_URL}/auth/verification/send`, { email: email }, {
+      headers: { 'Content-Type': 'application/json' }
     });
-    if (!response.ok) throw new Error('Failed to send OTP');
-    // The backend currently doesn't return the OTP. The frontend should not expect it.
-    // This function might need to change its return value or how it's used.
-    // For now, returning a success indication or the response itself.
-    return await response.json(); // Or handle based on actual backend response
+    return response.data;
   } catch (error) {
     // console.error('Error sending OTP:', error.message, error.response ? error.response.status : '');
     throw error.response ? error.response.data : new Error('Request failed');
@@ -122,17 +107,10 @@ export const sendOTP = async (email) => {
 export const verifyOTP = async (email, otp) => {
   try {
     // Backend /auth/verification/verify expects { "email": "user@example.com", "otp": "1234" } in body
-    const response = await fetch(`${BACKEND_BASE_URL}/auth/verification/verify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, otp: otp.toString() }), // Corrected body
+    const response = await axios.post(`${BACKEND_BASE_URL}/auth/verification/verify`, { email: email, otp: otp.toString() }, {
+      headers: { 'Content-Type': 'application/json' }
     });
-    if (!response.ok) {
-      const errorText = await response.text();
-      // alert(errorText || 'OTP is not correct'); // Avoid alert in service
-      throw new Error(errorText || 'Failed to verify OTP'); // Keep original error message if text() fails
-    }
-    return response.text(); // Or response.json() if backend sends JSON
+    return response.data;
   } catch (error) {
     // console.error('Error verifying OTP:', error.message, error.response ? error.response.status : '');
     // If error is already an Error object from response.text() failure or custom new Error:
